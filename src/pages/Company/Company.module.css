@@ -1,0 +1,47 @@
+.container {
+  padding: 24px;
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+}
+
+.actionBar {
+  width: 100%;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.searchInput {
+  width: 400px;
+}
+
+.statusBadge {
+  text-transform: capitalize;
+}
+
+.statusBadge.active {
+  color: #52c41a;
+}
+
+.statusBadge.inactive {
+  color: #ff4d4f;
+}
+
+.drawerContent {
+  padding: 24px;
+}
+
+.filterDropdown {
+  padding: 8px;
+}

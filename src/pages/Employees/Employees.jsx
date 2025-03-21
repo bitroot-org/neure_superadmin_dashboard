@@ -24,7 +24,7 @@ import {
 
 const { Option } = Select;
 
-const ManageEmployees = () => {
+const Employees = () => {
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [employees, setEmployees] = useState([]);
@@ -227,7 +227,7 @@ const ManageEmployees = () => {
           onChange={handleCompanyChange}
           style={{ width: 300 }}
           loading={loading}
-          defaultValue={companies.length > 0 ? companies[0].id : undefined}
+          value={selectedCompany}
         >
           {companies.map((company) => (
             <Option key={company.id} value={company.id}>
@@ -384,14 +384,6 @@ const ManageEmployees = () => {
           </Form.Item>
 
           <Form.Item
-            name="username"
-            label="Username"
-            rules={[{ required: !uploadedFile }]}
-          >
-            <Input disabled={isFormDisabled} />
-          </Form.Item>
-
-          <Form.Item
             name="gender"
             label="Gender"
             rules={[{ required: !uploadedFile }]}
@@ -424,14 +416,6 @@ const ManageEmployees = () => {
           </Form.Item>
 
           <Form.Item
-            name="age"
-            label="Age"
-            rules={[{ required: !uploadedFile }]}
-          >
-            <Input type="number" disabled={isFormDisabled} />
-          </Form.Item>
-
-          <Form.Item
             name="department_id"
             label="Department"
             rules={[{ required: !uploadedFile }]}
@@ -459,4 +443,4 @@ const ManageEmployees = () => {
   );
 };
 
-export default ManageEmployees;
+export default Employees;

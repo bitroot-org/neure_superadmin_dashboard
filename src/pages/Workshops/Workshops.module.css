@@ -1,0 +1,55 @@
+.container {
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+}
+
+.tabs {
+  margin-bottom: 24px;
+}
+
+.actionBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.datePicker {
+  width: 300px;
+}
+
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .actionBar {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .datePicker {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+}

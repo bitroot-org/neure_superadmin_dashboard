@@ -9,45 +9,36 @@ import {
   NotificationOutlined,
   BarChartOutlined,
   FileTextOutlined,
+  FolderOpenOutlined,
+  HistoryOutlined,
+  ProfileOutlined,
+  SettingOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import neurelogo from "../../assets/darkneurelogo.png";
 import Header from "../Header";
+import path from "path";
 const Sidebar = () => {
   const menuData = [
     {
-      path: "/dashboard",
-      name: "Dashboard",
+      path: "/home",
+      name: "Home",
       icon: <HomeOutlined />,
     },
     {
       path: "/companies",
       name: "Companies",
       icon: <TeamOutlined />,
-      routes: [
-        {
-          path: "/companies/manage",
-          name: "Manage Companies",
-        },
-        {
-          path: "/companies/roi-metrics",
-          name: "ROI & Metrics",
-        },
-      ],
     },
     {
       path: "/employees",
       name: "Employees",
       icon: <UserOutlined />,
-      routes: [
-        {
-          path: "/employees/manage",
-          name: "Manage Employees",
-        },
-        {
-          path: "/employees/assessments",
-          name: "Assessments",
-        },
-      ],
+    },
+    {
+      path: "/workshops",
+      name: "Workshops",
+      icon: <FileTextOutlined />,
     },
     {
       path: "/therapists",
@@ -55,30 +46,38 @@ const Sidebar = () => {
       icon: <SolutionOutlined />,
     },
     {
-      path: "/workshops",
-      name: "Workshops",
-      icon: <FileTextOutlined />,
-      routes: [
-        {
-          path: "/workshops/folders",
-          name: "Workshop Folders",
-        },
-        {
-          path: "/workshops/schedules",
-          name: "Schedules",
-        },
-      ],
-    },
-    {
-      path: "/notifications",
-      name: "Notifications",
-      icon: <NotificationOutlined />,
+      path: "/assessments",
+      name: "Assessments",
+      icon: <FolderOpenOutlined /> ,
     },
     {
       path: "/analytics",
       name: "Analytics",
       icon: <BarChartOutlined />,
     },
+    {
+      path: "/activitylog",
+      name: "Activity Log",
+      icon: <HistoryOutlined />,
+    },
+    {
+      type: 'divider',
+    },
+    {
+      path: "/profile",
+      name: "Profile",
+      icon: <ProfileOutlined />,
+    },
+    {
+      path: "/settings",
+      name: "Settings",
+      icon: <SettingOutlined />,
+    },
+    {
+      path: "/logout",
+      name: "Logout",
+      icon: <LogoutOutlined />,
+    }
   ];
 
   return (

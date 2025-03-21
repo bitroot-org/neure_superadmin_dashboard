@@ -1,19 +1,55 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Refresh token function
-const refreshToken = async () => {
+// Request interceptor
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Response interceptor
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      try {
+        const response = await refreshToken();
+        if (response.data.accessToken) {
+          localStorage.setItem("accessToken", response.data.accessToken);
+          api.defaults.headers.common["Authorization"] = `Bearer ${response.data.accessToken}`;
+          return api(originalRequest);
+        }
+      } catch (refreshError) {
+        localStorage.clear();
+        window.location.href = "/login";
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const refreshToken = async () => {
   const token = localStorage.getItem("refreshToken");
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/api/user/refresh-token`,
+      `${import.meta.env.VITE_API_BASE_URL}/user/refresh-token`,
       {},
       {
         headers: {
@@ -27,68 +63,38 @@ const refreshToken = async () => {
   }
 };
 
-// Request interceptor
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Response interceptor
-// api.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config;
-
-//     if (
-//       (error.response.status === 401 || error.response.status === 403) &&
-//       !originalRequest._retry
-//     ) {
-//       originalRequest._retry = true;
-//       try {
-//         const response = await refreshToken();
-//         if (response.data.accessToken) {
-//           localStorage.setItem("accessToken", response.data.accessToken);
-//           api.defaults.headers.common[
-//             "Authorization"
-//           ] = `Bearer ${response.data.accessToken}`;
-//           return api(originalRequest);
-//         }
-//       } catch (refreshError) {
-//         localStorage.clear();
-//         window.location.href = "/login";
-//         return Promise.reject(refreshError);
-//       }
-//     }
-//     return Promise.reject(error);
-//   }
-// );
-
-export const loginUser = async (email, password) => {
+export const login = async (email, password) => {
   try {
-    const response = await api.post("/user/login", { email, password });
-    if (response.data.data) {
-      localStorage.setItem("accessToken", response.data.data.accessToken);
-      localStorage.setItem("refreshToken", response.data.data.refreshToken);
-      localStorage.setItem("expiresAt", response.data.data.expiresAt);
+    const response = await api.post("/user/login", {
+      email,
+      password,
+      role_id: 1,
+    });
+    
+    if (response.data.status && response.data.data) {
+      const { accessToken, refreshToken, expiresAt } = response.data.data;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("expiresAt", expiresAt);
+      localStorage.setItem("companyId", response.data.data.companyId);
+      
+      return response.data;
     }
-    return response.data;
+    throw new Error(response.data.message || 'Login failed');
   } catch (error) {
     throw error.response?.data || error;
   }
 };
 
-export const logoutUser = async () => {
+export const logout = async () => {
   try {
-    // No need to pass token explicitly since interceptor handles it
     const response = await api.post("/user/logout");
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
 };
+
 
 export const getTherapists = async () => {
   try {
@@ -108,9 +114,9 @@ export const createTherapist = async (data) => {
   }
 }
 
-export const getAllCompanies = async () => {
+export const getAllCompanies = async (params = {}) => {
   try {
-    const response = await api.get("/company/getAllCompanies");
+    const response = await api.get("/company/getAllCompanies", { params });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -157,6 +163,15 @@ export const bulkCreateEmployees = async (file, companyId) => {
 export const getDepartments = async () => {
   try {
     const response = await api.get("/company/getDepartments");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const createCompany = async (data) => {
+  try {
+    const response = await api.post("/company/createCompany", data);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
