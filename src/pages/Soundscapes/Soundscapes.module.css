@@ -1,0 +1,128 @@
+.container {
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.actionBar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tableContainer {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.albumArt {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  overflow: hidden;
+}
+
+.albumArt img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.uploadSection {
+  margin-bottom: 24px;
+}
+
+.imageUpload {
+  border: 2px dashed #d9d9d9;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  background: #fafafa;
+}
+
+.uploadPlaceholder {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.uploadPlaceholder img {
+  width: 40px;
+  height: 40px;
+  opacity: 0.5;
+}
+
+.audioUpload {
+  padding: 16px;
+  background: #fafafa;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+}
+
+.audioUpload :global(.ant-upload-drag) {
+  border: none !important;
+  padding: 0;
+}
+
+.submitButton {
+  margin-top: 40px;
+}
+
+.submitButton button {
+  height: 40px;
+  font-size: 16px;
+}
+
+/* Make drawer title clickable */
+:global(.ant-drawer-title) {
+  cursor: pointer;
+}
+
+:global(.ant-drawer-header) {
+  padding: 16px 24px;
+}
+
+.buttonGroup {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .actionBar {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+}

@@ -49,3 +49,16 @@
   font-size: 12px;
   color: rgba(0, 0, 0, 0.45);
 }
+
+
+:global(.ant-menu-item-selected) {
+  background-color: #635BFF !important;
+}
+
+:global(.ant-menu-item:hover) {
+  background-color: #635bffbd !important;
+}
+
+:global(.ant-menu-item-selected::after) {
+  border-right-color: #FF6B00 !important;
+}

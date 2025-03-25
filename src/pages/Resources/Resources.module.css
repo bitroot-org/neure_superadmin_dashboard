@@ -1,0 +1,96 @@
+.container {
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+}
+
+.tabs {
+  margin-bottom: 24px;
+}
+
+.actionBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.datePicker {
+  width: 300px;
+}
+
+.tableContainer {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.coverImage {
+  width: 40px;
+  height: 40px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.docIcon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .actionBar {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .datePicker {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+}
+
+:global(.ant-drawer-title) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+:global(.ant-drawer-title .anticon) {
+  cursor: pointer;
+}
+
+:global(.ant-form-item-label) {
+  font-weight: 500;
+}
+
+:global(.ant-upload-drag) {
+  background: #ffffff !important;
+  border: 1px solid #d9d9d9 !important;
+}
+
+:global(.ant-btn-block) {
+  height: 40px;
+  font-size: 16px;
+  margin-top: 24px;
+}

@@ -177,3 +177,35 @@ export const createCompany = async (data) => {
     throw error.response?.data || error;
   }
 }
+
+export const createArticle = async (data) => {
+  try {
+    const response = await api.post("/article/createArticle", data);
+    return response.data ; 
+  } catch (error) {
+    throw error.response?.data || error; 
+  }
+}
+
+export const updateArticle = async (data) => {
+  try {
+    const response = await api.put("/article/updateArticle", data);
+    return response.data ; 
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const uploadArticleImage = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post("/upload/article", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }); 
+  } catch (error) {
+    throw error.response?.data || error; 
+  }
+}

@@ -1,0 +1,105 @@
+.container {
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+}
+
+.actionBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.datePicker {
+  width: 300px;
+}
+
+.tableContainer {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.assessmentForm {
+  padding: 16px 0;
+}
+
+.questionBox {
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.optionsContainer {
+  margin-top: 16px;
+}
+
+.optionsLabel {
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.optionRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.removeOption {
+  color: #999;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.removeOption:hover {
+  color: #ff4d4f;
+}
+
+.addOptionBtn {
+  color: #6366f1;
+  padding: 0;
+  height: auto;
+  margin-top: 8px;
+}
+
+.addQuestionBtn {
+  margin: 24px 0;
+  height: 40px;
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+.publishBtn {
+  height: 40px;
+  background: #6366f1;
+}
+
+.publishBtn:hover {
+  background: #4f46e5;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .actionBar {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .datePicker {
+    width: 100%;
+  }
+}

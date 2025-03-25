@@ -1,6 +1,6 @@
 import React from "react";
 import { ProLayout } from "@ant-design/pro-layout";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   HomeOutlined,
   UserOutlined,
@@ -16,9 +16,11 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import neurelogo from "../../assets/darkneurelogo.png";
-import Header from "../Header";
-import path from "path";
+import { createArticle, updateArticle, uploadArticleImage } from "../../services/api";
+import styles from './Sidebar.module.css';
+
 const Sidebar = () => {
+  const location = useLocation();
   const menuData = [
     {
       path: "/home",
@@ -46,6 +48,16 @@ const Sidebar = () => {
       icon: <SolutionOutlined />,
     },
     {
+      path: "/soundscapes",
+      name: "Soundscapes",
+      icon: <NotificationOutlined />,
+    },
+    {
+      path: "/resources",
+      name: "Resources",
+      icon: <FolderOpenOutlined />,
+    },
+    {
       path: "/assessments",
       name: "Assessments",
       icon: <FolderOpenOutlined /> ,
@@ -59,9 +71,6 @@ const Sidebar = () => {
       path: "/activitylog",
       name: "Activity Log",
       icon: <HistoryOutlined />,
-    },
-    {
-      type: 'divider',
     },
     {
       path: "/profile",
@@ -85,15 +94,27 @@ const Sidebar = () => {
       title="Neure Dashboard"
       menuDataRender={() => menuData}
       logo={neurelogo}
-      menuItemRender={(item, dom) => <Link to={item.path}>{dom}</Link>}
-      contentStyle={{ margin: -10, padding: 0 }}
+      menuItemRender={(item, dom) => (
+        <Link 
+          to={item.path}
+          style={{
+            color: location.pathname === item.path ? 'white' : undefined,
+          }}
+        >
+          {dom}
+        </Link>
+      )}
+      contentStyle={{ margin: 0, padding: 0 }}
       fixSiderbar
+      menuProps={{
+        selectedKeys: [location.pathname],
+      }}
     >
       <div
         style={{
           padding: "24px",
           minHeight: "100vh",
-          background: "yellow",
+          background: "#6faaf7",
         }}
       >
         <Outlet />
