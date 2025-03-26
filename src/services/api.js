@@ -209,3 +209,121 @@ export const uploadArticleImage = async (file) => {
     throw error.response?.data || error; 
   }
 }
+
+export const createAssessment = async (data) => {
+  try {
+    // If there's an ID, it's an update operation
+    if (data.id) {
+      return await updateAssessment(data);
+    }
+    const response = await api.post(`/assessments/createAssessment`, data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const updateAssessment = async (data) => {
+  try {
+    const response = await api.put(`/assessments/updateAssessment`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Update assessment error:', error);
+    throw error.response?.data || error;
+  }
+}
+
+export const getAllAssessments = async (params = {}) => {
+  try {
+    const response = await api.get(`/assessments/getAllAssessments`, { 
+      params: {
+        page: params.page || 1,
+        limit: params.limit || 10
+      } 
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const getAllWorkshops = async (params = {}) => {
+  try {
+    const response = await api.get(`/workshop/getAllWorkshops`, {
+      params: {
+        page: params.page || 1,
+        limit: params.limit || 10
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const updateWorkshop = async (data) => {
+  try {
+    const response = await api.put(`/workshop/updateWorkshop`, data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const deleteWorkshop = async (data) => {
+  try {
+    const response = await api.delete(`/workshop/deleteWorkshop`, {
+      data: data
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const uploadWorkshopFiles = async (workshopId, coverImage, pdf) => {
+  try {
+    const formData = new FormData();
+    formData.append('workshopId', workshopId);
+    
+    if (coverImage) {
+      formData.append('coverImage', coverImage);
+    }
+    
+    if (pdf) {
+      formData.append('pdf', pdf);
+    }
+
+    const response = await api.post("/uploads/workshop/files", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const createWorkshop = async (data) => {
+  try {
+    const response = await api.post(`/workshop/createWorkshop`, data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const getAllWorkshopSchedules = async (params = {}) => {
+  try {
+    const response = await api.get(`/workshop/getAllWorkshopSchedules`, {
+      params: {
+        page: params.page || 1,
+        limit: params.limit || 10
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}

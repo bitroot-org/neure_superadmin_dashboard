@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Tabs, DatePicker, Button, Table, Space, Drawer, Form, Input, Upload, Select, TimePicker } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Tabs, DatePicker, Button, Table, Space, Drawer, Form, Input, Upload, Select, TimePicker, message, Modal } from 'antd';
 import { FilterOutlined, PlusOutlined, UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import styles from './Workshops.module.css';
+import {deleteWorkshop, updateWorkshop, getAllWorkshops, createWorkshop, uploadWorkshopFiles, getAllWorkshopSchedules} from '../../services/api';
 
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
@@ -10,9 +11,180 @@ const Workshops = () => {
   const [activeTab, setActiveTab] = useState('schedule');
   const [scheduleDrawerVisible, setScheduleDrawerVisible] = useState(false);
   const [createDrawerVisible, setCreateDrawerVisible] = useState(false);
+  const [editDrawerVisible, setEditDrawerVisible] = useState(false);
   const [scheduleForm] = Form.useForm();
   const [selectedWorkshop, setSelectedWorkshop] = useState(null);
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [workshops, setWorkshops] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [coverImage, setCoverImage] = useState(null);
+  const [worksheetFile, setWorksheetFile] = useState(null);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 1,
+    total: 0
+  });
+  const [scheduleData, setScheduleData] = useState([]);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
+
+  // Fetch workshops on component mount
+  useEffect(() => {
+    fetchWorkshops();
+    fetchWorkshopSchedules();
+  }, []);
+
+  const fetchWorkshops = async (page = 1, limit = 10) => {
+    setLoading(true);
+    try {
+      const response = await getAllWorkshops({ page, limit });
+      if (response.status && response.data) {
+        setWorkshops(response.data.workshops || []);
+        setPagination({
+          current: response.data.pagination.currentPage,
+          pageSize: response.data.pagination.limit,
+          total: response.data.pagination.total
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching workshops:', error);
+      message.error('Failed to load workshops');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateWorkshop = async (values) => {
+    try {
+      const payload = {
+        id: selectedWorkshop.id,
+        title: values.title,
+        description: values.description,
+        location: values.location || ''
+      };
+      
+      await updateWorkshop(payload);
+      message.success('Workshop updated successfully');
+      setEditDrawerVisible(false);
+      fetchWorkshops(pagination.current, pagination.pageSize);
+    } catch (error) {
+      console.error('Error updating workshop:', error);
+      message.error('Failed to update workshop');
+    }
+  };
+
+  const handleDeleteWorkshop = (workshopId) => {
+    Modal.confirm({
+      title: 'Are you sure you want to delete this workshop?',
+      content: 'This action cannot be undone.',
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await deleteWorkshop({ id: workshopId });
+          message.success('Workshop deleted successfully');
+          fetchWorkshops(pagination.current, pagination.pageSize);
+        } catch (error) {
+          console.error('Error deleting workshop:', error);
+          message.error('Failed to delete workshop');
+        }
+      }
+    });
+  };
+
+  const handleEditWorkshop = (workshop) => {
+    setSelectedWorkshop(workshop);
+    editForm.setFieldsValue({
+      title: workshop.title,
+      description: workshop.description,
+      location: workshop.location,
+      host_name: workshop.organizer
+    });
+    setEditDrawerVisible(true);
+  };
+
+  const handleTableChange = (newPagination) => {
+    fetchWorkshops(newPagination.current, newPagination.pageSize);
+  };
+
+   // Update the handleCreateWorkshop function
+   const handleCreateWorkshop = async (values) => {
+    try {
+      // First create the workshop
+      const payload = {
+        title: values.title,
+        description: values.description,
+        host_name: values.host_name,
+        agenda: values.agenda || ''
+      };
+      
+      const response = await createWorkshop(payload);
+      
+      if (response.status && response.data) {
+        const workshopId = response.data.id;
+        
+        // Then upload files if they exist
+        if (coverImage || worksheetFile) {
+          await uploadWorkshopFiles(workshopId, coverImage, worksheetFile);
+        }
+        
+        message.success('Workshop created successfully');
+        setCreateDrawerVisible(false);
+        form.resetFields();
+        fetchWorkshops(); // Refresh the list
+        
+        // Reset file states
+        setCoverImage(null);
+        setWorksheetFile(null);
+      }
+    } catch (error) {
+      console.error('Error creating workshop:', error);
+      message.error('Failed to create workshop');
+    }
+  };
+  
+  const handleCreateClick = () => {
+    if (activeTab === 'schedule') {
+      setScheduleDrawerVisible(true);
+    } else {
+      setCreateDrawerVisible(true);
+    }
+  };
+
+  const handleScheduleSubmit = (values) => {
+    console.log('Schedule values:', values);
+    setScheduleDrawerVisible(false);
+    scheduleForm.resetFields();
+  };
+
+  // Add this new function to fetch workshop schedules
+  const fetchWorkshopSchedules = async () => {
+    setScheduleLoading(true);
+    try {
+      const response = await getAllWorkshopSchedules();
+      if (response.status && response.data) {
+        // Transform the data to match the table columns
+        const formattedData = response.data.map(schedule => ({
+          key: schedule.session_id,
+          id: schedule.session_id,
+          workshop: schedule.workshop_title,
+          company: schedule.company_name,
+          date: new Date(schedule.schedule_date).toLocaleDateString(),
+          time: new Date(schedule.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          worksheet: schedule.pdf_url ? 'Available' : 'Not available',
+          dateAdded: new Date(schedule.schedule_date).toLocaleDateString(),
+          pdf_url: schedule.pdf_url
+        }));
+        setScheduleData(formattedData);
+      }
+    } catch (error) {
+      console.error('Error fetching workshop schedules:', error);
+      message.error('Failed to load workshop schedules');
+    } finally {
+      setScheduleLoading(false);
+    }
+  };
 
   const scheduleColumns = [
     {
@@ -39,6 +211,11 @@ const Workshops = () => {
       title: 'Worksheet',
       dataIndex: 'worksheet',
       key: 'worksheet',
+      render: (text, record) => (
+        record.pdf_url ? 
+        <a href={record.pdf_url} target="_blank" rel="noopener noreferrer">View PDF</a> : 
+        'Not available'
+      ),
     },
     {
       title: 'Date Added',
@@ -62,8 +239,8 @@ const Workshops = () => {
     },
     {
       title: 'Host',
-      dataIndex: 'host',
-      key: 'host',
+      dataIndex: 'organizer',
+      key: 'organizer',
     },
     {
       title: 'Description',
@@ -74,11 +251,11 @@ const Workshops = () => {
     },
     {
       title: 'Image',
-      dataIndex: 'image',
-      key: 'image',
+      dataIndex: 'poster_image',
+      key: 'poster_image',
       render: (image) => (
         <img 
-          src={image} 
+          src={image || '/placeholder-image.png'} 
           alt="Workshop" 
           style={{ width: 50, height: 50, objectFit: 'cover' }} 
         />
@@ -86,43 +263,30 @@ const Workshops = () => {
     },
     {
       title: 'Date Added',
-      dataIndex: 'dateAdded',
-      key: 'dateAdded',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-      title: 'CTA',
+      title: 'Actions',
       key: 'action',
       render: (_, record) => (
         <Space>
-          <Button type="link">Edit</Button>
-          <Button type="link">Delete</Button>
+          <Button 
+            type="link" 
+            onClick={() => handleEditWorkshop(record)}
+          >
+            Edit
+          </Button>
+          <Button 
+            type="link" 
+            danger
+            onClick={() => handleDeleteWorkshop(record.id)}
+          >
+            Delete
+          </Button>
         </Space>
       ),
-    },
-  ];
-
-  // Dummy data for schedules
-  const scheduleData = [
-    {
-      key: '1',
-      workshop: 'Stress Management',
-      company: 'Company A',
-      date: '2024-03-15',
-      time: '10:00 AM',
-      worksheet: 'Worksheet 1',
-      dateAdded: '2024-03-01',
-    },
-  ];
-
-  // Dummy data for workshops
-  const workshopsData = [
-    {
-      key: '1',
-      title: 'Mental Health Awareness',
-      host: 'Dr. Smith',
-      description: 'A comprehensive workshop about understanding and managing mental health in the workplace.',
-      image: 'https://example.com/workshop1.jpg',
-      dateAdded: '2024-03-01',
     },
   ];
 
@@ -136,27 +300,6 @@ const Workshops = () => {
       label: 'Workshops',
     },
   ];
-
-  const handleCreateWorkshop = (values) => {
-    console.log('Form values:', values);
-    // Add API call here
-    setCreateDrawerVisible(false);
-    form.resetFields();
-  };
-
-  const handleCreateClick = () => {
-    if (activeTab === 'schedule') {
-      setScheduleDrawerVisible(true);
-    } else {
-      setCreateDrawerVisible(true);
-    }
-  };
-
-  const handleScheduleSubmit = (values) => {
-    console.log('Schedule values:', values);
-    setScheduleDrawerVisible(false);
-    scheduleForm.resetFields();
-  };
 
   // Add this component inside your main component
   const ScheduleDrawer = () => (
@@ -223,14 +366,14 @@ const Workshops = () => {
               </Form.Item>
             </div>
 
-            <Form.Item
+            {/* <Form.Item
               name="resources"
               label="Resources (optional)"
             >
               <Upload>
                 <Button icon={<UploadOutlined />}>Upload files</Button>
               </Upload>
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item>
               <Button type="primary" htmlType="submit">
@@ -284,16 +427,19 @@ const Workshops = () => {
       <div className={styles.tableContainer}>
         <Table
           columns={activeTab === 'schedule' ? scheduleColumns : workshopsColumns}
-          dataSource={activeTab === 'schedule' ? scheduleData : workshopsData}
-          pagination={{
+          dataSource={activeTab === 'schedule' ? scheduleData : workshops}
+          rowKey="id"
+          loading={activeTab === 'schedule' ? scheduleLoading : loading}
+          pagination={activeTab === 'workshops' ? pagination : {
             pageSize: 10,
             showSizeChanger: false,
-            showTotal: (total) => `Total ${total} ${activeTab}`,
           }}
+          onChange={activeTab === 'workshops' ? handleTableChange : undefined}
           scroll={{ x: 'max-content' }}
         />
       </div>
 
+      {/* Existing create workshop drawer */}
       <Drawer
         title={
           <Space>
@@ -313,16 +459,14 @@ const Workshops = () => {
         >
           <div className={styles.uploadSection}>
             <Upload.Dragger
-              name="image"
+              name="coverImage"
               multiple={false}
-              action="/api/upload" // Replace with your upload endpoint
-              onChange={(info) => {
-                if (info.file.status === 'done') {
-                  message.success(`${info.file.name} file uploaded successfully`);
-                } else if (info.file.status === 'error') {
-                  message.error(`${info.file.name} file upload failed.`);
-                }
+              beforeUpload={(file) => {
+                setCoverImage(file);
+                return false; // Prevent auto upload
               }}
+              onRemove={() => setCoverImage(null)}
+              fileList={coverImage ? [coverImage] : []}
             >
               <p className="ant-upload-drag-icon">
                 <img 
@@ -331,7 +475,7 @@ const Workshops = () => {
                   style={{ width: 100, height: 100 }}
                 />
               </p>
-              <p className="ant-upload-text">Click or drag file to this area to upload</p>
+              <p className="ant-upload-text">Click or drag file to upload cover image</p>
             </Upload.Dragger>
           </div>
 
@@ -360,8 +504,8 @@ const Workshops = () => {
           </Form.Item>
 
           <Form.Item
-            name="other_details"
-            label="Other details"
+            name="agenda"
+            label="Agenda"
           >
             <TextArea rows={4} />
           </Form.Item>
@@ -370,8 +514,15 @@ const Workshops = () => {
             name="worksheet"
             label="Worksheet"
           >
-            <Upload>
-              <Button icon={<UploadOutlined />}>Upload files</Button>
+            <Upload
+              beforeUpload={(file) => {
+                setWorksheetFile(file);
+                return false; // Prevent auto upload
+              }}
+              onRemove={() => setWorksheetFile(null)}
+              fileList={worksheetFile ? [worksheetFile] : []}
+            >
+              <Button icon={<UploadOutlined />}>Upload PDF worksheet</Button>
             </Upload>
           </Form.Item>
 
@@ -383,7 +534,57 @@ const Workshops = () => {
         </Form>
       </Drawer>
       
-      {/* Add this before closing div */}
+      {/* Edit Workshop Drawer */}
+      <Drawer
+        title={
+          <Space>
+            <ArrowLeftOutlined onClick={() => setEditDrawerVisible(false)} />
+            Edit workshop
+          </Space>
+        }
+        width={720}
+        onClose={() => setEditDrawerVisible(false)}
+        open={editDrawerVisible}
+        bodyStyle={{ paddingBottom: 80 }}
+      >
+        <Form
+          form={editForm}
+          layout="vertical"
+          onFinish={handleUpdateWorkshop}
+        >
+          <Form.Item
+            name="title"
+            label="Title"
+            rules={[{ required: true, message: 'Please enter title' }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="host_name"
+            label="Host name"
+            rules={[{ required: true, message: 'Please enter host name' }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="description"
+            label="Description"
+            rules={[{ required: true, message: 'Please enter description' }]}
+          >
+            <TextArea rows={4} />
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" className={styles.submitButton}>
+              Update workshop
+            </Button>
+          </Form.Item>
+        </Form>
+      </Drawer>
+      
+      {/* Schedule Drawer */}
       <ScheduleDrawer />
     </div>
   );
