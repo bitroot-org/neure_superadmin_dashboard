@@ -16,7 +16,6 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import neurelogo from "../../assets/darkneurelogo.png";
-import { createArticle, updateArticle, uploadArticleImage } from "../../services/api";
 import styles from './Sidebar.module.css';
 
 const Sidebar = () => {

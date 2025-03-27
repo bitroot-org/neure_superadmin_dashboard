@@ -32,7 +32,9 @@ api.interceptors.response.use(
         const response = await refreshToken();
         if (response.data.accessToken) {
           localStorage.setItem("accessToken", response.data.accessToken);
-          api.defaults.headers.common["Authorization"] = `Bearer ${response.data.accessToken}`;
+          api.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${response.data.accessToken}`;
           return api(originalRequest);
         }
       } catch (refreshError) {
@@ -70,17 +72,17 @@ export const login = async (email, password) => {
       password,
       role_id: 1,
     });
-    
+
     if (response.data.status && response.data.data) {
       const { accessToken, refreshToken, expiresAt } = response.data.data;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("expiresAt", expiresAt);
       localStorage.setItem("companyId", response.data.data.companyId);
-      
+
       return response.data;
     }
-    throw new Error(response.data.message || 'Login failed');
+    throw new Error(response.data.message || "Login failed");
   } catch (error) {
     throw error.response?.data || error;
   }
@@ -95,7 +97,6 @@ export const logout = async () => {
   }
 };
 
-
 export const getTherapists = async () => {
   try {
     const response = await api.get("/user/getTherapists");
@@ -103,7 +104,7 @@ export const getTherapists = async () => {
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const createTherapist = async (data) => {
   try {
@@ -112,7 +113,7 @@ export const createTherapist = async (data) => {
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const getAllCompanies = async (params = {}) => {
   try {
@@ -121,44 +122,44 @@ export const getAllCompanies = async (params = {}) => {
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const getCompanyEmployees = async (companyId, params) => {
   const response = await api.get(`/company/getCompanyEmployees`, {
     params: {
       company_id: companyId,
       page: params.page,
-      limit: params.limit
-    }
+      limit: params.limit,
+    },
   });
   return response.data;
 };
 
-export const createEmployee = async (data) => {   
+export const createEmployee = async (data) => {
   try {
     const response = await api.post("/company/createEmployee", data);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const bulkCreateEmployees = async (file, companyId) => {
   try {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('company_id', companyId);
+    formData.append("file", file);
+    formData.append("company_id", companyId);
 
     const response = await api.post("/company/bulkCreateEmployees", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const getDepartments = async () => {
   try {
@@ -167,7 +168,7 @@ export const getDepartments = async () => {
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const createCompany = async (data) => {
   try {
@@ -176,39 +177,39 @@ export const createCompany = async (data) => {
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const createArticle = async (data) => {
   try {
     const response = await api.post("/article/createArticle", data);
-    return response.data ; 
+    return response.data;
   } catch (error) {
-    throw error.response?.data || error; 
+    throw error.response?.data || error;
   }
-}
+};
 
 export const updateArticle = async (data) => {
   try {
     const response = await api.put("/article/updateArticle", data);
-    return response.data ; 
+    return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const uploadArticleImage = async (file) => {
   try {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     const response = await api.post("/upload/article", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
-    }); 
+    });
   } catch (error) {
-    throw error.response?.data || error; 
+    throw error.response?.data || error;
   }
-}
+};
 
 export const createAssessment = async (data) => {
   try {
@@ -221,45 +222,45 @@ export const createAssessment = async (data) => {
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const updateAssessment = async (data) => {
   try {
     const response = await api.put(`/assessments/updateAssessment`, data);
     return response.data;
   } catch (error) {
-    console.error('Update assessment error:', error);
+    console.error("Update assessment error:", error);
     throw error.response?.data || error;
   }
-}
+};
 
 export const getAllAssessments = async (params = {}) => {
   try {
-    const response = await api.get(`/assessments/getAllAssessments`, { 
+    const response = await api.get(`/assessments/getAllAssessments`, {
       params: {
         page: params.page || 1,
-        limit: params.limit || 10
-      } 
+        limit: params.limit || 10,
+      },
     });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const getAllWorkshops = async (params = {}) => {
   try {
     const response = await api.get(`/workshop/getAllWorkshops`, {
       params: {
         page: params.page || 1,
-        limit: params.limit || 10
-      }
+        limit: params.limit || 10,
+      },
     });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const updateWorkshop = async (data) => {
   try {
@@ -268,42 +269,42 @@ export const updateWorkshop = async (data) => {
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const deleteWorkshop = async (data) => {
   try {
     const response = await api.delete(`/workshop/deleteWorkshop`, {
-      data: data
+      data: data,
     });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const uploadWorkshopFiles = async (workshopId, coverImage, pdf) => {
   try {
     const formData = new FormData();
-    formData.append('workshopId', workshopId);
-    
+    formData.append("workshopId", workshopId);
+
     if (coverImage) {
-      formData.append('coverImage', coverImage);
+      formData.append("coverImage", coverImage);
     }
-    
+
     if (pdf) {
-      formData.append('pdf', pdf);
+      formData.append("pdf", pdf);
     }
 
     const response = await api.post("/uploads/workshop/files", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const createWorkshop = async (data) => {
   try {
@@ -312,18 +313,91 @@ export const createWorkshop = async (data) => {
   } catch (error) {
     throw error.response?.data || error;
   }
-}
+};
 
 export const getAllWorkshopSchedules = async (params = {}) => {
   try {
     const response = await api.get(`/workshop/getAllWorkshopSchedules`, {
       params: {
         page: params.page || 1,
-        limit: params.limit || 10
-      }
+        limit: params.limit || 10,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const scheduleWorkshop = async (data) => {
+  try {
+    const response = await api.post(`/workshop/scheduleWorkshop`, data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const getArticles = async (params = {}) => {
+  try {
+    const response = await api.get(`/article/getArticles`, {
+      params: {
+        page: params.page || 1,
+        limit: params.limit || 10,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const getGalleryItems = async (params = {}) => {
+  try {
+    const response = await api.get(`/getGalleryItems`, {
+      params: {
+        page: params.page || 1,
+        limit: params.limit || 10,
+        type: params.type
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const uploadGalleryItem = async (data) => {
+  try {
+    const response = await api.post(`/uploadGalleryItem`, data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const updateGalleryItem = async (data) => {
+  try {
+    const response = await api.put(`/updateGalleryItem`, data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const uploadMediaFile = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await api.post("/uploads/gallery", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
 }
+
+
