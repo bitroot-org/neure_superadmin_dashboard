@@ -179,9 +179,13 @@ export const createCompany = async (data) => {
   }
 };
 
-export const createArticle = async (data) => {
+export const createArticle = async (formData) => {
   try {
-    const response = await api.post("/article/createArticle", data);
+    const response = await api.post('/article/createArticle', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -367,9 +371,13 @@ export const getGalleryItems = async (params = {}) => {
   }
 };
 
-export const uploadGalleryItem = async (data) => {
+export const uploadGalleryItem = async (formData) => {
   try {
-    const response = await api.post(`/uploadGalleryItem`, data);
+    const response = await api.post('/uploadGalleryItem', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -396,6 +404,50 @@ export const uploadMediaFile = async (file) => {
     });
     return response.data;
   } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const getSoundscapes = async (params = {}) => {
+  try {
+    const response = await api.get(`/soundscapes/getSoundscapes`, {
+      params: {
+        page: params.page || 1,
+        limit: params.limit || 10,
+      },
+    });
+    return response.data;     
+  }
+  catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const createSoundscape = async (formData) => {
+  try {
+    // Ensure we're sending with multipart/form-data header for file uploads
+    const response = await api.post(`/soundscapes/createSoundscape`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  }
+  catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const deleteSoundscape = async (soundscapeId) => {
+  try {
+    const response = await api.delete('/soundscapes/deleteSoundscape', {
+      params: {
+        soundscapeId: soundscapeId
+      }
+    });
+    return response.data;
+  }
+  catch (error) {
     throw error.response?.data || error;
   }
 }

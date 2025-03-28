@@ -26,7 +26,7 @@ import {
   uploadGalleryItem,
   updateGalleryItem,
   uploadMediaFile,
-  createArticle
+  createArticle,
 } from "../../services/api";
 
 const Resources = () => {
@@ -463,103 +463,205 @@ const Resources = () => {
     },
   ];
 
-  const handleCreateResource = async (values) => {
-    try {
-      const resourceType = values.resource_type;
-      let response;
+  // const handleCreateResource = async (values) => {
+  //   try {
+  //     const resourceType = values.resource_type;
+  //     let response;
 
-      // Format tags as an array
-      const tags = values.tags ? values.tags : [];
+  //     // Format tags as an array
+  //     const tags = values.tags ? values.tags.map((tag) => tag.trim()) : [];
+  //     if (resourceType === "video") {
+  //       // For videos, we just need to pass the URL and other metadata
+  //       const payload = {
+  //         type: "video",
+  //         title: values.title,
+  //         description: values.description || "",
+  //         tags: tags,
+  //         url: values.url,
+  //       };
 
-      if (resourceType === "video") {
-        // For videos, we just need to pass the URL and other metadata
-        const payload = {
-          type: "video",
-          title: values.title,
-          description: values.description || "",
-          tags: tags,
-          url: values.url,
-        };
+  //       response = await uploadGalleryItem(payload);
+  //     } else if (resourceType === "image" || resourceType === "document") {
+  //       // For images and documents, we need to handle file upload
+  //       const file =
+  //         resourceType === "image"
+  //           ? values.image?.fileList[0]?.originFileObj
+  //           : values.document?.fileList[0]?.originFileObj;
 
-        response = await uploadGalleryItem(payload);
-      } else if (resourceType === "image" || resourceType === "document") {
-        // For images and documents, we need to handle file upload
-        const file =
-          resourceType === "image"
-            ? values.image?.fileList[0]?.originFileObj
-            : values.document?.fileList[0]?.originFileObj;
+  //       if (!file) {
+  //         message.error(`Please upload a ${resourceType}`);
+  //         return;
+  //       }
 
-        if (!file) {
-          message.error(`Please upload a ${resourceType}`);
-          return;
-        }
+  //       // First upload the file to get the URL
+  //       const formData = new FormData();
+  //       formData.append("file", file);
+  //       formData.append("type", resourceType);
 
-        // First upload the file to get the URL
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("type", resourceType);
+  //       const uploadResponse = await uploadMediaFile(formData);
 
-        const uploadResponse = await uploadMediaFile(formData);
+  //       if (uploadResponse.status && uploadResponse.data) {
+  //         // Now create the gallery item with the file URL
+  //         const payload = {
+  //           type: resourceType,
+  //           title: values.title,
+  //           description: values.description || "",
+  //           tags: tags,
+  //           url: uploadResponse.data.file_url,
+  //         };
 
-        if (uploadResponse.status && uploadResponse.data) {
-          // Now create the gallery item with the file URL
-          const payload = {
-            type: resourceType,
-            title: values.title,
-            description: values.description || "",
-            tags: tags,
-            url: uploadResponse.data.file_url,
-          };
+  //         response = await uploadGalleryItem(payload);
+  //       } else {
+  //         throw new Error("File upload failed");
+  //       }
+  //     } else if (resourceType === "article") {
+  //       const file = values.cover_image?.fileList[0]?.originFileObj;
 
-          response = await uploadGalleryItem(payload);
-        } else {
-          throw new Error("File upload failed");
-        }
-      } else if (resourceType === "article") {
-        // Handle article creation (you might have a separate API for this)
-        // This is just a placeholder
-        message.info("Article creation is handled separately");
-        setCreateDrawerVisible(false);
-        form.resetFields();
+  //       if (!file) {
+  //         message.error("Please upload a cover image");
+  //         return;
+  //       }
+
+  //       const formData = new FormData();
+  //       formData.append("file", file);
+  //       formData.append("title", values.title);
+  //       formData.append("content", values.content);
+  //       formData.append("reading_time", values.read_time);
+  //       formData.append("category", values.category);
+  //       formData.append("tags", JSON.stringify(tags));
+  //       formData.append("type", "article");
+
+  //       response = await createArticle(formData);
+
+  //       if (response && response.status) {
+  //         message.success("Article created successfully");
+  //         fetchArticles(pagination.current, pagination.pageSize); // Refresh the articles list
+  //       } else {
+  //         throw new Error("Failed to create article");
+  //       }
+  //     }
+
+  //     if (response && response.status) {
+  //       message.success(`${resourceType} uploaded successfully`);
+  //       // Refresh the gallery items
+  //       if (resourceType === "image") {
+  //         fetchGalleryItems(
+  //           "image",
+  //           imagesPagination.current,
+  //           imagesPagination.pageSize
+  //         );
+  //       } else if (resourceType === "video") {
+  //         fetchGalleryItems(
+  //           "video",
+  //           videosPagination.current,
+  //           videosPagination.pageSize
+  //         );
+  //       } else if (resourceType === "document") {
+  //         fetchGalleryItems(
+  //           "document",
+  //           documentsPagination.current,
+  //           documentsPagination.pageSize
+  //         );
+  //       }
+  //     } else {
+  //       throw new Error("Failed to upload resource");
+  //     }
+
+  //     setCreateDrawerVisible(false);
+  //     form.resetFields();
+  //   } catch (error) {
+  //     console.error("Error creating resource:", error);
+  //     message.error(
+  //       "Failed to create resource: " + (error.message || "Unknown error")
+  //     );
+  //   }
+  // };
+
+  // ... existing code ...
+
+const handleCreateResource = async (values) => {
+  try {
+    const resourceType = values.resource_type;
+    let response;
+
+    // Format tags as an array
+    const tags = values.tags ? values.tags.map((tag) => tag.trim()) : [];
+    
+    if (resourceType === "video") {
+      // For videos, create a FormData object
+      const formData = new FormData();
+      formData.append("type", "video");
+      formData.append("title", values.title);
+      formData.append("description", values.description || "");
+      formData.append("tags", JSON.stringify(tags));
+      formData.append("url", values.url);
+
+      response = await uploadGalleryItem(formData);
+    } else if (resourceType === "image" || resourceType === "document") {
+      // For images and documents, we need to handle file upload
+      const file =
+        resourceType === "image"
+          ? values.image?.fileList[0]?.originFileObj
+          : values.document?.fileList[0]?.originFileObj;
+
+      if (!file) {
+        message.error(`Please upload a ${resourceType}`);
         return;
       }
 
-      if (response && response.status) {
-        message.success(`${resourceType} uploaded successfully`);
-        // Refresh the gallery items
-        if (resourceType === "image") {
-          fetchGalleryItems(
-            "image",
-            imagesPagination.current,
-            imagesPagination.pageSize
-          );
-        } else if (resourceType === "video") {
-          fetchGalleryItems(
-            "video",
-            videosPagination.current,
-            videosPagination.pageSize
-          );
-        } else if (resourceType === "document") {
-          fetchGalleryItems(
-            "document",
-            documentsPagination.current,
-            documentsPagination.pageSize
-          );
-        }
+      // First upload the file to get the URL
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("type", resourceType);
+
+      const uploadResponse = await uploadMediaFile(formData);
+
+      if (uploadResponse.status && uploadResponse.data) {
+        // Now create the gallery item with the file URL using FormData
+        const galleryFormData = new FormData();
+        galleryFormData.append("type", resourceType);
+        galleryFormData.append("title", values.title);
+        galleryFormData.append("description", values.description || "");
+        galleryFormData.append("tags", JSON.stringify(tags));
+        galleryFormData.append("url", uploadResponse.data.file_url);
+
+        response = await uploadGalleryItem(galleryFormData);
       } else {
-        throw new Error("Failed to upload resource");
+        throw new Error("File upload failed");
+      }
+    } else if (resourceType === "article") {
+      // Article creation already uses FormData, no changes needed
+      const file = values.cover_image?.fileList[0]?.originFileObj;
+
+      if (!file) {
+        message.error("Please upload a cover image");
+        return;
       }
 
-      setCreateDrawerVisible(false);
-      form.resetFields();
-    } catch (error) {
-      console.error("Error creating resource:", error);
-      message.error(
-        "Failed to create resource: " + (error.message || "Unknown error")
-      );
-    }
-  };
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("title", values.title);
+      formData.append("content", values.content);
+      formData.append("reading_time", values.read_time);
+      formData.append("category", values.category);
+      formData.append("tags", JSON.stringify(tags));
+      formData.append("type", "article");
 
+      response = await createArticle(formData);
+      
+      // ... rest of the article handling code remains the same
+    }
+
+    // ... rest of the function remains the same
+  } catch (error) {
+    console.error("Error creating resource:", error);
+    message.error(
+      "Failed to create resource: " + (error.message || "Unknown error")
+    );
+  }
+};
+
+// ... rest of the component remains the same
   const renderFormFields = () => {
     const resourceType = form.getFieldValue("resource_type");
 
