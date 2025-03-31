@@ -20,7 +20,7 @@ import Soundscapes from "./pages/Soundscapes/Soundscapes";
 import Resources from "./pages/Resources/Resources";
 import Workshops from "./pages/Workshops/Workshops";
 import Notifications from "./pages/Notifications";
-import Analytics from "./pages/Analytics";
+import Analytics from "./pages/Analytics/Analytics";
 import "./index.css";
 
 const App = () => (

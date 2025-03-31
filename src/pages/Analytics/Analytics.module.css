@@ -5,7 +5,12 @@
 }
 
 .header {
-  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .title {
@@ -14,25 +19,20 @@
   color: #1d1d1f;
 }
 
-.subtitle {
-  font-size: 16px;
+.controls {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.section {
-  margin-bottom: 32px;
+.summaryRow {
+  margin-bottom: 24px;
 }
 
-.sectionTitle {
-  margin-bottom: 16px !important;
-  font-weight: 500 !important;
-  color: #1d1d1f;
-}
-
-.statsCard,
-.metricsCard,
-.engagementCard,
-.tableCard {
-  border-radius: 16px;
+.summaryCard,
+.chartsCard,
+.chartCard {
+  border-radius: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 
               0 2px 4px rgba(0, 0, 0, 0.04), 
               0 4px 8px rgba(0, 0, 0, 0.04);
@@ -41,25 +41,24 @@
   background: linear-gradient(145deg, #ffffff, #f8f8f8);
 }
 
-.statsCard:hover,
-.metricsCard:hover,
-.engagementCard:hover {
+.summaryCard:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06), 
               0 8px 16px rgba(0, 0, 0, 0.06);
 }
 
-.metricsCard {
-  padding-bottom: 8px;
+.chartCard {
+  margin-bottom: 0;
 }
 
 .loadingContainer,
-.errorContainer {
+.errorContainer,
+.placeholderContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 400px;
   gap: 16px;
 }
 
@@ -88,10 +87,18 @@
     padding: 16px;
   }
   
-  .statsCard,
-  .metricsCard,
-  .engagementCard,
-  .tableCard {
-    border-radius: 12px;
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .controls {
+    width: 100%;
+  }
+  
+  .summaryCard,
+  .chartsCard,
+  .chartCard {
+    border-radius: 10px;
   }
 }

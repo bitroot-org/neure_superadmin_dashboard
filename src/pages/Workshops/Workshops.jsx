@@ -395,94 +395,6 @@ const Workshops = () => {
     },
   ];
 
-  // Add this component inside your main component
-  const ScheduleDrawer = () => (
-    <Drawer
-      title={
-        <Space>
-          <ArrowLeftOutlined onClick={() => setScheduleDrawerVisible(false)} />
-          Create schedule
-        </Space>
-      }
-      width={720}
-      onClose={() => setScheduleDrawerVisible(false)}
-      open={scheduleDrawerVisible}
-    >
-      <Form
-        form={scheduleForm}
-        layout="vertical"
-        onFinish={handleScheduleSubmit}
-        className={styles.fullWidthForm}
-      >
-        <Form.Item
-          name="workshop_template"
-          label="Select workshop template"
-          rules={[{ required: true, message: "Please select a workshop" }]}
-        >
-          <Select
-            placeholder="Select workshop"
-            onChange={(value, option) => setSelectedWorkshop(option)}
-            loading={loading}
-          >
-            {workshops.map((workshop) => (
-              <Select.Option
-                key={workshop.id}
-                value={workshop.id}
-                workshop={workshop}
-              >
-                {workshop.title}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          name="company"
-          label="Select company"
-          rules={[{ required: true, message: "Please select a company" }]}
-        >
-          <Select placeholder="Select company" loading={companiesLoading}>
-            {companies.map((company) => (
-              <Select.Option key={company.id} value={company.id}>
-                {company.company_name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <div className={styles.dateTimeContainer}>
-          <Form.Item
-            name="date"
-            label="Date"
-            rules={[{ required: true, message: "Please select date" }]}
-            style={{ flex: 1 }}
-          >
-            <DatePicker style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item
-            name="time"
-            label="Time"
-            rules={[{ required: true, message: "Please select time" }]}
-            style={{ flex: 1 }}
-          >
-            <TimePicker style={{ width: "100%" }} format="HH:mm" />
-          </Form.Item>
-        </div>
-
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className={styles.submitButton}
-          >
-            Confirm
-          </Button>
-        </Form.Item>
-      </Form>
-    </Drawer>
-  );
-
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Workshops</h1>
@@ -680,8 +592,91 @@ const Workshops = () => {
         </Form>
       </Drawer>
 
-      {/* Schedule Drawer */}
-      <ScheduleDrawer />
+      {/* Replace the <ScheduleDrawer /> at the bottom with this drawer */}
+      <Drawer
+        title={
+          <Space>
+            <ArrowLeftOutlined onClick={() => setScheduleDrawerVisible(false)} />
+            Create schedule
+          </Space>
+        }
+        width={720}
+        onClose={() => setScheduleDrawerVisible(false)}
+        open={scheduleDrawerVisible}
+      >
+        <Form
+          form={scheduleForm}
+          layout="vertical"
+          onFinish={handleScheduleSubmit}
+          className={styles.fullWidthForm}
+        >
+          <Form.Item
+            name="workshop_template"
+            label="Select workshop template"
+            rules={[{ required: true, message: "Please select a workshop" }]}
+          >
+            <Select
+              placeholder="Select workshop"
+              onChange={(value, option) => setSelectedWorkshop(option)}
+              loading={loading}
+            >
+              {workshops.map((workshop) => (
+                <Select.Option
+                  key={workshop.id}
+                  value={workshop.id}
+                  workshop={workshop}
+                >
+                  {workshop.title}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="company"
+            label="Select company"
+            rules={[{ required: true, message: "Please select a company" }]}
+          >
+            <Select placeholder="Select company" loading={companiesLoading}>
+              {companies.map((company) => (
+                <Select.Option key={company.id} value={company.id}>
+                  {company.company_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <div className={styles.dateTimeContainer}>
+            <Form.Item
+              name="date"
+              label="Date"
+              rules={[{ required: true, message: "Please select date" }]}
+              style={{ flex: 1 }}
+            >
+              <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
+
+            <Form.Item
+              name="time"
+              label="Time"
+              rules={[{ required: true, message: "Please select time" }]}
+              style={{ flex: 1 }}
+            >
+              <TimePicker style={{ width: "100%" }} format="HH:mm" />
+            </Form.Item>
+          </div>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className={styles.submitButton}
+            >
+              Confirm
+            </Button>
+          </Form.Item>
+        </Form>
+      </Drawer>
     </div>
   );
 };

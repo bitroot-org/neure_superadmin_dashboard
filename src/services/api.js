@@ -453,3 +453,42 @@ export const deleteSoundscape = async (soundscapeId) => {
 }
 
 
+export const metricsData = async () => {
+  try {
+    const response = await api.get(`/dashboard/metrics`);
+    return response.data;
+  }
+  catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const getTrends = async () => {
+  try {
+    const response = await api.get(`/analytics/trends`);
+    return response.data;
+  }
+  catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const updateTherapist = async (therapistId, data) => {
+  try {
+    const response = await api.put(`/user/updateTherapist/${therapistId}`, data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const deleteTherapist = async (therapistId) => {
+  try {
+    const response = await api.delete(`/user/deleteTherapist/${therapistId}`);
+    return response.data;
+  }
+  catch (error) {
+    throw error.response?.data || error;
+  }
+}
+

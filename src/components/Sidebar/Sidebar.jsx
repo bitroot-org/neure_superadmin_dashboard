@@ -66,21 +66,21 @@ const Sidebar = () => {
       name: "Analytics",
       icon: <BarChartOutlined />,
     },
-    {
-      path: "/activitylog",
-      name: "Activity Log",
-      icon: <HistoryOutlined />,
-    },
-    {
-      path: "/profile",
-      name: "Profile",
-      icon: <ProfileOutlined />,
-    },
-    {
-      path: "/settings",
-      name: "Settings",
-      icon: <SettingOutlined />,
-    },
+    // {
+    //   path: "/activitylog",
+    //   name: "Activity Log",
+    //   icon: <HistoryOutlined />,
+    // },
+    // {
+    //   path: "/profile",
+    //   name: "Profile",
+    //   icon: <ProfileOutlined />,
+    // },
+    // {
+    //   path: "/settings",
+    //   name: "Settings",
+    //   icon: <SettingOutlined />,
+    // },
     {
       path: "/logout",
       name: "Logout",

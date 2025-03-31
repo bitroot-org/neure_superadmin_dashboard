@@ -150,16 +150,18 @@ const Company = () => {
       dataIndex: 'active',
       key: 'active',
       filters: [
-        { text: 'Active', value: 'active' },
-        { text: 'Inactive', value: 'inactive' },
-        { text: 'Pending', value: 'pending' },
+        { text: 'Active', value: 1 },
+        { text: 'Inactive', value: 0 },
       ],
       onFilter: (value, record) => record.active === value,
-      render: (status) => (
-        <span className={`${styles.statusBadge} ${styles[status]}`}>
-          {status}
-        </span>
-      ),
+      render: (status) => {
+        const isActive = status === 1;
+        return (
+          <span className={`${styles.statusBadge} ${isActive ? styles.active : styles.inactive}`}>
+            {isActive ? 'Active' : 'Inactive'}
+          </span>
+        );
+      },
     },
     {
       title: 'Company Size',
@@ -182,9 +184,28 @@ const Company = () => {
       },
     },
     {
-      title: 'Industry',
-      dataIndex: 'industry',
-      key: 'industry',
+      title: 'Departments',
+      key: 'departments',
+      width: 200,
+      ellipsis: true,
+      render: (_, record) => {
+        if (!record.departments || record.departments.length === 0) {
+          return '-';
+        }
+        const departmentNames = record.departments.map(dept => dept.name).join(', ');
+        return (
+          <div className={styles.departmentCell} title={departmentNames}>
+            {departmentNames}
+          </div>
+        );
+      },
+      filters: departments.map(dept => ({ text: dept.department_name, value: dept.department_name })),
+      onFilter: (value, record) => {
+        if (!record.departments || record.departments.length === 0) {
+          return false;
+        }
+        return record.departments.some(dept => dept.name === value);
+      },
     },
     {
       title: 'Created At',
@@ -248,18 +269,21 @@ const Company = () => {
               <Descriptions.Item label="Email Domain">
                 {selectedCompany.email_domain}
               </Descriptions.Item>
-              <Descriptions.Item label="Industry">
-                {selectedCompany.industry}
+              <Descriptions.Item label="Departments">
+                {selectedCompany.departments && selectedCompany.departments.length > 0
+                  ? selectedCompany.departments.map(dept => dept.name).join(', ')
+                  : '-'}
               </Descriptions.Item>
               <Descriptions.Item label="Company Size">
                 {selectedCompany.company_size}
               </Descriptions.Item>
               <Descriptions.Item label="Status">
-                <span style={{
-                  color: selectedCompany.status === 'active' ? 'green' : 'red',
-                  textTransform: 'capitalize'
-                }}>
-                  {selectedCompany.active}
+                <span className={`${styles.statusBadge} ${
+                  selectedCompany.active === 1 ? styles.active : 
+                  selectedCompany.active === 0 ? styles.inactive : styles.pending
+                }`}>
+                  {selectedCompany.active === 1 ? 'Active' : 
+                   selectedCompany.active === 0 ? 'Inactive' : 'Pending'}
                 </span>
               </Descriptions.Item>
               <Descriptions.Item label="Onboarding Date">
