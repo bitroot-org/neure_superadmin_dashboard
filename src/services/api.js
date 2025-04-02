@@ -492,3 +492,49 @@ export const deleteTherapist = async (therapistId) => {
   }
 }
 
+export const rescheduleWorkshop = async (scheduleId, newStartTime, newEndTime) => {
+  try {
+    const response = await api.put(`/workshop/rescheduleWorkshop`, {
+      schedule_id: scheduleId,
+      new_start_time: newStartTime,
+      new_end_time: newEndTime
+    });
+    return response.data;
+  }
+  catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const cancelWorkshopSchedule = async (scheduleId) => {
+  try {
+    const response = await api.put(`/workshop/cancelWorkshopSchedule`, {
+      schedule_id: scheduleId
+    });
+    return response.data;
+  }
+  catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const deleteArticle = async (articleId) => {
+  try {
+    const response = await api.delete(`/article/deleteArticle/${articleId}`);
+    return response.data;
+  }
+  catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const deleteGalleryItem = async (galleryItemId) => {
+  try {
+    const response = await api.delete(`/deleteGalleryItem/${galleryItemId}`);
+    return response.data;
+  }
+  catch (error) {
+    throw error.response?.data || error;
+  }
+}
+

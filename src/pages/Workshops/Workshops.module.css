@@ -122,3 +122,44 @@
 .fullWidthForm {
   width: 100%;
 }
+
+
+.detailsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detailItem {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 16px;
+}
+
+.detailItem h3 {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #8c8c8c;
+}
+
+.detailItem p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.pdfLink {
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

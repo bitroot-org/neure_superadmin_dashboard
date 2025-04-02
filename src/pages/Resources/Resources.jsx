@@ -27,6 +27,8 @@ import {
   updateGalleryItem,
   uploadMediaFile,
   createArticle,
+  deleteArticle,
+  deleteGalleryItem,
 } from "../../services/api";
 
 const Resources = () => {
@@ -173,6 +175,32 @@ const Resources = () => {
     }
   };
 
+  const handleDeleteArticle = (articleId) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this article?",
+      content: "This action cannot be undone.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          setLoading(true);
+          const response = await deleteArticle(articleId);
+          if (response.status) {
+            message.success("Article deleted successfully");
+            setViewDrawerVisible(false);
+            fetchArticles(pagination.current, pagination.pageSize);
+          }
+        } catch (error) {
+          console.error("Error deleting article:", error);
+          message.error("Failed to delete article");
+        } finally {
+          setLoading(false);
+        }
+      },
+    });
+  };
+
   // Handle table pagination change
   const handleTableChange = (newPagination) => {
     fetchArticles(newPagination.current, newPagination.pageSize);
@@ -226,8 +254,12 @@ const Resources = () => {
           <Button type="link" onClick={() => handleViewArticle(record)}>
             View
           </Button>
-          <Button type="link" onClick={() => handleEditArticle(record)}>
-            Edit
+          <Button
+            type="link"
+            danger
+            onClick={() => handleDeleteArticle(record.id)}
+          >
+            Delete
           </Button>
         </Space>
       ),
@@ -463,205 +495,88 @@ const Resources = () => {
     },
   ];
 
-  // const handleCreateResource = async (values) => {
-  //   try {
-  //     const resourceType = values.resource_type;
-  //     let response;
+  const handleCreateResource = async (values) => {
+    try {
+      const resourceType = values.resource_type;
+      let response;
 
-  //     // Format tags as an array
-  //     const tags = values.tags ? values.tags.map((tag) => tag.trim()) : [];
-  //     if (resourceType === "video") {
-  //       // For videos, we just need to pass the URL and other metadata
-  //       const payload = {
-  //         type: "video",
-  //         title: values.title,
-  //         description: values.description || "",
-  //         tags: tags,
-  //         url: values.url,
-  //       };
+      // Format tags as an array
+      const tags = values.tags ? values.tags.map((tag) => tag.trim()) : [];
 
-  //       response = await uploadGalleryItem(payload);
-  //     } else if (resourceType === "image" || resourceType === "document") {
-  //       // For images and documents, we need to handle file upload
-  //       const file =
-  //         resourceType === "image"
-  //           ? values.image?.fileList[0]?.originFileObj
-  //           : values.document?.fileList[0]?.originFileObj;
+      if (resourceType === "video") {
+        // For videos, create a FormData object
+        const formData = new FormData();
+        formData.append("type", "video");
+        formData.append("title", values.title);
+        formData.append("description", values.description || "");
+        formData.append("tags", JSON.stringify(tags));
+        formData.append("url", values.url);
 
-  //       if (!file) {
-  //         message.error(`Please upload a ${resourceType}`);
-  //         return;
-  //       }
+        response = await uploadGalleryItem(formData);
+      } else if (resourceType === "image" || resourceType === "document") {
+        // For images and documents, we need to handle file upload
+        const file =
+          resourceType === "image"
+            ? values.image?.fileList[0]?.originFileObj
+            : values.document?.fileList[0]?.originFileObj;
 
-  //       // First upload the file to get the URL
-  //       const formData = new FormData();
-  //       formData.append("file", file);
-  //       formData.append("type", resourceType);
+        if (!file) {
+          message.error(`Please upload a ${resourceType}`);
+          return;
+        }
 
-  //       const uploadResponse = await uploadMediaFile(formData);
+        // First upload the file to get the URL
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("type", resourceType);
 
-  //       if (uploadResponse.status && uploadResponse.data) {
-  //         // Now create the gallery item with the file URL
-  //         const payload = {
-  //           type: resourceType,
-  //           title: values.title,
-  //           description: values.description || "",
-  //           tags: tags,
-  //           url: uploadResponse.data.file_url,
-  //         };
+        const uploadResponse = await uploadMediaFile(formData);
 
-  //         response = await uploadGalleryItem(payload);
-  //       } else {
-  //         throw new Error("File upload failed");
-  //       }
-  //     } else if (resourceType === "article") {
-  //       const file = values.cover_image?.fileList[0]?.originFileObj;
+        if (uploadResponse.status && uploadResponse.data) {
+          // Now create the gallery item with the file URL using FormData
+          const galleryFormData = new FormData();
+          galleryFormData.append("type", resourceType);
+          galleryFormData.append("title", values.title);
+          galleryFormData.append("description", values.description || "");
+          galleryFormData.append("tags", JSON.stringify(tags));
+          galleryFormData.append("url", uploadResponse.data.file_url);
 
-  //       if (!file) {
-  //         message.error("Please upload a cover image");
-  //         return;
-  //       }
+          response = await uploadGalleryItem(galleryFormData);
+        } else {
+          throw new Error("File upload failed");
+        }
+      } else if (resourceType === "article") {
+        // Article creation already uses FormData, no changes needed
+        const file = values.cover_image?.fileList[0]?.originFileObj;
 
-  //       const formData = new FormData();
-  //       formData.append("file", file);
-  //       formData.append("title", values.title);
-  //       formData.append("content", values.content);
-  //       formData.append("reading_time", values.read_time);
-  //       formData.append("category", values.category);
-  //       formData.append("tags", JSON.stringify(tags));
-  //       formData.append("type", "article");
+        if (!file) {
+          message.error("Please upload a cover image");
+          return;
+        }
 
-  //       response = await createArticle(formData);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("title", values.title);
+        formData.append("content", values.content);
+        formData.append("reading_time", values.read_time);
+        formData.append("category", values.category);
+        formData.append("tags", JSON.stringify(tags));
+        formData.append("type", "article");
 
-  //       if (response && response.status) {
-  //         message.success("Article created successfully");
-  //         fetchArticles(pagination.current, pagination.pageSize); // Refresh the articles list
-  //       } else {
-  //         throw new Error("Failed to create article");
-  //       }
-  //     }
+        response = await createArticle(formData);
 
-  //     if (response && response.status) {
-  //       message.success(`${resourceType} uploaded successfully`);
-  //       // Refresh the gallery items
-  //       if (resourceType === "image") {
-  //         fetchGalleryItems(
-  //           "image",
-  //           imagesPagination.current,
-  //           imagesPagination.pageSize
-  //         );
-  //       } else if (resourceType === "video") {
-  //         fetchGalleryItems(
-  //           "video",
-  //           videosPagination.current,
-  //           videosPagination.pageSize
-  //         );
-  //       } else if (resourceType === "document") {
-  //         fetchGalleryItems(
-  //           "document",
-  //           documentsPagination.current,
-  //           documentsPagination.pageSize
-  //         );
-  //       }
-  //     } else {
-  //       throw new Error("Failed to upload resource");
-  //     }
-
-  //     setCreateDrawerVisible(false);
-  //     form.resetFields();
-  //   } catch (error) {
-  //     console.error("Error creating resource:", error);
-  //     message.error(
-  //       "Failed to create resource: " + (error.message || "Unknown error")
-  //     );
-  //   }
-  // };
-
-  // ... existing code ...
-
-const handleCreateResource = async (values) => {
-  try {
-    const resourceType = values.resource_type;
-    let response;
-
-    // Format tags as an array
-    const tags = values.tags ? values.tags.map((tag) => tag.trim()) : [];
-    
-    if (resourceType === "video") {
-      // For videos, create a FormData object
-      const formData = new FormData();
-      formData.append("type", "video");
-      formData.append("title", values.title);
-      formData.append("description", values.description || "");
-      formData.append("tags", JSON.stringify(tags));
-      formData.append("url", values.url);
-
-      response = await uploadGalleryItem(formData);
-    } else if (resourceType === "image" || resourceType === "document") {
-      // For images and documents, we need to handle file upload
-      const file =
-        resourceType === "image"
-          ? values.image?.fileList[0]?.originFileObj
-          : values.document?.fileList[0]?.originFileObj;
-
-      if (!file) {
-        message.error(`Please upload a ${resourceType}`);
-        return;
+        // ... rest of the article handling code remains the same
       }
 
-      // First upload the file to get the URL
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("type", resourceType);
-
-      const uploadResponse = await uploadMediaFile(formData);
-
-      if (uploadResponse.status && uploadResponse.data) {
-        // Now create the gallery item with the file URL using FormData
-        const galleryFormData = new FormData();
-        galleryFormData.append("type", resourceType);
-        galleryFormData.append("title", values.title);
-        galleryFormData.append("description", values.description || "");
-        galleryFormData.append("tags", JSON.stringify(tags));
-        galleryFormData.append("url", uploadResponse.data.file_url);
-
-        response = await uploadGalleryItem(galleryFormData);
-      } else {
-        throw new Error("File upload failed");
-      }
-    } else if (resourceType === "article") {
-      // Article creation already uses FormData, no changes needed
-      const file = values.cover_image?.fileList[0]?.originFileObj;
-
-      if (!file) {
-        message.error("Please upload a cover image");
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("title", values.title);
-      formData.append("content", values.content);
-      formData.append("reading_time", values.read_time);
-      formData.append("category", values.category);
-      formData.append("tags", JSON.stringify(tags));
-      formData.append("type", "article");
-
-      response = await createArticle(formData);
-      
-      // ... rest of the article handling code remains the same
+      // ... rest of the function remains the same
+    } catch (error) {
+      console.error("Error creating resource:", error);
+      message.error(
+        "Failed to create resource: " + (error.message || "Unknown error")
+      );
     }
+  };
 
-    // ... rest of the function remains the same
-  } catch (error) {
-    console.error("Error creating resource:", error);
-    message.error(
-      "Failed to create resource: " + (error.message || "Unknown error")
-    );
-  }
-};
-
-// ... rest of the component remains the same
   const renderFormFields = () => {
     const resourceType = form.getFieldValue("resource_type");
 
@@ -916,28 +831,56 @@ const handleCreateResource = async (values) => {
       okText: "Yes, Delete",
       okType: "danger",
       cancelText: "Cancel",
-      onOk() {
-        // Here you would call your API to delete the resource
-        message.success(`${type} deleted successfully`);
-        // Refresh the list after deletion
-        if (type === "image") {
-          fetchGalleryItems(
-            "image",
-            imagesPagination.current,
-            imagesPagination.pageSize
-          );
-        } else if (type === "video") {
-          fetchGalleryItems(
-            "video",
-            videosPagination.current,
-            videosPagination.pageSize
-          );
-        } else if (type === "document") {
-          fetchGalleryItems(
-            "document",
-            documentsPagination.current,
-            documentsPagination.pageSize
-          );
+      onOk: async () => {
+        try {
+          // Set the appropriate loading state based on resource type
+          if (type === "image") {
+            setImagesLoading(true);
+          } else if (type === "video") {
+            setVideosLoading(true);
+          } else if (type === "document") {
+            setDocumentsLoading(true);
+          }
+
+          const response = await deleteGalleryItem(record.id);
+
+          if (response.status) {
+            message.success(`${type} deleted successfully`);
+            // Refresh the list after deletion
+            if (type === "image") {
+              fetchGalleryItems(
+                "image",
+                imagesPagination.current,
+                imagesPagination.pageSize
+              );
+            } else if (type === "video") {
+              fetchGalleryItems(
+                "video",
+                videosPagination.current,
+                videosPagination.pageSize
+              );
+            } else if (type === "document") {
+              fetchGalleryItems(
+                "document",
+                documentsPagination.current,
+                documentsPagination.pageSize
+              );
+            }
+          } else {
+            throw new Error(`Failed to delete ${type}`);
+          }
+        } catch (error) {
+          console.error(`Error deleting ${type}:`, error);
+          message.error(`Failed to delete ${type}`);
+        } finally {
+          // Reset loading state
+          if (type === "image") {
+            setImagesLoading(false);
+          } else if (type === "video") {
+            setVideosLoading(false);
+          } else if (type === "document") {
+            setDocumentsLoading(false);
+          }
         }
       },
     });
@@ -1108,6 +1051,19 @@ const handleCreateResource = async (values) => {
         onClose={() => setViewDrawerVisible(false)}
         open={viewDrawerVisible}
         className={styles.articleDrawer}
+        extra={
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => {
+                setViewDrawerVisible(false);
+                handleEditArticle(selectedArticle);
+              }}
+            >
+              Edit
+            </Button>
+          </Space>
+        }
       >
         {selectedArticle && (
           <div className={styles.articleView}>

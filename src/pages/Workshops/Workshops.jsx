@@ -30,6 +30,8 @@ import {
   getAllWorkshopSchedules,
   scheduleWorkshop,
   getAllCompanies,
+  rescheduleWorkshop,
+  cancelWorkshopSchedule
 } from "../../services/api";
 
 const { RangePicker } = DatePicker;
@@ -58,6 +60,11 @@ const Workshops = () => {
   const [companies, setCompanies] = useState([]);
   const [companiesLoading, setCompaniesLoading] = useState(false);
   const [dateRange, setDateRange] = useState(null);
+  const [viewDetailsDrawerVisible, setViewDetailsDrawerVisible] =
+    useState(false);
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
+  const [rescheduleModalVisible, setRescheduleModalVisible] = useState(false);
+  const [rescheduleForm] = Form.useForm();
   // Fetch workshops on component mount
   useEffect(() => {
     fetchWorkshops();
@@ -220,6 +227,56 @@ const Workshops = () => {
     }
   };
 
+  const handleRescheduleWorkshop = (schedule) => {
+    setSelectedSchedule(schedule);
+    rescheduleForm.setFieldsValue({
+      date: null,
+      time: null,
+    });
+    setRescheduleModalVisible(true);
+  };
+
+  const handleRescheduleSubmit = async (values) => {
+    try {
+      const scheduleId = selectedSchedule.id;
+      const newStartTime = `${values.date.format("YYYY-MM-DD")} ${values.startTime.format("HH:mm:ss")}`;
+      const newEndTime = `${values.date.format("YYYY-MM-DD")} ${values.endTime.format("HH:mm:ss")}`;
+      
+      const response = await rescheduleWorkshop(scheduleId, newStartTime, newEndTime);
+      
+      if (response.status) {
+        message.success("Workshop rescheduled successfully");
+        setRescheduleModalVisible(false);
+        fetchWorkshopSchedules();
+      }
+    } catch (error) {
+      console.error("Error rescheduling workshop:", error);
+      message.error("Failed to reschedule workshop");
+    }
+  };
+
+  const handleCancelWorkshop = (scheduleId) => {
+    Modal.confirm({
+      title: "Are you sure you want to cancel this workshop?",
+      content: "This action cannot be undone.",
+      okText: "Yes, Cancel Workshop",
+      okType: "danger",
+      cancelText: "No",
+      onOk: async () => {
+        try {
+          const response = await cancelWorkshopSchedule(scheduleId);
+          if (response.status) {
+            message.success("Workshop cancelled successfully");
+            fetchWorkshopSchedules();
+          }
+        } catch (error) {
+          console.error("Error cancelling workshop:", error);
+          message.error("Failed to cancel workshop");
+        }
+      },
+    });
+  };
+
   const handleScheduleSubmit = async (values) => {
     try {
       const payload = {
@@ -242,6 +299,12 @@ const Workshops = () => {
       message.error("Failed to schedule workshop");
     }
   };
+
+  const handleViewDetails = (schedule) => {
+    setSelectedSchedule(schedule);
+    setViewDetailsDrawerVisible(true);
+  };
+
 
   // Add this new function to fetch workshop schedules
   const fetchWorkshopSchedules = async (dateFilter = dateRange) => {
@@ -294,12 +357,12 @@ const Workshops = () => {
       key: "company",
     },
     {
-      title: "Date",
+      title: "Shedule Date",
       dataIndex: "date",
       key: "date",
     },
     {
-      title: "Time",
+      title: " Shedule Time",
       dataIndex: "time",
       key: "time",
     },
@@ -317,14 +380,22 @@ const Workshops = () => {
         ),
     },
     {
-      title: "Date Added",
-      dataIndex: "dateAdded",
-      key: "dateAdded",
-    },
-    {
-      title: "CTA",
+      title: "Actions",
       key: "action",
-      render: (_, record) => <Button type="link">View Details</Button>,
+      render: (_, record) => (
+        <Space>
+          <Button type="link" onClick={() => handleViewDetails(record)}>
+            View Details
+          </Button>
+          <Button 
+            type="link" 
+            danger
+            onClick={() => handleCancelWorkshop(record.id)}
+          >
+            Cancel
+          </Button>
+        </Space>
+      ),
     },
   ];
 
@@ -596,7 +667,9 @@ const Workshops = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setScheduleDrawerVisible(false)} />
+            <ArrowLeftOutlined
+              onClick={() => setScheduleDrawerVisible(false)}
+            />
             Create schedule
           </Space>
         }
@@ -677,6 +750,133 @@ const Workshops = () => {
           </Form.Item>
         </Form>
       </Drawer>
+
+      {/* Add this at the end of the return statement, after the other drawers */}
+      {/* Update the view details drawer */}
+            <Drawer
+              title={
+                <Space>
+                  <ArrowLeftOutlined onClick={() => setViewDetailsDrawerVisible(false)} />
+                  Workshop Schedule Details
+                </Space>
+              }
+              width={720}
+              onClose={() => setViewDetailsDrawerVisible(false)}
+              open={viewDetailsDrawerVisible}
+            >
+              {selectedSchedule && (
+                <div className={styles.detailsContainer}>
+                  <div className={styles.detailItem}>
+                    <h3>Workshop</h3>
+                    <p>{selectedSchedule.workshop}</p>
+                  </div>
+                  
+                  <div className={styles.detailItem}>
+                    <h3>Company</h3>
+                    <p>{selectedSchedule.company}</p>
+                  </div>
+                  
+                  <div className={styles.detailItem}>
+                    <h3>Date</h3>
+                    <p>{selectedSchedule.date}</p>
+                  </div>
+                  
+                  <div className={styles.detailItem}>
+                    <h3>Time</h3>
+                    <p>{selectedSchedule.time}</p>
+                  </div>
+                  
+                  <div className={styles.detailItem}>
+                    <h3>Date Added</h3>
+                    <p>{selectedSchedule.dateAdded}</p>
+                  </div>
+                  
+                  <div className={styles.detailItem}>
+                    <h3>Worksheet</h3>
+                    {selectedSchedule.pdf_url ? (
+                      <a 
+                        href={selectedSchedule.pdf_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className={styles.pdfLink}
+                      >
+                        <Button type="primary">View PDF</Button>
+                      </a>
+                    ) : (
+                      <p>No worksheet available</p>
+                    )}
+                  </div>
+            
+                  <div className={styles.actionButtons}>
+                    <Button 
+                      type="primary" 
+                      onClick={() => handleRescheduleWorkshop(selectedSchedule)}
+                    >
+                      Reschedule Workshop
+                    </Button>
+                    <Button 
+                      type="primary" 
+                      danger 
+                      onClick={() => {
+                        handleCancelWorkshop(selectedSchedule.id);
+                        setViewDetailsDrawerVisible(false);
+                      }}
+                    >
+                      Cancel Workshop
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </Drawer>
+      
+            {/* Update the reschedule modal */}
+              <Modal
+                title="Reschedule Workshop"
+                open={rescheduleModalVisible}
+                onCancel={() => setRescheduleModalVisible(false)}
+                footer={null}
+              >
+                <Form
+                  form={rescheduleForm}
+                  layout="vertical"
+                  onFinish={handleRescheduleSubmit}
+                >
+                  <Form.Item
+                    name="date"
+                    label="New Date"
+                    rules={[{ required: true, message: "Please select a new date" }]}
+                  >
+                    <DatePicker style={{ width: "100%" }} />
+                  </Form.Item>
+            
+                  <Form.Item
+                    name="startTime"
+                    label="Start Time"
+                    rules={[{ required: true, message: "Please select a start time" }]}
+                  >
+                    <TimePicker format="HH:mm" style={{ width: "100%" }} />
+                  </Form.Item>
+            
+                  <Form.Item
+                    name="endTime"
+                    label="End Time"
+                    rules={[{ required: true, message: "Please select an end time" }]}
+                  >
+                    <TimePicker format="HH:mm" style={{ width: "100%" }} />
+                  </Form.Item>
+            
+                  <Form.Item>
+                    <div className={styles.modalButtons}>
+                      <Button onClick={() => setRescheduleModalVisible(false)}>
+                        Cancel
+                      </Button>
+                      <Button type="primary" htmlType="submit">
+                        Reschedule
+                      </Button>
+                    </div>
+                  </Form.Item>
+                </Form>
+              </Modal>
     </div>
   );
 };
