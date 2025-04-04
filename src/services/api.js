@@ -358,12 +358,23 @@ export const getArticles = async (params = {}) => {
 
 export const getGalleryItems = async (params = {}) => {
   try {
+    const queryParams = {
+      page: params.page || 1,
+      limit: params.limit || 10,
+      type: params.type
+    };
+    
+    // Add conditional parameters
+    if (params.companyId !== undefined) {
+      queryParams.companyId = params.companyId;
+    }
+    
+    if (params.showUnassigned !== undefined) {
+      queryParams.showUnassigned = params.showUnassigned;
+    }
+    
     const response = await api.get(`/getGalleryItems`, {
-      params: {
-        page: params.page || 1,
-        limit: params.limit || 10,
-        type: params.type
-      },
+      params: queryParams
     });
     return response.data;
   } catch (error) {
@@ -452,7 +463,6 @@ export const deleteSoundscape = async (soundscapeId) => {
   }
 }
 
-
 export const metricsData = async () => {
   try {
     const response = await api.get(`/dashboard/metrics`);
@@ -537,4 +547,13 @@ export const deleteGalleryItem = async (galleryItemId) => {
     throw error.response?.data || error;
   }
 }
+
+export const assignResourcesToCompany = async (data) => {
+  try {
+    const response = await api.post("/assignToCompany", data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
 

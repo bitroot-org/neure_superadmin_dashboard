@@ -59,3 +59,50 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.previewSection {
+  margin-top: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.previewSection h5 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* Add these styles to your existing CSS file */
+.resourceItem {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.resourceIcon {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+.resourceInfo {
+  flex: 1;
+}
+
+.resourceTitle {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.resourceType {
+  font-size: 12px;
+  color: #666;
+}
+
+.resourceActions {
+  display: flex;
+  gap: 8px;
+}

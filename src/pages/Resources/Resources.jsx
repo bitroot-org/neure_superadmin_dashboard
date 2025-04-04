@@ -215,10 +215,28 @@ const Resources = () => {
     fetchGalleryItems(type, newPagination.current, newPagination.pageSize);
   };
 
+  const extractYoutubeThumbnail = (url) => {
+    if (!url) return null;
+    
+    let videoId = '';
+    // Handle different YouTube URL formats
+    if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1].split(/[?&#]/)[0];
+    } else if (url.includes('youtube.com/watch?v=')) {
+      videoId = url.split('v=')[1].split(/[?&#]/)[0];
+    } else if (url.includes('youtube.com/embed/')) {
+      videoId = url.split('embed/')[1].split(/[?&#]/)[0];
+    } else if (url.includes('youtube.com/v/')) {
+      videoId = url.split('v/')[1].split(/[?&#]/)[0];
+    }
+  
+    return videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
+  };
+
   // Update the articlesColumns to use the actual data
   const articlesColumns = [
     {
-      title: "Cover Image",
+      title: "Image",
       key: "coverImage",
       render: (_, record) => (
         <div className={styles.coverImage}>
@@ -239,6 +257,23 @@ const Resources = () => {
       title: "Title",
       dataIndex: "title",
       key: "title",
+    },
+    {
+      title: "Tags",
+      key: "tags",
+      render: (_, record) => (
+        <div className={styles.tagsList}>
+          {record.tags && record.tags.length > 0 ? (
+            record.tags.map((tag) => (
+              <span key={tag} className={styles.resourceTag}>
+                {tag}
+              </span>
+            ))
+          ) : (
+            <span className={styles.noTags}>No tags</span>
+          )}
+        </div>
+      ),
     },
     {
       title: "Date published",
@@ -268,7 +303,7 @@ const Resources = () => {
 
   const imagesColumns = [
     {
-      title: "Cover image",
+      title: "Image",
       key: "coverImage",
       render: (_, record) => (
         <div className={styles.coverImage}>
@@ -289,6 +324,23 @@ const Resources = () => {
       title: "Title",
       dataIndex: "title",
       key: "title",
+    },
+    {
+      title: "Tags",
+      key: "tags",
+      render: (_, record) => (
+        <div className={styles.tagsList}>
+          {record.tags && record.tags.length > 0 ? (
+            record.tags.map((tag) => (
+              <span key={tag} className={styles.resourceTag}>
+                {tag}
+              </span>
+            ))
+          ) : (
+            <span className={styles.noTags}>No tags</span>
+          )}
+        </div>
+      ),
     },
     {
       title: "Size",
@@ -327,39 +379,41 @@ const Resources = () => {
 
   const videosColumns = [
     {
-      title: "Video",
-      key: "video",
-      render: (_, record) => (
-        <div className={styles.videoThumbnail}>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
-              stroke="#292D32"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M9.5 15.5V8.5L16.5 12L9.5 15.5Z"
-              stroke="#292D32"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
-      ),
+      title: "Thumbnail",
+      key: "thumbnail",
+      render: (_, record) => {
+        // Use file_url instead of thumbnail_url or url
+        const thumbnailUrl = extractYoutubeThumbnail(record.file_url);
+        return (
+          <img 
+            src={thumbnailUrl || '/placeholder-image.png'} 
+            alt="Video thumbnail" 
+            style={{ width: '80px', height: 'auto' , borderRadius: '12px'}}
+          />
+        );
+      },
     },
     {
       title: "Title",
       dataIndex: "title",
       key: "title",
+    },
+    {
+      title: "Tags",
+      key: "tags",
+      render: (_, record) => (
+        <div className={styles.tagsList}>
+          {record.tags && record.tags.length > 0 ? (
+            record.tags.map((tag) => (
+              <span key={tag} className={styles.resourceTag}>
+                {tag}
+              </span>
+            ))
+          ) : (
+            <span className={styles.noTags}>No tags</span>
+          )}
+        </div>
+      ),
     },
     {
       title: "Size",
@@ -425,6 +479,23 @@ const Resources = () => {
       title: "Title",
       dataIndex: "title",
       key: "title",
+    },
+    {
+      title: "Tags",
+      key: "tags",
+      render: (_, record) => (
+        <div className={styles.tagsList}>
+          {record.tags && record.tags.length > 0 ? (
+            record.tags.map((tag) => (
+              <span key={tag} className={styles.resourceTag}>
+                {tag}
+              </span>
+            ))
+          ) : (
+            <span className={styles.noTags}>No tags</span>
+          )}
+        </div>
+      ),
     },
     {
       title: "Size",

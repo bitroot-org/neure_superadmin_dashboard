@@ -1,6 +1,6 @@
 import React from "react";
 import { ProLayout } from "@ant-design/pro-layout";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   HomeOutlined,
   UserOutlined,
@@ -15,11 +15,42 @@ import {
   SettingOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
+import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
 import styles from './Sidebar.module.css';
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // Add useNavigate hook for redirection
+  
+  // Updated logout handler function with console logging
+  const handleLogout = (e) => {
+    console.log("Logout clicked");
+    // Prevent default behavior
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // Show confirmation dialog
+    Modal.confirm({
+      title: 'Confirm Logout',
+      content: 'Are you sure you want to logout?',
+      okText: 'Yes',
+      cancelText: 'No',
+      onOk: () => {
+        console.log("Logout confirmed");
+        // Clear all items from localStorage
+        localStorage.clear();
+        // Redirect to login page
+        navigate('/login');
+      },
+      onCancel: () => {
+        console.log("Logout cancelled");
+      }
+    });
+  };
+
   const menuData = [
     {
       path: "/home",
@@ -82,7 +113,8 @@ const Sidebar = () => {
     //   icon: <SettingOutlined />,
     // },
     {
-      path: "/logout",
+      key: "logout",
+      path: "#",
       name: "Logout",
       icon: <LogoutOutlined />,
     }
@@ -94,6 +126,26 @@ const Sidebar = () => {
       menuDataRender={() => menuData}
       logo={neurelogo}
       menuItemRender={(item, dom) => (
+        item.key === "logout" ? 
+        // For logout item, use a button with onClick instead of Link
+        <button 
+          onClick={handleLogout}
+          style={{
+            cursor: 'pointer',
+            color: location.pathname === item.path ? 'white' : undefined,
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            textAlign: 'left'
+          }}
+        >
+          {dom}
+        </button>
+        :
+        // For regular menu items, use Link as before
         <Link 
           to={item.path}
           style={{

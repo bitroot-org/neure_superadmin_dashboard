@@ -1,24 +1,56 @@
 // src/components/ManageCompanies.js
-import React, { useState, useEffect, useCallback } from 'react';
-import { Table, Input, DatePicker, Space, Drawer, Descriptions, Form, Button, Select, message } from 'antd';
-import { getAllCompanies, getDepartments, createCompany } from '../../services/api';
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
-import moment from 'moment';
-import styles from './Company.module.css';
-import debounce from 'lodash/debounce';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Table,
+  Input,
+  DatePicker,
+  Space,
+  Drawer,
+  Descriptions,
+  Form,
+  Button,
+  Select,
+  message,
+  Tag,
+  List,
+  Typography,
+} from "antd";
+import {
+  getAllCompanies,
+  getDepartments,
+  createCompany,
+  getGalleryItems,
+  assignResourcesToCompany,
+} from "../../services/api";
+import {
+  SearchOutlined,
+  PlusOutlined,
+  FileTextOutlined,
+  VideoCameraOutlined,
+  PaperClipOutlined,
+} from "@ant-design/icons";
+import moment from "moment";
+import styles from "./Company.module.css";
+import debounce from "lodash/debounce";
 
 const { RangePicker } = DatePicker;
 
 const Company = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [dateRange, setDateRange] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [createDrawerVisible, setCreateDrawerVisible] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [form] = Form.useForm();
+  const [resourceDrawerVisible, setResourceDrawerVisible] = useState(false);
+  const [resources, setResources] = useState([]);
+  const [selectedResources, setSelectedResources] = useState([]);
+  const [resourceForm] = Form.useForm();
+  const [resourceType, setResourceType] = useState("image");
+  const [previewResources, setPreviewResources] = useState([]);
 
   const handleCreateDrawerOpen = async () => {
     try {
@@ -26,12 +58,12 @@ const Company = () => {
       setDepartments(response.data || []);
       setCreateDrawerVisible(true);
     } catch (error) {
-      console.error('Error fetching departments:', error);
-      message.error('Failed to load departments');
+      console.error("Error fetching departments:", error);
+      message.error("Failed to load departments");
     }
   };
 
-  const fetchCompanies = async (search = '') => {
+  const fetchCompanies = async (search = "") => {
     setLoading(true);
     try {
       const params = {};
@@ -40,9 +72,8 @@ const Company = () => {
       }
       const response = await getAllCompanies(params);
       setCompanies(response.data.companies);
-
     } catch (error) {
-      console.error('Error fetching company data:', error);
+      console.error("Error fetching company data:", error);
     } finally {
       setLoading(false);
     }
@@ -54,6 +85,7 @@ const Company = () => {
     }, 500),
     []
   );
+
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchText(value);
@@ -76,7 +108,7 @@ const Company = () => {
         setSelectedCompany(record);
         setDrawerVisible(true);
       },
-      style: { cursor: 'pointer' }
+      style: { cursor: "pointer" },
     };
   };
 
@@ -85,54 +117,154 @@ const Company = () => {
       setLoading(true);
 
       // Transform the industry values (department names) to department IDs
-      const departmentIds = values.industry.map(deptName => {
-        const dept = departments.find(d => d.department_name === deptName);
-        return dept ? dept.id : null;
-      }).filter(id => id !== null);
+      const departmentIds = values.industry
+        .map((deptName) => {
+          const dept = departments.find((d) => d.department_name === deptName);
+          return dept ? dept.id : null;
+        })
+        .filter((id) => id !== null);
 
       const payload = {
         company_name: values.company_name,
-        email: values.email_domain,
         company_size: values.company_size.toString(),
-        department_ids: departmentIds
+        department_ids: departmentIds,
+        contact_person_info: {
+          first_name: values.first_name,
+          last_name: values.last_name,
+          email: values.email,
+          phone: values.phone,
+        },
       };
 
       const response = await createCompany(payload);
 
       if (response.status) {
-        message.success('Company created successfully');
+        message.success("Company created successfully");
         setCreateDrawerVisible(false);
         form.resetFields();
         // Refresh the companies list
         fetchCompanies();
       } else {
-        message.error(response.message || 'Failed to create company');
+        message.error(response.message || "Failed to create company");
       }
     } catch (error) {
-      console.error('Error creating company:', error);
-      message.error('Failed to create company: ' + (error.message || 'Unknown error'));
+      console.error("Error creating company:", error);
+      message.error(
+        "Failed to create company: " + (error.message || "Unknown error")
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchResources = async (type = "image") => {
+    try {
+      const response = await getGalleryItems({
+        type,
+        companyId: selectedCompany?.id,
+        showUnassigned: true,
+      });
+      // Update to access the items array from the response
+      setResources(response.data.items || []);
+    } catch (error) {
+      console.error("Error fetching resources:", error);
+      message.error("Failed to load resources");
+    }
+  };
+
+  const handleAssignResources = () => {
+    fetchResources(resourceType);
+    setResourceDrawerVisible(true);
+  };
+
+  const handleResourceTypeChange = (type) => {
+    setResourceType(type);
+    fetchResources(type);
+    // Clear selected resources when type changes
+    resourceForm.setFieldsValue({ resources: [] });
+    setPreviewResources([]);
+  };
+
+  const handleResourceSubmit = async (values) => {
+    try {
+      setLoading(true);
+
+      const response = await assignResourcesToCompany({
+        company_id: selectedCompany.id,
+        resource_ids: values.resources,
+      });
+
+      if (response.status) {
+        message.success("Resources assigned successfully");
+        setResourceDrawerVisible(false);
+        resourceForm.resetFields();
+      } else {
+        message.error(response.message || "Failed to assign resources");
+      }
+    } catch (error) {
+      console.error("Error assigning resources:", error);
+      message.error(
+        "Failed to assign resources: " + (error.message || "Unknown error")
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResourceSelectionChange = (selectedIds) => {
+    const selected = resources.filter((resource) =>
+      selectedIds.includes(resource.id)
+    );
+    setPreviewResources(selected);
+  };
+
   const columns = [
     {
-      title: 'Company Name',
-      dataIndex: 'company_name',
-      key: 'company_name',
+      title: "Company Name",
+      dataIndex: "company_name",
+      key: "company_name",
     },
     {
-      title: 'Email Domain',
-      dataIndex: 'email_domain',
-      key: 'email_domain',
+      title: "Contact Person",
+      key: "contact_person_name",
+      render: (_, record) => {
+        if (record.contact_person_info) {
+          return `${record.contact_person_info.first_name} ${record.contact_person_info.last_name}`;
+        }
+        return "-";
+      },
     },
     {
-      title: 'Onboarding Date',
-      dataIndex: 'onboarding_date',
-      key: 'onboarding_date',
+      title: "Contact Email",
+      key: "contact_person_email",
+      render: (_, record) => {
+        if (record.contact_person_info) {
+          return record.contact_person_info.email;
+        }
+        return "-";
+      },
+    },
+    {
+      title: "Contact Number",
+      key: "contact_person_phone",
+      render: (_, record) => {
+        if (record.contact_person_info) {
+          return record.contact_person_info.phone;
+        }
+        return "-";
+      },
+    },
+    {
+      title: "Onboarding Date",
+      dataIndex: "onboarding_date",
+      key: "onboarding_date",
       render: (date) => new Date(date).toLocaleDateString(),
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
         <div style={{ padding: 8 }}>
           <RangePicker
             value={dateRange}
@@ -146,73 +278,81 @@ const Company = () => {
       ),
     },
     {
-      title: 'Status',
-      dataIndex: 'active',
-      key: 'active',
+      title: "Status",
+      dataIndex: "active",
+      key: "active",
       filters: [
-        { text: 'Active', value: 1 },
-        { text: 'Inactive', value: 0 },
+        { text: "Active", value: 1 },
+        { text: "Inactive", value: 0 },
       ],
       onFilter: (value, record) => record.active === value,
       render: (status) => {
         const isActive = status === 1;
         return (
-          <span className={`${styles.statusBadge} ${isActive ? styles.active : styles.inactive}`}>
-            {isActive ? 'Active' : 'Inactive'}
+          <span
+            className={`${styles.statusBadge} ${
+              isActive ? styles.active : styles.inactive
+            }`}
+          >
+            {isActive ? "Active" : "Inactive"}
           </span>
         );
       },
     },
     {
-      title: 'Company Size',
-      dataIndex: 'company_size',
-      key: 'company_size',
+      title: "Company Size",
+      dataIndex: "company_size",
+      key: "company_size",
       filters: [
-        { text: '1-100', value: '100' },
-        { text: '101-200', value: '200' },
-        { text: '201-300', value: '300' },
-        { text: '301-500', value: '500' },
-        { text: '500+', value: '501' }
+        { text: "1-100", value: "100" },
+        { text: "101-200", value: "200" },
+        { text: "201-300", value: "300" },
+        { text: "301-500", value: "500" },
+        { text: "500+", value: "501" },
       ],
       onFilter: (value, record) => {
         const size = parseInt(value);
         if (size === 501) {
           return record.company_size >= 500;
         }
-        return record.company_size <= size &&
-          record.company_size > (size - 100);
+        return record.company_size <= size && record.company_size > size - 100;
       },
     },
     {
-      title: 'Departments',
-      key: 'departments',
+      title: "Departments",
+      key: "departments",
       width: 200,
       ellipsis: true,
       render: (_, record) => {
         if (!record.departments || record.departments.length === 0) {
-          return '-';
+          return "-";
         }
-        const departmentNames = record.departments.map(dept => dept.name).join(', ');
+        const departmentNames = record.departments
+          .map((dept) => dept.name)
+          .join(", ");
         return (
           <div className={styles.departmentCell} title={departmentNames}>
             {departmentNames}
           </div>
         );
       },
-      filters: departments.map(dept => ({ text: dept.department_name, value: dept.department_name })),
+      filters: departments.map((dept) => ({
+        text: dept.department_name,
+        value: dept.department_name,
+      })),
       onFilter: (value, record) => {
         if (!record.departments || record.departments.length === 0) {
           return false;
         }
-        return record.departments.some(dept => dept.name === value);
+        return record.departments.some((dept) => dept.name === value);
       },
     },
     {
-      title: 'Created At',
-      dataIndex: 'created_at',
-      key: 'created_at',
+      title: "Created At",
+      dataIndex: "created_at",
+      key: "created_at",
       render: (date) => new Date(date).toLocaleDateString(),
-    }
+    },
   ];
 
   return (
@@ -251,14 +391,17 @@ const Company = () => {
         />
       </div>
 
-
-
       <Drawer
         title="Company Details"
         placement="right"
         width={500}
         onClose={() => setDrawerVisible(false)}
         open={drawerVisible}
+        extra={
+          <Button type="primary" onClick={handleAssignResources}>
+            Assign Resources
+          </Button>
+        }
       >
         <div className={styles.drawerContent}>
           {selectedCompany && (
@@ -266,24 +409,47 @@ const Company = () => {
               <Descriptions.Item label="Company Name">
                 {selectedCompany.company_name}
               </Descriptions.Item>
-              <Descriptions.Item label="Email Domain">
-                {selectedCompany.email_domain}
+              <Descriptions.Item label="Contact Person">
+                {selectedCompany.contact_person_info
+                  ? `${selectedCompany.contact_person_info.first_name} ${selectedCompany.contact_person_info.last_name}`
+                  : "-"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Contact Email">
+                {selectedCompany.contact_person_info
+                  ? selectedCompany.contact_person_info.email
+                  : "-"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Contact Phone">
+                {selectedCompany.contact_person_info
+                  ? selectedCompany.contact_person_info.phone
+                  : "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Departments">
-                {selectedCompany.departments && selectedCompany.departments.length > 0
-                  ? selectedCompany.departments.map(dept => dept.name).join(', ')
-                  : '-'}
+                {selectedCompany.departments &&
+                selectedCompany.departments.length > 0
+                  ? selectedCompany.departments
+                      .map((dept) => dept.name)
+                      .join(", ")
+                  : "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Company Size">
                 {selectedCompany.company_size}
               </Descriptions.Item>
               <Descriptions.Item label="Status">
-                <span className={`${styles.statusBadge} ${
-                  selectedCompany.active === 1 ? styles.active : 
-                  selectedCompany.active === 0 ? styles.inactive : styles.pending
-                }`}>
-                  {selectedCompany.active === 1 ? 'Active' : 
-                   selectedCompany.active === 0 ? 'Inactive' : 'Pending'}
+                <span
+                  className={`${styles.statusBadge} ${
+                    selectedCompany.active === 1
+                      ? styles.active
+                      : selectedCompany.active === 0
+                      ? styles.inactive
+                      : styles.pending
+                  }`}
+                >
+                  {selectedCompany.active === 1
+                    ? "Active"
+                    : selectedCompany.active === 0
+                    ? "Inactive"
+                    : "Pending"}
                 </span>
               </Descriptions.Item>
               <Descriptions.Item label="Onboarding Date">
@@ -304,23 +470,54 @@ const Company = () => {
         open={createDrawerVisible}
         bodyStyle={{ paddingBottom: 80 }}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleCreateCompany}
-        >
+        <Form form={form} layout="vertical" onFinish={handleCreateCompany}>
           <Form.Item
             name="company_name"
             label="Company Name"
-            rules={[{ required: true, message: 'Please enter company name' }]}
+            rules={[{ required: true, message: "Please enter company name" }]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
             name="email_domain"
-            label="Email Domain"
-            rules={[{ required: true, message: 'Please enter email domain' }]}
+            label="Email"
+            rules={[{ required: true, message: "Please enter email domain" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="first_name"
+            label="First Name"
+            rules={[{ required: true, message: "Please enter first name" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="last_name"
+            label="Last Name"
+            rules={[{ required: true, message: "Please enter last name" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              { required: true, message: "Please enter contact email" },
+              { type: "email", message: "Please enter a valid email" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="phone"
+            label="Phone"
+            rules={[{ required: true, message: "Please enter contact phone" }]}
           >
             <Input />
           </Form.Item>
@@ -328,14 +525,15 @@ const Company = () => {
           <Form.Item
             name="industry"
             label="Industry"
-            rules={[{ required: true, message: 'Please select at least one industry' }]}
+            rules={[
+              {
+                required: true,
+                message: "Please select at least one industry",
+              },
+            ]}
           >
-            <Select
-              mode="multiple"
-              placeholder="Select industries"
-              allowClear
-            >
-              {departments.map(dept => (
+            <Select mode="multiple" placeholder="Select industries" allowClear>
+              {departments.map((dept) => (
                 <Select.Option key={dept.id} value={dept.department_name}>
                   {dept.department_name}
                 </Select.Option>
@@ -373,9 +571,160 @@ const Company = () => {
           </Form.Item> */}
 
           <Space>
-            <Button onClick={() => setCreateDrawerVisible(false)}>Cancel</Button>
+            <Button onClick={() => setCreateDrawerVisible(false)}>
+              Cancel
+            </Button>
             <Button type="primary" htmlType="submit">
               Create
+            </Button>
+          </Space>
+        </Form>
+      </Drawer>
+
+      <Drawer
+        title={`Assign Resources to ${
+          selectedCompany?.company_name || "Company"
+        }`}
+        placement="right"
+        width={500}
+        onClose={() => setResourceDrawerVisible(false)}
+        open={resourceDrawerVisible}
+      >
+        <Form
+          form={resourceForm}
+          layout="vertical"
+          onFinish={handleResourceSubmit}
+        >
+          <Form.Item
+            name="resourceType"
+            label="Resource Type"
+            initialValue="image"
+          >
+            <Select
+              onChange={handleResourceTypeChange}
+              style={{ width: "100%" }}
+            >
+              <Select.Option value="image">Images</Select.Option>
+              <Select.Option value="video">Videos</Select.Option>
+              <Select.Option value="document">Documents</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="resources"
+            label="Select Resources"
+            rules={[
+              {
+                required: true,
+                message: "Please select at least one resource",
+              },
+            ]}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Select resources to assign"
+              style={{ width: "100%" }}
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+              onChange={handleResourceSelectionChange}
+            >
+              {resources.map((resource) => (
+                <Select.Option key={resource.id} value={resource.id}>
+                  {resource.title}
+                  {resource.description &&
+                    ` - ${resource.description.substring(0, 30)}...`}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          {previewResources.length > 0 && (
+            <div className={styles.previewSection}>
+              <Typography.Title level={5}>Resource Preview</Typography.Title>
+              <List
+                itemLayout="horizontal"
+                dataSource={previewResources}
+                renderItem={(item) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={
+                        item.file_type === "image" ? (
+                          <a
+                            href={item.file_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <img
+                              src={item.file_url}
+                              alt={item.title}
+                              style={{
+                                width: 80,
+                                height: 60,
+                                objectFit: "cover",
+                                cursor: "pointer",
+                              }}
+                            />
+                          </a>
+                        ) : item.file_type === "video" ? (
+                          <a
+                            href={item.file_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <VideoCameraOutlined
+                              style={{
+                                fontSize: 36,
+                                color: "#1890ff",
+                                cursor: "pointer",
+                              }}
+                            />
+                          </a>
+                        ) : (
+                          <a
+                            href={item.file_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <FileTextOutlined
+                              style={{
+                                fontSize: 36,
+                                color: "#faad14",
+                                cursor: "pointer",
+                              }}
+                            />
+                          </a>
+                        )
+                      }
+                      title={item.title}
+                      description={
+                        <div>
+                          <p>{item.description}</p>
+                          {item.tags && item.tags.length > 0 && (
+                            <div>
+                              {item.tags.map((tag) => (
+                                <Tag key={tag} color="blue">
+                                  {tag}
+                                </Tag>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      }
+                    />
+                  </List.Item>
+                )}
+              />
+            </div>
+          )}
+
+          <Space>
+            <Button onClick={() => setResourceDrawerVisible(false)}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Assign Resources
             </Button>
           </Space>
         </Form>

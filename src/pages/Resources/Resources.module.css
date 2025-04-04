@@ -194,3 +194,26 @@
     gap: 8px;
   }
 }
+
+.tagsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 200px;
+}
+
+.resourceTag {
+  background-color: #f0f0f0;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: #666;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.noTags {
+  color: #999;
+  font-style: italic;
+  font-size: 12px;
+}

@@ -51,7 +51,8 @@ const Soundscapes = () => {
           ...item,
           key: item.id,
           dateAdded: new Date(item.created_at).toLocaleDateString(),
-          category: "Music",
+          category: item.categories || "Uncategorized", // Use categories from API or fallback
+          tags: item.tags || [], // Ensure tags is always an array
         }));
 
         setSoundscapes(processedSoundscapes);
@@ -69,98 +70,6 @@ const Soundscapes = () => {
     }
   };
 
-  // Function to get audio metadata (duration and size)
-  const getAudioMetadata = async (url) => {
-    try {
-      // Attempt to get metadata using music-metadata-browser
-      const metadata = await musicMetadata.fetchFromUrl(url);
-
-      // Get duration from metadata
-      const duration = metadata.format.duration || 0;
-
-      // Get file size from metadata or estimate it
-      let size = metadata.format.byteSize;
-
-      // If size is not available, estimate based on duration and bitrate
-      if (!size && metadata.format.bitrate) {
-        size = Math.round((duration * metadata.format.bitrate) / 8);
-      } else if (!size) {
-        // Fallback to estimation with standard bitrate
-        size = Math.round((duration * 192 * 1024) / 8);
-      }
-
-      return { duration, size };
-    } catch (error) {
-      console.error("Error fetching audio metadata:", error);
-
-      // Fallback to the Audio API method
-      return new Promise((resolve) => {
-        const audio = new Audio();
-        audio.crossOrigin = "anonymous";
-        audio.src = url;
-
-        let durationResolved = false;
-
-        audio.addEventListener("loadedmetadata", () => {
-          if (!durationResolved) {
-            const duration = audio.duration || 0;
-
-            if (!isFinite(duration) || duration === 0) {
-              resolve({ duration: 180, size: 4 * 1024 * 1024 });
-              durationResolved = true;
-              return;
-            }
-
-            const estimatedSize = Math.round((duration * 192 * 1024) / 8);
-
-            durationResolved = true;
-            resolve({ duration, size: estimatedSize });
-
-            audio.pause();
-            audio.src = "";
-          }
-        });
-
-        audio.addEventListener("error", () => {
-          if (!durationResolved) {
-            durationResolved = true;
-            resolve({ duration: 180, size: 4 * 1024 * 1024 });
-          }
-        });
-
-        setTimeout(() => {
-          if (!durationResolved) {
-            durationResolved = true;
-            resolve({ duration: 180, size: 4 * 1024 * 1024 });
-          }
-        }, 5000);
-
-        audio.load();
-      });
-    }
-  };
-
-  // Format duration to mm:ss
-  const formatDuration = (seconds) => {
-    if (!seconds) return "00:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
-  // Format size to KB/MB
-  const formatSize = (bytes) => {
-    if (!bytes) return "0 KB";
-    const kb = bytes / 1024;
-    if (kb < 1024) {
-      return `${Math.round(kb)} KB`;
-    } else {
-      return `${(kb / 1024).toFixed(2)} MB`;
-    }
-  };
-
   // Fetch soundscapes on component mount
   useEffect(() => {
     fetchSoundscapes();
@@ -175,18 +84,6 @@ const Soundscapes = () => {
   const handlePlay = (record) => {
     setCurrentAudio(record);
     setPlayModalVisible(true);
-  };
-
-  // Handle audio play/pause
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
   };
 
   // Reset audio player when modal closes
@@ -270,8 +167,27 @@ const Soundscapes = () => {
     },
     {
       title: "Category",
-      dataIndex: "category",
-      key: "category",
+      dataIndex: "categories", // Changed from "category" to "categories"
+      key: "categories",
+      render: (categories) => categories || "Uncategorized",
+    },
+    {
+      title: "Tags",
+      dataIndex: "tags",
+      key: "tags",
+      render: (tags) => (
+        tags && tags.length > 0 ? (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+            {tags.map((tag, index) => (
+              <span key={index} className={styles.tag}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <span>No tags</span>
+        )
+      ),
     },
     {
       title: "Date added",
@@ -302,8 +218,6 @@ const Soundscapes = () => {
       ),
     },
   ];
-
-  // ... existing code ...
 
   const handleCreateSoundscape = async (values) => {
     try {
@@ -421,8 +335,7 @@ const Soundscapes = () => {
                 <strong>Length:</strong> {currentAudio?.length || "00:00"}
               </p>
             </div>
-          </div>
-          {currentAudio && (
+          </div>          {currentAudio && (
             <audio
               ref={audioRef}
               src={currentAudio.sound_file_url}
