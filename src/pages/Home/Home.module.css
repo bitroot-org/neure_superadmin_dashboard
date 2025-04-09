@@ -1,58 +1,131 @@
+/* Luxury Dashboard Styling */
 .container {
-  padding: 24px;
+  padding: 32px;
   background-color: var(--background);
   min-height: 100vh;
+  position: relative;
+}
+
+/* Subtle background pattern for luxury feel */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(212, 183, 143, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 183, 143, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .header {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+  border-bottom: 1px solid rgba(212, 183, 143, 0.2);
+  padding-bottom: 16px;
 }
 
 .title {
-  margin-bottom: 0 !important;
+  margin-bottom: 8px !important;
   font-weight: 600 !important;
   color: var(--primary-dark);
+  font-family: 'Playfair Display', serif !important;
+  letter-spacing: 0.02em;
+  font-size: 2.2rem !important;
 }
 
 .subtitle {
   font-size: 16px;
+  color: var(--text-muted);
+  font-family: 'Archivo', sans-serif;
+  letter-spacing: 0.03em;
 }
 
 .section {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
 }
 
 .sectionTitle {
-  margin-bottom: 16px !important;
-  font-weight: 500 !important;
+  margin-bottom: 20px !important;
+  font-weight: 600 !important;
   color: var(--primary-dark);
+  font-family: 'Clash Display', sans-serif !important;
+  letter-spacing: 0.02em;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 8px;
 }
 
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--gradient-gold);
+  border-radius: 2px;
+}
+
+/* Luxury Card Styling */
 .statsCard,
 .metricsCard,
 .engagementCard,
 .tableCard {
-  border-radius: 16px;
-  box-shadow: 0 1px 2px rgba(0, 106, 113, 0.04),
-              0 2px 4px rgba(0, 106, 113, 0.04),
-              0 4px 8px rgba(0, 106, 113, 0.04);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
   height: 100%;
   background: #ffffff;
-  border: 1px solid rgba(154, 203, 208, 0.2);
+  border: 1px solid rgba(212, 183, 143, 0.15);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Gold accent for cards */
+.statsCard::before,
+.metricsCard::before,
+.engagementCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--gradient-gold);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.statsCard:hover::before,
+.metricsCard:hover::before,
+.engagementCard:hover::before {
+  opacity: 1;
 }
 
 .statsCard:hover,
 .metricsCard:hover,
 .engagementCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 8px rgba(0, 106, 113, 0.08),
-              0 8px 16px rgba(0, 106, 113, 0.08);
-  border-color: var(--primary-light);
+  box-shadow: var(--shadow-md);
+  border-color: var(--gold-light);
 }
 
 .metricsCard {
-  padding-bottom: 8px;
+  padding-bottom: 12px;
+}
+
+/* Table card with luxury styling */
+.tableCard {
+  box-shadow: var(--shadow-md);
+  border: none;
 }
 
 .loadingContainer,
@@ -63,26 +136,18 @@
   justify-content: center;
   height: 100vh;
   gap: 16px;
+  background-color: var(--background);
 }
 
-/* Modern scrollbar with color palette */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .container {
+    padding: 24px;
+  }
 
-::-webkit-scrollbar-track {
-  background: var(--background);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--primary-light);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
+  .title {
+    font-size: 1.8rem !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -90,10 +155,22 @@
     padding: 16px;
   }
 
+  .title {
+    font-size: 1.5rem !important;
+  }
+
   .statsCard,
   .metricsCard,
   .engagementCard,
   .tableCard {
-    border-radius: 12px;
+    border-radius: 6px;
+  }
+
+  .header {
+    margin-bottom: 24px;
+  }
+
+  .section {
+    margin-bottom: 24px;
   }
 }

@@ -12,8 +12,10 @@ import {
   Descriptions,
   Upload,
   message,
+  Typography,
 } from "antd";
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import styles from "./Employees.module.css";
 import {
   getAllCompanies,
   getCompanyEmployees,
@@ -111,7 +113,7 @@ const Employees = () => {
   const handleCreateEmployee = async (values) => {
     try {
       setLoading(true);
-      
+
       if (uploadedFile) {
         const response = await bulkCreateEmployees(uploadedFile, selectedCompany);
         if (response.status) {
@@ -130,11 +132,11 @@ const Employees = () => {
           message.success('Employee created successfully');
         }
       }
-      
+
       setCreateDrawerVisible(false);
       form.resetFields();
       handleCompanyChange(selectedCompany);
-      
+
     } catch (error) {
       console.error('Error:', error);
       message.error(uploadedFile ? 'Failed to upload employees' : 'Failed to create employee');
@@ -209,19 +211,16 @@ const Employees = () => {
     },
   ];
 
-  return (
-    <div>
-      <h1>Employee Management</h1>
-      {error && <Alert message={error} type="error" closable />}
+  const { Title } = Typography;
 
-      <Space
-        direction="horizontal"
-        style={{
-          width: "100%",
-          marginBottom: 16,
-          justifyContent: "space-between",
-        }}
-      >
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <Title level={2} className={styles.title}>Employee Management</Title>
+        {error && <Alert message={error} type="error" closable />}
+      </div>
+
+      <div className={styles.controls}>
         <Select
           placeholder="Select a company"
           onChange={handleCompanyChange}
@@ -243,9 +242,9 @@ const Employees = () => {
         >
           Add Employee
         </Button>
-      </Space>
+      </div>
 
-      <div style={{ width: "100%", overflowX: "auto" }}>
+      <div className={styles.tableContainer}>
         <Table
           dataSource={employees}
           columns={columns}

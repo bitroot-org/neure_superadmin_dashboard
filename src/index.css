@@ -1,16 +1,37 @@
-/* Color Palette */
+/* Luxury Modern Color Palette */
 :root {
-  --primary-dark: #006A71;  /* Deep teal */
-  --primary: #48A6A7;       /* Medium teal/turquoise */
-  --primary-light: #9ACBD0; /* Light teal/aqua */
-  --background: #F2EFE7;    /* Off-white/cream */
+  /* Primary Colors */
+  --primary-dark: #1A3A3D;   /* Deep rich teal */
+  --primary: #2A5D63;        /* Sophisticated teal */
+  --primary-light: #7BA9AD;  /* Soft teal */
 
-  --text-dark: #333333;
-  --text-light: #ffffff;
-  --text-muted: #666666;
-  --success: #52c41a;
-  --warning: #faad14;
-  --error: #ff4d4f;
+  /* Background Colors */
+  --background: #F5F2ED;     /* Warm cream */
+  --background-alt: #EAE6DF; /* Subtle cream variant */
+
+  /* Accent Colors */
+  --gold: #D4B78F;           /* Champagne gold */
+  --gold-light: #E6D2B3;     /* Light gold */
+  --gold-dark: #B39267;      /* Deep gold */
+
+  /* Text Colors */
+  --text-dark: #1E2023;      /* Almost black */
+  --text-light: #FFFFFF;     /* Pure white */
+  --text-muted: #6E7175;     /* Sophisticated gray */
+
+  /* Status Colors */
+  --success: #4D8B6C;        /* Elegant green */
+  --warning: #D9A86C;        /* Warm amber */
+  --error: #B55A5A;          /* Muted red */
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(26, 58, 61, 0.08);
+  --shadow-md: 0 4px 12px rgba(26, 58, 61, 0.12);
+  --shadow-lg: 0 8px 24px rgba(26, 58, 61, 0.16);
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  --gradient-gold: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
 }
 
 body {
@@ -21,11 +42,11 @@ body {
 
 /* Global Font Styles */
 
-/* Table row data, form data, and other data descriptions */
+/* Body text, table row data, form data, and other data descriptions */
+body,
 .ant-table td,
 .ant-descriptions-item-content,
 .ant-form-item-control-input,
-.ant-statistic-content,
 .ant-card-meta-description,
 .ant-typography p,
 .ant-select-selection-item,
@@ -33,46 +54,236 @@ body {
 .ant-input-number-input,
 .ant-picker-input > input,
 .ant-tag,
-.ant-statistic-title,
 .ant-form-item-label > label {
   font-family: 'Archivo', sans-serif !important;
-  font-weight: 200 !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em;
+  color: var(--text-dark);
 }
 
-/* Page titles */
-h1, h2, h3, h4, h5,
+/* Statistics and numbers - more elegant */
+.ant-statistic-content,
+.ant-statistic-title {
+  font-family: 'Cormorant', serif !important;
+}
+
+.ant-statistic-content {
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+}
+
+.ant-statistic-title {
+  font-weight: 500 !important;
+  letter-spacing: 0.03em;
+  font-size: 1.1em !important;
+  color: var(--text-muted);
+}
+
+/* Page titles and headings - luxury serif font */
+h1, h2,
 .ant-typography h1,
 .ant-typography h2,
+.ant-page-header-heading-title,
+.ant-typography-h1,
+.ant-typography-h2,
+.ant-typography-title-level-1,
+.ant-typography-title-level-2 {
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+  color: var(--primary-dark);
+}
+
+/* Subheadings - modern sans-serif */
+h3, h4, h5,
 .ant-typography h3,
 .ant-typography h4,
 .ant-typography h5,
-.ant-page-header-heading-title,
 .ant-modal-title,
 .ant-drawer-title,
-.ant-typography-h1,
-.ant-typography-h2,
 .ant-typography-h3,
 .ant-typography-h4,
 .ant-typography-h5,
-.ant-typography-title {
+.ant-typography-title-level-3,
+.ant-typography-title-level-4,
+.ant-typography-title-level-5 {
   font-family: 'Clash Display', sans-serif !important;
   font-weight: 600 !important;
+  letter-spacing: 0.01em;
+  color: var(--primary);
 }
 
-/* Sidebar menu items */
+/* Sidebar menu items - elegant and bold */
 .ant-menu-title-content,
 .ant-pro-menu-item-title {
   font-family: 'Clash Display', sans-serif !important;
   font-weight: 600 !important;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.9em;
 }
 
-/* Table headers */
+/* Table headers - sophisticated styling */
 .ant-table-thead > tr > th {
   font-family: 'Clash Display', sans-serif !important;
   font-weight: 600 !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.85em;
 }
 
 .ant-pro-layout {
   display: flex;
   flex: 1;
+}
+
+/* Luxury UI Elements */
+
+/* Elegant Cards */
+.ant-card {
+  border-radius: 8px;
+  border: 1px solid rgba(212, 183, 143, 0.2);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.ant-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--gold-light);
+}
+
+.ant-card-head {
+  border-bottom: 1px solid rgba(212, 183, 143, 0.3);
+}
+
+/* Sophisticated Buttons */
+.ant-btn {
+  border-radius: 4px;
+  border: 1px solid var(--primary);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+}
+
+.ant-btn-primary {
+  background: var(--gradient-primary);
+  border: none;
+}
+
+.ant-btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.ant-btn-default:hover {
+  border-color: var(--gold);
+  color: var(--gold-dark);
+}
+
+/* Elegant Tables */
+.ant-table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.ant-table-thead > tr > th {
+  background: var(--background-alt) !important;
+  border-bottom: 2px solid var(--gold-light);
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: rgba(212, 183, 143, 0.05) !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(212, 183, 143, 0.1);
+}
+
+/* Luxury Form Elements */
+.ant-input,
+.ant-select-selector,
+.ant-picker,
+.ant-input-number,
+.ant-input-affix-wrapper {
+  border-radius: 4px;
+  border: 1px solid rgba(212, 183, 143, 0.3);
+  transition: all 0.3s ease;
+}
+
+.ant-input:hover,
+.ant-select-selector:hover,
+.ant-picker:hover,
+.ant-input-number:hover,
+.ant-input-affix-wrapper:hover {
+  border-color: var(--gold);
+}
+
+.ant-input:focus,
+.ant-select-selector:focus,
+.ant-picker-focused,
+.ant-input-number-focused,
+.ant-input-affix-wrapper-focused {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(42, 93, 99, 0.2);
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-alt);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 4px;
+  border: 2px solid var(--background-alt);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Luxury Tabs */
+.ant-tabs-tab {
+  font-family: 'Clash Display', sans-serif !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--primary-dark) !important;
+}
+
+.ant-tabs-ink-bar {
+  background: var(--gradient-gold) !important;
+  height: 3px !important;
+}
+
+/* Elegant Dropdown Menus */
+.ant-dropdown-menu {
+  border-radius: 6px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(212, 183, 143, 0.2);
+}
+
+.ant-dropdown-menu-item:hover {
+  background-color: rgba(212, 183, 143, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ant-card,
+  .ant-table {
+    border-radius: 6px;
+  }
+
+  .ant-statistic-title {
+    font-size: 0.9em !important;
+  }
 }

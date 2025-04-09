@@ -1,3 +1,5 @@
+/* Luxury Sidebar Styling */
+
 .headerActions {
   display: flex;
   align-items: center;
@@ -5,54 +7,82 @@
 
 .userDropdown {
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 .userDropdown:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(212, 183, 143, 0.1);
 }
 
 .sidebarFooter {
-  padding: 16px;
-  border-top: 1px solid #f0f0f0;
-  background-color: #fff;
+  padding: 20px;
+  border-top: 1px solid rgba(212, 183, 143, 0.2);
+  background-color: rgba(26, 58, 61, 0.98);
 }
 
 .profileSection {
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  padding: 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
 }
 
 .profileSection:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgba(212, 183, 143, 0.1);
 }
 
 .userInfo {
-  margin-left: 12px;
+  margin-left: 16px;
   overflow: hidden;
 }
 
 .userName {
-  font-weight: 500;
+  font-family: 'Clash Display', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--text-light);
 }
 
 .userRole {
+  font-family: 'Archivo', sans-serif;
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.7);
 }
 
+/* Luxury Menu Styling */
+:global(.ant-menu) {
+  background: transparent !important;
+  border-right: none !important;
+}
+
+:global(.ant-menu-item) {
+  margin: 8px 0 !important;
+  border-radius: 6px !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+:global(.ant-menu-item .ant-menu-title-content) {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 600 !important;
+}
+
+:global(.ant-menu-item .anticon) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
 
 :global(.ant-menu-item-selected) {
   background-color: var(--primary-dark) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 :global(.ant-menu-item:hover) {
@@ -60,5 +90,318 @@
 }
 
 :global(.ant-menu-item-selected::after) {
-  border-right-color: var(--primary-light) !important;
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 4px !important;
+  height: 100% !important;
+  background: var(--gradient-gold) !important;
+  border-right: none !important;
+}
+
+:global(.ant-menu-item .anticon) {
+  font-size: 18px !important;
+}
+
+/* Fix for collapsed sidebar */
+:global(.ant-layout-sider-collapsed .ant-menu-item) {
+  padding: 0 !important;
+  justify-content: center !important;
+  background-color: transparent !important;
+  margin: 16px auto !important;
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 40px !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+:global(.ant-layout-sider-collapsed .ant-menu-item .anticon) {
+  font-size: 20px !important;
+  margin: 0 !important;
+  color: white !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* Force icon to be visible in collapsed mode */
+:global(.ant-layout-sider-collapsed .ant-menu-item .anticon svg) {
+  display: block !important;
+  fill: white !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+:global(.ant-layout-sider-collapsed .ant-menu-item .ant-menu-title-content) {
+  display: none !important;
+}
+
+/* Force icons to be visible in collapsed mode */
+:global(.ant-layout-sider-collapsed .sidebar-icon-wrapper) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+:global(.ant-layout-sider-collapsed .sidebar-icon-wrapper svg) {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  fill: white !important;
+  color: white !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+:global(.ant-layout-sider-collapsed .ant-pro-sider-logo) {
+  padding: 16px !important;
+  justify-content: center !important;
+}
+
+:global(.ant-layout-sider-collapsed .ant-menu-item-selected) {
+  background-color: transparent !important;
+}
+
+:global(.ant-layout-sider-collapsed .ant-menu-item-selected::after),
+:global(.ant-layout-sider-collapsed .ant-menu-item-selected::before) {
+  display: none !important;
+}
+
+/* Fix for collapsed menu alignment */
+:global(.ant-layout-sider-collapsed .ant-menu-inline) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* Fix for menu item alignment in collapsed mode */
+:global(.ant-layout-sider-collapsed .ant-menu-item-icon) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin-right: 0 !important;
+}
+
+/* Fix for menu item alignment in collapsed mode */
+:global(.ant-layout-sider-collapsed .ant-menu-item-icon svg) {
+  display: block !important;
+}
+
+/* Fix for logout button in collapsed mode */
+:global(.ant-layout-sider-collapsed .ant-menu-item button) {
+  display: flex !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+:global(.ant-layout-sider-collapsed .ant-menu-item button .anticon) {
+  margin: 0 !important;
+  font-size: 20px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+/* Force all icons to be visible and centered */
+:global(.ant-layout-sider-collapsed .anticon) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  color: white !important;
+}
+
+:global(.ant-layout-sider-collapsed .anticon svg) {
+  display: block !important;
+  fill: white !important;
+  color: white !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Direct override for SVG paths */
+:global(.ant-layout-sider-collapsed .anticon svg path) {
+  fill: white !important;
+  stroke: white !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fix for menu item alignment in collapsed mode */
+:global(.ant-layout-sider-collapsed .ant-menu-item) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 0 !important;
+  margin: 16px 0 !important;
+  height: 40px !important;
+}
+
+:global(.ant-layout-sider-collapsed .ant-menu-item a),
+:global(.ant-layout-sider-collapsed .ant-menu-item button) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Menu Content Styling */
+.menuContent {
+  width: 100%;
+}
+
+/* Custom sidebar styling */
+.customSidebar :global(.ant-layout-sider-collapsed .ant-menu-item) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 0 !important;
+  margin: 16px 0 !important;
+  height: 40px !important;
+}
+
+.customSidebar :global(.ant-layout-sider-collapsed .ant-menu-item .anticon) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 !important;
+  color: white !important;
+  font-size: 24px !important;
+}
+
+.customSidebar :global(.ant-layout-sider-collapsed .ant-menu-item .anticon svg) {
+  fill: white !important;
+  color: white !important;
+  display: block !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+/* Custom icon wrapper styling */
+:global(.sidebar-icon-wrapper) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+:global(.ant-layout-sider-collapsed .custom-icon-wrapper) {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Luxury ProLayout Styling */
+:global(.ant-pro-layout .ant-layout-sider) {
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15) !important;
+  background: var(--gradient-primary) !important;
+}
+
+:global(.ant-pro-layout .ant-pro-sider-logo) {
+  padding: 24px 16px !important;
+  height: 80px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+:global(.ant-pro-layout .ant-pro-sider-logo h1) {
+  font-family: 'Playfair Display', serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  color: var(--text-light) !important;
+}
+
+:global(.ant-layout-content) {
+  background-color: var(--background) !important;
+  min-height: 100vh !important;
+}
+
+/* Gold accent for selected menu item */
+:global(.ant-menu-light .ant-menu-item-selected) {
+  position: relative;
+}
+
+:global(.ant-menu-light .ant-menu-item-selected::before) {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--gradient-gold);
+}
+
+/* Luxury Logo Title */
+.logoTitle {
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  font-size: 1.5rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  background: linear-gradient(to right, #ffffff, var(--gold-light));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+}
+
+/* Menu Link Styling */
+.menuLink,
+.menuButton {
+  position: relative;
+  transition: all 0.3s ease;
+  padding: 0 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.menuLink:hover,
+.menuButton:hover {
+  background-color: rgba(123, 169, 173, 0.2);
+}
+
+/* Content Container */
+.contentContainer {
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--background);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add subtle pattern to content background */
+.contentContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(212, 183, 143, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 183, 143, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
 }

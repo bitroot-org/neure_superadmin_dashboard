@@ -1,4 +1,5 @@
 import React from "react";
+import CustomIcon from "./CustomIcon";
 import { ProLayout } from "@ant-design/pro-layout";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -10,9 +11,6 @@ import {
   BarChartOutlined,
   FileTextOutlined,
   FolderOpenOutlined,
-  HistoryOutlined,
-  ProfileOutlined,
-  SettingOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
@@ -51,56 +49,61 @@ const Sidebar = () => {
     });
   };
 
+  // Custom icon renderer to ensure visibility in collapsed mode
+  const renderIcon = (Icon) => {
+    return <CustomIcon icon={Icon} />;
+  };
+
   const menuData = [
     {
       path: "/home",
       name: "Home",
-      icon: <HomeOutlined />,
+      icon: renderIcon(HomeOutlined),
     },
     {
       path: "/companies",
       name: "Companies",
-      icon: <TeamOutlined />,
+      icon: renderIcon(TeamOutlined),
     },
     {
       path: "/employees",
       name: "Employees",
-      icon: <UserOutlined />,
+      icon: renderIcon(UserOutlined),
     },
     {
       path: "/workshops",
       name: "Workshops",
-      icon: <FileTextOutlined />,
+      icon: renderIcon(FileTextOutlined),
     },
     {
       path: "/therapists",
       name: "Therapists",
-      icon: <SolutionOutlined />,
+      icon: renderIcon(SolutionOutlined),
     },
     {
       path: "/soundscapes",
       name: "Soundscapes",
-      icon: <NotificationOutlined />,
+      icon: renderIcon(NotificationOutlined),
     },
     {
       path: "/resources",
       name: "Resources",
-      icon: <FolderOpenOutlined />,
+      icon: renderIcon(FolderOpenOutlined),
     },
     {
       path: "/assessments",
       name: "Assessments",
-      icon: <FolderOpenOutlined /> ,
+      icon: renderIcon(FolderOpenOutlined),
     },
     {
       path: "/analytics",
       name: "Analytics",
-      icon: <BarChartOutlined />,
+      icon: renderIcon(BarChartOutlined),
     },
     {
       path: '/announcements',
       name: 'Announcements',
-      icon: <NotificationOutlined />,
+      icon: renderIcon(NotificationOutlined),
     },
     // {
     //   path: "/activitylog",
@@ -121,13 +124,13 @@ const Sidebar = () => {
       key: "logout",
       path: "#",
       name: "Logout",
-      icon: <LogoutOutlined />,
+      icon: renderIcon(LogoutOutlined),
     }
   ];
 
   return (
     <ProLayout
-      title="Neure Dashboard"
+      title={<span className={styles.logoTitle}>Neure</span>}
       menuDataRender={() => menuData}
       logo={neurelogo}
       menuItemRender={(item, dom) => (
@@ -135,9 +138,10 @@ const Sidebar = () => {
         // For logout item, use a button with onClick instead of Link
         <button
           onClick={handleLogout}
+          className={styles.menuButton}
           style={{
             cursor: 'pointer',
-            color: location.pathname === item.path ? 'white' : undefined,
+            color: 'white',
             background: 'transparent',
             border: 'none',
             padding: 0,
@@ -153,8 +157,12 @@ const Sidebar = () => {
         // For regular menu items, use Link as before
         <Link
           to={item.path}
+          className={styles.menuLink}
           style={{
-            color: location.pathname === item.path ? 'white' : undefined,
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
           }}
         >
           {dom}
@@ -164,15 +172,24 @@ const Sidebar = () => {
       fixSiderbar
       menuProps={{
         selectedKeys: [location.pathname],
+        mode: 'inline',
+        inlineIndent: 16
       }}
+      menuContentRender={(_, dom) => {
+        return (
+          <div className={styles.menuContent}>
+            {dom}
+          </div>
+        );
+      }}
+      siderWidth={260}
+      collapsedWidth={80}
+      breakpoint="lg"
+      collapsible={true}
+      defaultCollapsed={false}
+      className={styles.customSidebar}
     >
-      <div
-        style={{
-          padding: "24px",
-          minHeight: "100vh",
-          background: "var(--background)",
-        }}
-      >
+      <div className={styles.contentContainer}>
         <Outlet />
       </div>
     </ProLayout>
