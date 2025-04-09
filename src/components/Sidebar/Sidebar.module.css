@@ -52,13 +52,13 @@
 
 
 :global(.ant-menu-item-selected) {
-  background-color: #635BFF !important;
+  background-color: var(--primary-dark) !important;
 }
 
 :global(.ant-menu-item:hover) {
-  background-color: #635bffbd !important;
+  background-color: var(--primary) !important;
 }
 
 :global(.ant-menu-item-selected::after) {
-  border-right-color: #FF6B00 !important;
+  border-right-color: var(--primary-light) !important;
 }

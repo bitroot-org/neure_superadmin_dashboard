@@ -557,3 +557,58 @@ export const assignResourcesToCompany = async (data) => {
   }
 };
 
+export const getCompanyAnalytics = async (params = {}) => {
+  try {
+    const response = await api.get("/company/analytics", { params });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const getCompanyList = async (params = {}) => {
+  try {
+    const response = await api.get("/company/getCompanyList", {params});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+
+export const getAnnouncements = async (params = {}) => {
+  try {
+    const response = await api.get("/announcements/list", {params});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const createAnnouncement = async (data) => {
+  try {
+    const response = await api.post("/announcements/create", data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const updateAnnouncement = async (data) => {
+  try {
+    const response = await api.put("/announcements/update", data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const deleteAnnouncement = async (announcementId) => {
+  try {
+    const response = await api.delete(`/announcements/delete/${announcementId}`);
+    return response.data;   
+  }
+  catch (error) {
+    throw error.response?.data || error;
+  }
+}

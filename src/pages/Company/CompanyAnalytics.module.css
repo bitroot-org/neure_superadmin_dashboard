@@ -1,0 +1,474 @@
+.container {
+  padding: 24px;
+  background-color: var(--background);
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.breadcrumbSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.breadcrumbSection :global(.ant-breadcrumb a) {
+  color: var(--primary);
+  transition: color 0.3s ease;
+}
+
+.breadcrumbSection :global(.ant-breadcrumb a:hover) {
+  color: var(--primary-dark);
+}
+
+.title {
+  margin: 0 !important;
+  color: var(--primary-dark);
+  font-weight: 600 !important;
+  line-height: 1.2;
+  word-break: normal;
+  hyphens: none;
+}
+
+.companyName {
+  display: inline-block;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.actions button {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.actions button:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.datePicker {
+  min-width: 250px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.metricCard {
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(154, 203, 208, 0.2);
+}
+
+.metricCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 106, 113, 0.1);
+  border-color: var(--primary-light);
+}
+
+.statIcon {
+  font-size: 20px;
+  margin-right: 8px;
+  color: var(--primary-dark);
+}
+
+.chartCard {
+  height: 400px;
+  border-radius: 12px;
+  border: 1px solid rgba(154, 203, 208, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 106, 113, 0.05);
+  transition: all 0.3s ease;
+}
+
+.chartCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 106, 113, 0.1);
+  border-color: var(--primary-light);
+}
+
+.statsCard {
+  height: 400px;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(154, 203, 208, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 106, 113, 0.05);
+  transition: all 0.3s ease;
+}
+
+/* Style the timeline items */
+.statsCard :global(.ant-timeline-item-content) {
+  margin-left: 20px;
+  padding-bottom: 20px;
+}
+
+.statsCard :global(.ant-timeline-item-content p) {
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.statsCard :global(.ant-timeline-item-content strong) {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.statsCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 106, 113, 0.1);
+  border-color: var(--primary-light);
+}
+
+.statsSection {
+  margin-top: 24px;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 16px;
+  background-color: var(--background);
+}
+
+.loadingContainer p {
+  color: var(--primary-dark);
+  font-weight: 500;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  width: 100%; 
+  margin-bottom: 24px;
+}
+
+
+
+@media (max-width: 992px) {
+  .chartsContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .statsSection > div {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .datePicker {
+    width: 100%;
+  }
+
+  .content {
+    gap: 16px;
+  }
+
+  .metricsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chartCard, .statsCard {
+    height: auto;
+    min-height: 300px;
+    padding: 12px;
+  }
+
+  /* Improve chart responsiveness */
+  :global(.recharts-responsive-container) {
+    height: 250px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 24px !important;
+  }
+
+  .breadcrumbSection {
+    margin-bottom: 12px;
+  }
+
+  /* Improve timeline on mobile */
+  .statsCard :global(.ant-timeline-item-content) {
+    margin-left: 12px;
+    padding-bottom: 16px;
+  }
+
+  /* Improve card titles on mobile */
+  :global(.ant-card-head-title) {
+    font-size: 16px;
+    padding: 8px 0;
+  }
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .titleInfo {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .titleIcon {
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
+}
+
+.backButton {
+  margin-left: auto;
+}
+
+.titleCard {
+  margin-bottom: 24px;
+}
+
+.titleSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.titleInfo {
+  display: flex;
+  align-items: center;
+}
+
+.titleIcon {
+  font-size: 24px;
+  margin-right: 12px;
+  color: var(--primary-dark);
+}
+
+/* This is a duplicate class that was already defined above */
+
+.analyticsContainer {
+  padding: 16px 0;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metricCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 106, 113, 0.08);
+  border: 1px solid rgba(154, 203, 208, 0.2);
+}
+
+.metricCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--primary-dark);
+}
+
+.metricCardValue {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.metricCardTrend {
+  font-size: 12px;
+}
+
+.chartsContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.chartBox {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 106, 113, 0.08);
+  border: 1px solid rgba(154, 203, 208, 0.2);
+  transition: all 0.3s ease;
+}
+
+.chartBox:hover {
+  box-shadow: 0 4px 12px rgba(0, 106, 113, 0.1);
+  border-color: var(--primary-light);
+}
+
+.chartPlaceholder {
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  position: relative;
+}
+
+/* Dummy chart styles */
+.dummyLineChart, .dummyBarChart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  height: 200px;
+  padding: 0 20px;
+}
+
+.dummyLineChartBar, .dummyBarChartBar {
+  width: 20px;
+  background-color: var(--primary-dark);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.dummyBarChartBar {
+  background-color: var(--primary);
+}
+
+.dummyPieChart {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.dummyPieChartSegment {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.dummyHorizontalBarChart {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dummyHorizontalBarChartRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dummyHorizontalBarChartLabel {
+  width: 80px;
+  text-align: right;
+  margin-right: 12px;
+  font-size: 12px;
+}
+
+.dummyHorizontalBarChartBarContainer {
+  flex: 1;
+  height: 20px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  position: relative;
+}
+
+.dummyHorizontalBarChartBar {
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: 4px;
+}
+
+.dummyHorizontalBarChartValue {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  line-height: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .metricsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chartsContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.companySelect {
+  min-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .titleRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .companySelect {
+    width: 100%;
+  }
+}

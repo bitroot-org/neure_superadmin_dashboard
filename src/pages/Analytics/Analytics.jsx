@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Card, Row, Col, Typography, Spin, Tabs, DatePicker, 
-  Statistic, Select, Empty, Alert 
+import {
+  Card, Row, Col, Typography, Spin, Tabs, DatePicker,
+  Statistic, Select, Empty, Alert
 } from 'antd';
-import { 
-  UserAddOutlined, 
-  TeamOutlined, 
-  RiseOutlined, 
-  HeartOutlined, 
-  InteractionOutlined 
+import {
+  UserAddOutlined,
+  TeamOutlined,
+  RiseOutlined,
+  HeartOutlined,
+  InteractionOutlined
 } from '@ant-design/icons';
-import { 
+import {
   LineChart, Line, AreaChart, Area, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import moment from 'moment';
 import { getTrends } from '../../services/api';
@@ -64,10 +64,10 @@ const Analytics = () => {
 
   const filterDataByDateRange = (data) => {
     if (!data) return [];
-    
+
     const startDate = dateRange[0].format('YYYY-MM-DD');
     const endDate = dateRange[1].format('YYYY-MM-DD');
-    
+
     return data.filter(item => {
       return item.date >= startDate && item.date <= endDate;
     });
@@ -75,12 +75,12 @@ const Analytics = () => {
 
   const aggregateDataByTimeFrame = (data) => {
     if (!data || data.length === 0) return [];
-    
+
     if (timeFrame === 'daily') return data;
-    
+
     const aggregatedData = [];
     const groupedData = {};
-    
+
     data.forEach(item => {
       let key;
       if (timeFrame === 'weekly') {
@@ -92,7 +92,7 @@ const Analytics = () => {
         // Group by month
         key = moment(item.date).format('YYYY-MM');
       }
-      
+
       if (!groupedData[key]) {
         groupedData[key] = {
           date: key,
@@ -105,7 +105,7 @@ const Analytics = () => {
           count: 0
         };
       }
-      
+
       groupedData[key].new_users += item.new_users || 0;
       groupedData[key].total_users = Math.max(groupedData[key].total_users, item.total_users || 0);
       groupedData[key].avg_psi += parseFloat(item.avg_psi || 0);
@@ -114,7 +114,7 @@ const Analytics = () => {
       groupedData[key].active_companies = Math.max(groupedData[key].active_companies, item.active_companies || 0);
       groupedData[key].count += 1;
     });
-    
+
     // Calculate averages for the aggregated data
     Object.keys(groupedData).forEach(key => {
       const item = groupedData[key];
@@ -126,7 +126,7 @@ const Analytics = () => {
       }
       aggregatedData.push(item);
     });
-    
+
     return aggregatedData.sort((a, b) => a.date.localeCompare(b.date));
   };
 
@@ -142,30 +142,30 @@ const Analytics = () => {
     return date;
   };
 
-  const userTrendsData = analyticsData ? 
+  const userTrendsData = analyticsData ?
     aggregateDataByTimeFrame(filterDataByDateRange(analyticsData.userTrends)) : [];
-  
-  const companyTrendsData = analyticsData ? 
+
+  const companyTrendsData = analyticsData ?
     aggregateDataByTimeFrame(filterDataByDateRange(analyticsData.companyTrends)) : [];
-    
-  const engagementTrendsData = analyticsData && analyticsData.engagementTrends ? 
+
+  const engagementTrendsData = analyticsData && analyticsData.engagementTrends ?
     aggregateDataByTimeFrame(filterDataByDateRange(analyticsData.engagementTrends)) : [];
-    
-  const contentUsageTrendsData = analyticsData && analyticsData.contentUsageTrends ? 
+
+  const contentUsageTrendsData = analyticsData && analyticsData.contentUsageTrends ?
     aggregateDataByTimeFrame(filterDataByDateRange(analyticsData.contentUsageTrends)) : [];
 
   // Calculate summary statistics
   const calculateSummary = () => {
     if (!analyticsData) return null;
-    
+
     const userTrends = analyticsData.userTrends;
     const companyTrends = analyticsData.companyTrends;
-    
+
     const latestUserData = userTrends[userTrends.length - 1] || {};
     const latestCompanyData = companyTrends[companyTrends.length - 1] || {};
-    
+
     const totalNewUsers = userTrends.reduce((sum, item) => sum + (item.new_users || 0), 0);
-    
+
     return {
       totalUsers: latestUserData.total_users || 0,
       newUsers: totalNewUsers,
@@ -205,16 +205,16 @@ const Analytics = () => {
       <div className={styles.header}>
         <Title level={2} className={styles.title}>Analytics Dashboard</Title>
         <div className={styles.controls}>
-          <Select 
-            defaultValue="daily" 
-            style={{ width: 120, marginRight: 16 }} 
+          <Select
+            defaultValue="daily"
+            style={{ width: 120, marginRight: 16 }}
             onChange={handleTimeFrameChange}
           >
             <Option value="daily">Daily</Option>
             <Option value="weekly">Weekly</Option>
             <Option value="monthly">Monthly</Option>
           </Select>
-          <RangePicker 
+          <RangePicker
             value={dateRange}
             onChange={handleDateRangeChange}
             allowClear={false}
@@ -230,7 +230,7 @@ const Analytics = () => {
               title="Total Users"
               value={summaryData?.totalUsers || 0}
               prefix={<TeamOutlined />}
-              valueStyle={{ color: '#1677ff' }}
+              valueStyle={{ color: 'var(--primary-dark)' }}
             />
           </Card>
         </Col>
@@ -240,7 +240,7 @@ const Analytics = () => {
               title="New Users"
               value={summaryData?.newUsers || 0}
               prefix={<UserAddOutlined />}
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: 'var(--primary)' }}
             />
           </Card>
         </Col>
@@ -250,7 +250,7 @@ const Analytics = () => {
               title="Active Companies"
               value={summaryData?.activeCompanies || 0}
               prefix={<TeamOutlined />}
-              valueStyle={{ color: '#722ed1' }}
+              valueStyle={{ color: 'var(--primary)' }}
             />
           </Card>
         </Col>
@@ -261,7 +261,7 @@ const Analytics = () => {
               value={summaryData?.avgPsi || 0}
               precision={2}
               prefix={<RiseOutlined />}
-              valueStyle={{ color: '#fa8c16' }}
+              valueStyle={{ color: 'var(--primary-dark)' }}
               suffix="%"
             />
           </Card>
@@ -273,7 +273,7 @@ const Analytics = () => {
               value={summaryData?.avgStress || 0}
               precision={2}
               prefix={<HeartOutlined />}
-              valueStyle={{ color: '#f5222d' }}
+              valueStyle={{ color: 'var(--primary-dark)' }}
               suffix="%"
             />
           </Card>
@@ -285,7 +285,7 @@ const Analytics = () => {
               value={summaryData?.avgEngagement || 0}
               precision={2}
               prefix={<InteractionOutlined />}
-              valueStyle={{ color: '#13c2c2' }}
+              valueStyle={{ color: 'var(--primary)' }}
               suffix="%"
             />
           </Card>
@@ -303,23 +303,23 @@ const Analytics = () => {
                     <ResponsiveContainer width="100%" height={300}>
                       <AreaChart data={userTrendsData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tickFormatter={formatDate}
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value) => [value, 'Total Users']}
                           labelFormatter={formatDate}
                         />
-                        <Area 
-                          type="monotone" 
-                          dataKey="total_users" 
+                        <Area
+                          type="monotone"
+                          dataKey="total_users"
                           name="Total Users"
-                          stroke="#1677ff" 
-                          fill="#1677ff" 
-                          fillOpacity={0.2} 
+                          stroke="var(--primary-dark)"
+                          fill="var(--primary-dark)"
+                          fillOpacity={0.2}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -330,20 +330,20 @@ const Analytics = () => {
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={userTrendsData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tickFormatter={formatDate}
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value) => [value, 'New Users']}
                           labelFormatter={formatDate}
                         />
-                        <Bar 
-                          dataKey="new_users" 
+                        <Bar
+                          dataKey="new_users"
                           name="New Users"
-                          fill="#52c41a" 
+                          fill="var(--primary)"
                         />
                       </BarChart>
                     </ResponsiveContainer>
@@ -362,49 +362,49 @@ const Analytics = () => {
                     <ResponsiveContainer width="100%" height={400}>
                       <LineChart data={companyTrendsData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tickFormatter={formatDate}
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis yAxisId="left" />
                         <YAxis yAxisId="right" orientation="right" />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value, name) => [value, name]}
                           labelFormatter={formatDate}
                         />
                         <Legend />
-                        <Line 
+                        <Line
                           yAxisId="left"
-                          type="monotone" 
-                          dataKey="avg_psi" 
+                          type="monotone"
+                          dataKey="avg_psi"
                           name="Avg. PSI (%)"
-                          stroke="#fa8c16" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary-dark)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
+                        <Line
                           yAxisId="left"
-                          type="monotone" 
-                          dataKey="avg_stress" 
+                          type="monotone"
+                          dataKey="avg_stress"
                           name="Avg. Stress Level (%)"
-                          stroke="#f5222d" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
+                        <Line
                           yAxisId="left"
-                          type="monotone" 
-                          dataKey="avg_engagement" 
+                          type="monotone"
+                          dataKey="avg_engagement"
                           name="Avg. Engagement (%)"
-                          stroke="#13c2c2" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary-light)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
+                        <Line
                           yAxisId="right"
-                          type="monotone" 
-                          dataKey="active_companies" 
+                          type="monotone"
+                          dataKey="active_companies"
                           name="Active Companies"
-                          stroke="#722ed1" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary-light)"
+                          activeDot={{ r: 8 }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -423,44 +423,44 @@ const Analytics = () => {
                     <ResponsiveContainer width="100%" height={300}>
                       <LineChart data={engagementTrendsData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tickFormatter={formatDate}
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value, name) => [value || 0, name]}
                           labelFormatter={formatDate}
                         />
                         <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey="daily_active_users" 
+                        <Line
+                          type="monotone"
+                          dataKey="daily_active_users"
                           name="Daily Active Users"
-                          stroke="#1677ff" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary-dark)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="workshop_active_users" 
+                        <Line
+                          type="monotone"
+                          dataKey="workshop_active_users"
                           name="Workshop Active Users"
-                          stroke="#722ed1" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="content_active_users" 
+                        <Line
+                          type="monotone"
+                          dataKey="content_active_users"
                           name="Content Active Users"
-                          stroke="#52c41a" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary-light)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="stress_tracking_users" 
+                        <Line
+                          type="monotone"
+                          dataKey="stress_tracking_users"
                           name="Stress Tracking Users"
-                          stroke="#f5222d" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary-dark)"
+                          activeDot={{ r: 8 }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -471,32 +471,32 @@ const Analytics = () => {
                     <ResponsiveContainer width="100%" height={300}>
                       <AreaChart data={engagementTrendsData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tickFormatter={formatDate}
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value, name) => [value ? `${value}%` : 'N/A', name]}
                           labelFormatter={formatDate}
                         />
                         <Legend />
-                        <Area 
-                          type="monotone" 
-                          dataKey="avg_workshop_attendance" 
+                        <Area
+                          type="monotone"
+                          dataKey="avg_workshop_attendance"
                           name="Avg. Workshop Attendance"
-                          stroke="#fa8c16" 
-                          fill="#fa8c16" 
-                          fillOpacity={0.2} 
+                          stroke="var(--primary-dark)"
+                          fill="var(--primary-dark)"
+                          fillOpacity={0.2}
                         />
-                        <Area 
-                          type="monotone" 
-                          dataKey="avg_content_engagement" 
+                        <Area
+                          type="monotone"
+                          dataKey="avg_content_engagement"
                           name="Avg. Content Engagement"
-                          stroke="#13c2c2" 
-                          fill="#13c2c2" 
-                          fillOpacity={0.2} 
+                          stroke="var(--primary)"
+                          fill="var(--primary)"
+                          fillOpacity={0.2}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -505,26 +505,26 @@ const Analytics = () => {
                 <Col xs={24}>
                   <Card title="User Engagement Distribution" bordered={false} className={styles.chartCard}>
                     <ResponsiveContainer width="100%" height={300}>
-                      <BarChart 
+                      <BarChart
                         data={engagementTrendsData}
                         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tickFormatter={formatDate}
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value) => [value || 0, 'Users']}
                           labelFormatter={formatDate}
                         />
                         <Legend />
-                        <Bar dataKey="daily_active_users" name="Daily Active" stackId="a" fill="#1677ff" />
-                        <Bar dataKey="workshop_active_users" name="Workshop Active" stackId="a" fill="#722ed1" />
-                        <Bar dataKey="content_active_users" name="Content Active" stackId="a" fill="#52c41a" />
-                        <Bar dataKey="stress_tracking_users" name="Stress Tracking" stackId="a" fill="#f5222d" />
+                        <Bar dataKey="daily_active_users" name="Daily Active" stackId="a" fill="var(--primary-dark)" />
+                        <Bar dataKey="workshop_active_users" name="Workshop Active" stackId="a" fill="var(--primary)" />
+                        <Bar dataKey="content_active_users" name="Content Active" stackId="a" fill="var(--primary-light)" />
+                        <Bar dataKey="stress_tracking_users" name="Stress Tracking" stackId="a" fill="rgba(0, 106, 113, 0.5)" />
                       </BarChart>
                     </ResponsiveContainer>
                   </Card>
@@ -542,20 +542,20 @@ const Analytics = () => {
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={contentUsageTrendsData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tickFormatter={formatDate}
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value, name) => [value || 0, name]}
                           labelFormatter={formatDate}
                         />
                         <Legend />
-                        <Bar dataKey="new_soundscapes" name="Soundscapes" fill="#1677ff" />
-                        <Bar dataKey="new_articles" name="Articles" fill="#52c41a" />
-                        <Bar dataKey="new_workshops" name="Workshops" fill="#722ed1" />
+                        <Bar dataKey="new_soundscapes" name="Soundscapes" fill="var(--primary-dark)" />
+                        <Bar dataKey="new_articles" name="Articles" fill="var(--primary)" />
+                        <Bar dataKey="new_workshops" name="Workshops" fill="var(--primary-light)" />
                       </BarChart>
                     </ResponsiveContainer>
                   </Card>
@@ -565,20 +565,20 @@ const Analytics = () => {
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={contentUsageTrendsData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tickFormatter={formatDate}
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value, name) => [value || 0, name]}
                           labelFormatter={formatDate}
                         />
                         <Legend />
-                        <Bar dataKey="new_images" name="Images" fill="#fa8c16" />
-                        <Bar dataKey="new_videos" name="Videos" fill="#f5222d" />
-                        <Bar dataKey="new_documents" name="Documents" fill="#13c2c2" />
+                        <Bar dataKey="new_images" name="Images" fill="var(--primary-dark)" />
+                        <Bar dataKey="new_videos" name="Videos" fill="var(--primary)" />
+                        <Bar dataKey="new_documents" name="Documents" fill="var(--primary-light)" />
                       </BarChart>
                     </ResponsiveContainer>
                   </Card>
@@ -588,23 +588,23 @@ const Analytics = () => {
                     <ResponsiveContainer width="100%" height={300}>
                       <AreaChart data={contentUsageTrendsData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tickFormatter={formatDate}
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value) => [value || 0, 'Companies']}
                           labelFormatter={formatDate}
                         />
-                        <Area 
-                          type="monotone" 
-                          dataKey="companies_using_resources" 
+                        <Area
+                          type="monotone"
+                          dataKey="companies_using_resources"
                           name="Companies Using Resources"
-                          stroke="#1677ff" 
-                          fill="#1677ff" 
-                          fillOpacity={0.2} 
+                          stroke="var(--primary-dark)"
+                          fill="var(--primary-dark)"
+                          fillOpacity={0.2}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -615,58 +615,58 @@ const Analytics = () => {
                     <ResponsiveContainer width="100%" height={400}>
                       <LineChart data={contentUsageTrendsData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tickFormatter={formatDate}
                           tick={{ fontSize: 12 }}
                         />
                         <YAxis />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value, name) => [value || 0, name]}
                           labelFormatter={formatDate}
                         />
                         <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey="new_soundscapes" 
+                        <Line
+                          type="monotone"
+                          dataKey="new_soundscapes"
                           name="Soundscapes"
-                          stroke="#1677ff" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary-dark)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="new_articles" 
+                        <Line
+                          type="monotone"
+                          dataKey="new_articles"
                           name="Articles"
-                          stroke="#52c41a" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="new_workshops" 
+                        <Line
+                          type="monotone"
+                          dataKey="new_workshops"
                           name="Workshops"
-                          stroke="#722ed1" 
-                          activeDot={{ r: 8 }} 
+                          stroke="var(--primary-light)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="new_images" 
+                        <Line
+                          type="monotone"
+                          dataKey="new_images"
                           name="Images"
-                          stroke="#fa8c16" 
-                          activeDot={{ r: 8 }} 
+                          stroke="rgba(0, 106, 113, 0.7)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="new_videos" 
+                        <Line
+                          type="monotone"
+                          dataKey="new_videos"
                           name="Videos"
-                          stroke="#f5222d" 
-                          activeDot={{ r: 8 }} 
+                          stroke="rgba(0, 106, 113, 0.5)"
+                          activeDot={{ r: 8 }}
                         />
-                        <Line 
-                          type="monotone" 
-                          dataKey="new_documents" 
+                        <Line
+                          type="monotone"
+                          dataKey="new_documents"
                           name="Documents"
-                          stroke="#13c2c2" 
-                          activeDot={{ r: 8 }} 
+                          stroke="rgba(0, 106, 113, 0.3)"
+                          activeDot={{ r: 8 }}
                         />
                       </LineChart>
                     </ResponsiveContainer>

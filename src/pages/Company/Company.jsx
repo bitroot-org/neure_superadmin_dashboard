@@ -1,5 +1,6 @@
 // src/components/ManageCompanies.js
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   Input,
@@ -14,6 +15,7 @@ import {
   Tag,
   List,
   Typography,
+  Modal, // Add Modal import
 } from "antd";
 import {
   getAllCompanies,
@@ -28,6 +30,10 @@ import {
   FileTextOutlined,
   VideoCameraOutlined,
   PaperClipOutlined,
+  BarChartOutlined,
+  LineChartOutlined,
+  PieChartOutlined,
+  DashboardOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
 import styles from "./Company.module.css";
@@ -51,6 +57,12 @@ const Company = () => {
   const [resourceForm] = Form.useForm();
   const [resourceType, setResourceType] = useState("image");
   const [previewResources, setPreviewResources] = useState([]);
+
+  const navigate = useNavigate();
+
+  // Add new state for analytics modal
+  const [analyticsModalVisible, setAnalyticsModalVisible] = useState(false);
+  const [companyAnalytics, setCompanyAnalytics] = useState(null);
 
   const handleCreateDrawerOpen = async () => {
     try {
@@ -218,6 +230,10 @@ const Company = () => {
     setPreviewResources(selected);
   };
 
+  const handleViewAnalytics = (company) => {
+    navigate(`/companies/${company.id}/analytics`);
+  };
+  
   const columns = [
     {
       title: "Company Name",
@@ -348,10 +364,43 @@ const Company = () => {
       },
     },
     {
+      title: "Engagement Score",
+      dataIndex: "engagement_score", 
+      key: "engagement_score",
+      render: (score) => {
+        const displayScore = score === null ? 0 : score;
+        return (
+          <div className={styles.engagementScoreContainer}>
+            <div
+              className={styles.engagementScoreBar}
+              style={{ width: `${displayScore}%` }}
+            />
+            <div className={styles.engagementScoreText}>{displayScore}%</div>
+          </div>
+        );
+      },
+    },
+    {
       title: "Created At",
       dataIndex: "created_at",
       key: "created_at",
       render: (date) => new Date(date).toLocaleDateString(),
+    },
+    {
+      title: "Analytics",
+      key: "analytics",
+      render: (_, record) => (
+        <Button 
+          type="primary" 
+          icon={<BarChartOutlined />} 
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent row click event
+            handleViewAnalytics(record);
+          }}
+        >
+          View Metrics
+        </Button>
+      ),
     },
   ];
 
@@ -468,7 +517,6 @@ const Company = () => {
         width={500}
         onClose={() => setCreateDrawerVisible(false)}
         open={createDrawerVisible}
-        bodyStyle={{ paddingBottom: 80 }}
       >
         <Form form={form} layout="vertical" onFinish={handleCreateCompany}>
           <Form.Item
@@ -732,5 +780,4 @@ const Company = () => {
     </div>
   );
 };
-
 export default Company;

@@ -1,8 +1,76 @@
+/* Color Palette */
+:root {
+  --primary-dark: #006A71;  /* Deep teal */
+  --primary: #48A6A7;       /* Medium teal/turquoise */
+  --primary-light: #9ACBD0; /* Light teal/aqua */
+  --background: #F2EFE7;    /* Off-white/cream */
+
+  --text-dark: #333333;
+  --text-light: #ffffff;
+  --text-muted: #666666;
+  --success: #52c41a;
+  --warning: #faad14;
+  --error: #ff4d4f;
+}
+
 body {
   margin: 0;
   padding: 0;
+  background-color: var(--background);
 }
 
+/* Global Font Styles */
+
+/* Table row data, form data, and other data descriptions */
+.ant-table td,
+.ant-descriptions-item-content,
+.ant-form-item-control-input,
+.ant-statistic-content,
+.ant-card-meta-description,
+.ant-typography p,
+.ant-select-selection-item,
+.ant-input,
+.ant-input-number-input,
+.ant-picker-input > input,
+.ant-tag,
+.ant-statistic-title,
+.ant-form-item-label > label {
+  font-family: 'Archivo', sans-serif !important;
+  font-weight: 200 !important;
+}
+
+/* Page titles */
+h1, h2, h3, h4, h5,
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+.ant-typography h4,
+.ant-typography h5,
+.ant-page-header-heading-title,
+.ant-modal-title,
+.ant-drawer-title,
+.ant-typography-h1,
+.ant-typography-h2,
+.ant-typography-h3,
+.ant-typography-h4,
+.ant-typography-h5,
+.ant-typography-title {
+  font-family: 'Clash Display', sans-serif !important;
+  font-weight: 600 !important;
+}
+
+/* Sidebar menu items */
+.ant-menu-title-content,
+.ant-pro-menu-item-title {
+  font-family: 'Clash Display', sans-serif !important;
+  font-weight: 600 !important;
+}
+
+/* Table headers */
+.ant-table-thead > tr > th {
+  font-family: 'Clash Display', sans-serif !important;
+  font-weight: 600 !important;
+}
 
 .ant-pro-layout {
   display: flex;

@@ -1,6 +1,6 @@
 .container {
   padding: 24px;
-  background-color: #f5f5f7;
+  background-color: var(--background);
   min-height: 100vh;
 }
 
@@ -11,7 +11,7 @@
 .title {
   margin-bottom: 0 !important;
   font-weight: 600 !important;
-  color: #1d1d1f;
+  color: var(--primary-dark);
 }
 
 .subtitle {
@@ -25,7 +25,7 @@
 .sectionTitle {
   margin-bottom: 16px !important;
   font-weight: 500 !important;
-  color: #1d1d1f;
+  color: var(--primary-dark);
 }
 
 .statsCard,
@@ -33,20 +33,22 @@
 .engagementCard,
 .tableCard {
   border-radius: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 
-              0 2px 4px rgba(0, 0, 0, 0.04), 
-              0 4px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgba(0, 106, 113, 0.04),
+              0 2px 4px rgba(0, 106, 113, 0.04),
+              0 4px 8px rgba(0, 106, 113, 0.04);
   transition: all 0.3s ease;
   height: 100%;
-  background: linear-gradient(145deg, #ffffff, #f8f8f8);
+  background: #ffffff;
+  border: 1px solid rgba(154, 203, 208, 0.2);
 }
 
 .statsCard:hover,
 .metricsCard:hover,
 .engagementCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06), 
-              0 8px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 8px rgba(0, 106, 113, 0.08),
+              0 8px 16px rgba(0, 106, 113, 0.08);
+  border-color: var(--primary-light);
 }
 
 .metricsCard {
@@ -63,31 +65,31 @@
   gap: 16px;
 }
 
-/* Apple-style scrollbar */
+/* Modern scrollbar with color palette */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--background);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--primary-light);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: var(--primary);
 }
 
 @media (max-width: 768px) {
   .container {
     padding: 16px;
   }
-  
+
   .statsCard,
   .metricsCard,
   .engagementCard,

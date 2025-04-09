@@ -22,7 +22,7 @@ import styles from './Sidebar.module.css';
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate(); // Add useNavigate hook for redirection
-  
+
   // Updated logout handler function with console logging
   const handleLogout = (e) => {
     console.log("Logout clicked");
@@ -31,7 +31,7 @@ const Sidebar = () => {
       e.preventDefault();
       e.stopPropagation();
     }
-    
+
     // Show confirmation dialog
     Modal.confirm({
       title: 'Confirm Logout',
@@ -97,6 +97,11 @@ const Sidebar = () => {
       name: "Analytics",
       icon: <BarChartOutlined />,
     },
+    {
+      path: '/announcements',
+      name: 'Announcements',
+      icon: <NotificationOutlined />,
+    },
     // {
     //   path: "/activitylog",
     //   name: "Activity Log",
@@ -126,9 +131,9 @@ const Sidebar = () => {
       menuDataRender={() => menuData}
       logo={neurelogo}
       menuItemRender={(item, dom) => (
-        item.key === "logout" ? 
+        item.key === "logout" ?
         // For logout item, use a button with onClick instead of Link
-        <button 
+        <button
           onClick={handleLogout}
           style={{
             cursor: 'pointer',
@@ -146,7 +151,7 @@ const Sidebar = () => {
         </button>
         :
         // For regular menu items, use Link as before
-        <Link 
+        <Link
           to={item.path}
           style={{
             color: location.pathname === item.path ? 'white' : undefined,
@@ -165,7 +170,7 @@ const Sidebar = () => {
         style={{
           padding: "24px",
           minHeight: "100vh",
-          background: "#6faaf7",
+          background: "var(--background)",
         }}
       >
         <Outlet />

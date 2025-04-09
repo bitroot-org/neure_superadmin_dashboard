@@ -1,12 +1,12 @@
 .container {
   padding: 24px;
-  background-color: #ffffff;
+  background-color: var(--background);
 }
 
 .title {
   font-size: 24px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--primary-dark);
   margin-bottom: 24px;
 }
 
@@ -27,8 +27,9 @@
 
 .tableContainer {
   background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 106, 113, 0.08);
+  border: 1px solid rgba(154, 203, 208, 0.2);
 }
 
 .coverImage {
@@ -161,8 +162,8 @@
 }
 
 .tag {
-  background-color: #f0f7ff;
-  color: #1677ff;
+  background-color: rgba(154, 203, 208, 0.2);
+  color: var(--primary-dark);
   padding: 4px 12px;
   border-radius: 16px;
   font-size: 12px;
@@ -184,11 +185,11 @@
   .articleImage {
     height: 180px;
   }
-  
+
   .articleHeader h2 {
     font-size: 22px;
   }
-  
+
   .articleMeta {
     flex-direction: column;
     gap: 8px;
