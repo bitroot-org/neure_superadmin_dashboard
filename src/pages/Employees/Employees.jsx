@@ -156,11 +156,6 @@ const Employees = () => {
 
   const columns = [
     {
-      title: "Employee Code",
-      dataIndex: "employee_code",
-      key: "employee_code",
-    },
-    {
       title: "Name",
       key: "name",
       render: (record) => `${record.first_name} ${record.last_name}`,
@@ -302,7 +297,7 @@ const Employees = () => {
       >
         <Alert
           message="Bulk Upload"
-          description="Upload an Excel file or fill the form below"
+          description="Upload an CSV file or fill the form below"
           type="info"
           showIcon
           style={{ marginBottom: 16 }}
@@ -327,12 +322,12 @@ const Employees = () => {
             </>
           ) : (
             <Upload
-              accept=".xlsx,.xls"
+              accept=".csv"
               maxCount={1}
               showUploadList={false}
               beforeUpload={handleFileUpload}
             >
-              <Button icon={<UploadOutlined />}>Upload Excel</Button>
+              <Button icon={<UploadOutlined />}>Upload CSV</Button>
             </Upload>
           )}
         </Space>

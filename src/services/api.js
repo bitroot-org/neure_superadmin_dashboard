@@ -612,3 +612,30 @@ export const deleteAnnouncement = async (announcementId) => {
     throw error.response?.data || error;
   }
 }
+
+export const deactivatedCompanies = async (params = {}) => {
+  try {
+    const response = await api.get("/company/deactivatedCompanies", {params});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const deactivationRequests = async (params = {}) => {
+  try {
+    const response = await api.get("/company/deactivationRequests", {params});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const processDeactivationRequest = async (data) => {
+  try {
+    const response = await api.post("/company/processDeactivationRequest", data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}

@@ -102,6 +102,11 @@ const Sidebar = () => {
       name: 'Announcements',
       icon: <NotificationOutlined />,
     },
+    {
+      path: '/AccountsDeactivation',
+      name: 'Accounts Deactivation',
+      icon: <NotificationOutlined />,
+    },
     // {
     //   path: "/activitylog",
     //   name: "Activity Log",

@@ -347,47 +347,34 @@ const CompanyAnalytics = () => {
           </Col>
           <Col xs={24} lg={8}>
             <Card title="Employee Statistics" className={styles.statsCard}>
-              <Timeline>
-                <Timeline.Item color="#006A71">
-                  <p>
-                    Total Employees:{" "}
-                    <strong>{analytics?.total_employees}</strong>
-                  </p>
-                </Timeline.Item>
-                <Timeline.Item color="#48A6A7">
-                  <p>
-                    Active Employees:{" "}
-                    <strong>{analytics?.active_employees}</strong>
-                  </p>
-                </Timeline.Item>
-                <Timeline.Item color="#9ACBD0">
-                  <p>
-                    Inactive Employees:{" "}
-                    <strong>{analytics?.inactive_employees}</strong>
-                  </p>
-                </Timeline.Item>
-                <Timeline.Item color="#006A71">
-                  <p>
-                    Total Departments:{" "}
-                    <strong>{analytics?.total_departments}</strong>
-                  </p>
-                </Timeline.Item>
-                <Timeline.Item color="#48A6A7">
-                  <p>
-                    New Users: <strong>{analytics?.new_users}</strong>
-                  </p>
-                </Timeline.Item>
-                <Timeline.Item color="#9ACBD0">
-                  <p>
-                    Last Employee Joined:{" "}
-                    <strong>
-                      {dayjs(analytics?.last_employee_joined).format(
-                        "MMMM D, YYYY"
-                      )}
-                    </strong>
-                  </p>
-                </Timeline.Item>
-              </Timeline>
+              <div className={styles.statsGrid}>
+                <div className={styles.statItem}>
+                  <div className={styles.statLabel}>Total Employees</div>
+                  <div className={styles.statValue}>{analytics?.total_employees}</div>
+                </div>
+                <div className={styles.statItem}>
+                  <div className={styles.statLabel}>Active Employees</div>
+                  <div className={styles.statValue}>{analytics?.active_employees}</div>
+                </div>
+                <div className={styles.statItem}>
+                  <div className={styles.statLabel}>Inactive Employees</div>
+                  <div className={styles.statValue}>{analytics?.inactive_employees}</div>
+                </div>
+                <div className={styles.statItem}>
+                  <div className={styles.statLabel}>Total Departments</div>
+                  <div className={styles.statValue}>{analytics?.total_departments}</div>
+                </div>
+                <div className={styles.statItem}>
+                  <div className={styles.statLabel}>New Users</div>
+                  <div className={styles.statValue}>{analytics?.new_users}</div>
+                </div>
+                <div className={styles.statItem}>
+                  <div className={styles.statLabel}>Last Employee Joined</div>
+                  <div className={styles.statValue}>
+                    {dayjs(analytics?.last_employee_joined).format("MMM D, YYYY")}
+                  </div>
+                </div>
+              </div>
             </Card>
           </Col>
         </Row>

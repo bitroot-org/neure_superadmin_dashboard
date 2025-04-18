@@ -1,0 +1,21 @@
+.container {
+  padding: 24px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  color: var(--primary-dark);
+  margin-bottom: 0 !important;
+}
+
+.tabContent {
+  margin-top: 24px;
+}
+
+.table {
+  background: #fff;
+  border-radius: 8px;
+}
