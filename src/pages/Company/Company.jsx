@@ -527,13 +527,13 @@ const Company = () => {
             <Input />
           </Form.Item>
 
-          <Form.Item
+          {/* <Form.Item
             name="email_domain"
             label="Email"
             rules={[{ required: true, message: "Please enter email domain" }]}
           >
             <Input />
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item
             name="first_name"
