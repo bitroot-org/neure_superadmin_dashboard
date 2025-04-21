@@ -93,11 +93,6 @@ const Sidebar = () => {
       icon: <FolderOpenOutlined /> ,
     },
     {
-      path: "/analytics",
-      name: "Analytics",
-      icon: <BarChartOutlined />,
-    },
-    {
       path: '/announcements',
       name: 'Announcements',
       icon: <NotificationOutlined />,
