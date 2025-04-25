@@ -107,7 +107,7 @@ const Announcements = () => {
         await createAnnouncement(payload);
         message.success("Announcement created successfully");
       }
-      
+
       setDrawerVisible(false);
       setEditingAnnouncement(null);
       form.resetFields();
@@ -123,7 +123,7 @@ const Announcements = () => {
       setEditingAnnouncement(record);
       setIsGlobal(record.is_global === 1);
       setSelectedAudienceType(record.audience_type);
-      
+
       // Set form values after a short delay to ensure state updates
       setTimeout(() => {
         form.setFieldsValue({
@@ -135,7 +135,7 @@ const Announcements = () => {
           company_ids: record.company_id,
         });
       }, 100);
-      
+
       setDrawerVisible(true);
     });
   };
@@ -246,15 +246,18 @@ const Announcements = () => {
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => {
-            setEditingAnnouncement(null);
-            setIsGlobal(false);
-            setSelectedAudienceType("employees");
-            form.resetFields();
-            form.setFieldsValue({
-              is_global: false,
-              audience_type: "employees",
+            // Fetch companies first to ensure the dropdown has data
+            fetchCompanies().then(() => {
+              setEditingAnnouncement(null);
+              setIsGlobal(false);
+              setSelectedAudienceType("employees");
+              form.resetFields();
+              form.setFieldsValue({
+                is_global: false,
+                audience_type: "employees",
+              });
+              setDrawerVisible(true);
             });
-            setDrawerVisible(true);
           }}
         >
           Create Announcement
