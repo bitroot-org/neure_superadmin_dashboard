@@ -10,6 +10,7 @@ import {
   Progress,
   Spin,
 } from "antd";
+import CountUp from 'react-countup';
 import {
   TeamOutlined,
   UserOutlined,
@@ -172,52 +173,87 @@ const Home = () => {
         </Title>
         <Row gutter={[24, 24]}>
           <Col xs={24} sm={12} lg={8} xl={4}>
-            <Card bordered={false} className={styles.statsCard}>
+            <Card className={styles.statsCard}>
               <Statistic
                 title="Companies"
                 value={metrics?.totalStats.total_companies || 0}
                 prefix={<TeamOutlined />}
                 valueStyle={{ color: "#1677ff" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={value}
+                    duration={2.5}
+                    separator=","
+                  />
+                )}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={8} xl={4}>
-            <Card bordered={false} className={styles.statsCard}>
+            <Card className={styles.statsCard}>
               <Statistic
                 title="Users"
                 value={metrics?.totalStats.total_users || 0}
                 prefix={<UserOutlined />}
                 valueStyle={{ color: "#52c41a" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={value}
+                    duration={2.5}
+                    separator=","
+                  />
+                )}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={8} xl={4}>
-            <Card bordered={false} className={styles.statsCard}>
+            <Card className={styles.statsCard}>
               <Statistic
                 title="Soundscapes"
                 value={metrics?.totalStats.total_soundscapes || 0}
                 prefix={<SoundOutlined />}
                 valueStyle={{ color: "#722ed1" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={value}
+                    duration={2.5}
+                    separator=","
+                  />
+                )}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={8} xl={4}>
-            <Card bordered={false} className={styles.statsCard}>
+            <Card className={styles.statsCard}>
               <Statistic
                 title="Articles"
                 value={metrics?.totalStats.total_articles || 0}
                 prefix={<FileTextOutlined />}
                 valueStyle={{ color: "#fa8c16" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={value}
+                    duration={2.5}
+                    separator=","
+                  />
+                )}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={8} xl={4}>
-            <Card bordered={false} className={styles.statsCard}>
+            <Card className={styles.statsCard}>
               <Statistic
                 title="Workshops"
                 value={metrics?.totalStats.total_workshops || 0}
                 prefix={<VideoCameraOutlined />}
                 valueStyle={{ color: "#eb2f96" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={value}
+                    duration={2.5}
+                    separator=","
+                  />
+                )}
               />
             </Card>
           </Col>
@@ -231,7 +267,7 @@ const Home = () => {
         </Title>
         <Row gutter={[24, 24]}>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} className={styles.metricsCard}>
+            <Card className={styles.metricsCard}>
               <Statistic
                 title="Avg. Stress Level"
                 value={parseFloat(
@@ -240,12 +276,20 @@ const Home = () => {
                 suffix="%"
                 prefix={<HeartOutlined />}
                 valueStyle={{ color: "#ff4d4f" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={parseFloat(value)}
+                    duration={2.5}
+                    decimals={1}
+                    decimal="."
+                  />
+                )}
               />
               <Text type="secondary">Across all companies</Text>
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} className={styles.metricsCard}>
+            <Card className={styles.metricsCard}>
               <Statistic
                 title="Avg. PSI"
                 value={parseFloat(
@@ -254,24 +298,40 @@ const Home = () => {
                 suffix="%"
                 prefix={<RiseOutlined />}
                 valueStyle={{ color: "#1677ff" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={parseFloat(value)}
+                    duration={2.5}
+                    decimals={1}
+                    decimal="."
+                  />
+                )}
               />
               <Text type="secondary">Psychological Safety Index</Text>
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} className={styles.metricsCard}>
+            <Card className={styles.metricsCard}>
               <Statistic
                 title="Avg. Retention Rate"
                 value={metrics?.companyMetrics.average_retention_rate || 0}
                 suffix="%"
                 prefix={<TrophyOutlined />}
                 valueStyle={{ color: "#52c41a" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={parseFloat(value)}
+                    duration={2.5}
+                    decimals={0}
+                    decimal="."
+                  />
+                )}
               />
               <Text type="secondary">Employee retention</Text>
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} className={styles.metricsCard}>
+            <Card className={styles.metricsCard}>
               <Statistic
                 title="Avg. Engagement"
                 value={parseFloat(
@@ -280,6 +340,14 @@ const Home = () => {
                 suffix="%"
                 prefix={<LineChartOutlined />}
                 valueStyle={{ color: "#722ed1" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={parseFloat(value)}
+                    duration={2.5}
+                    decimals={1}
+                    decimal="."
+                  />
+                )}
               />
               <Text type="secondary">Platform engagement</Text>
             </Card>
@@ -294,38 +362,66 @@ const Home = () => {
         </Title>
         <Row gutter={[24, 24]}>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} className={styles.engagementCard}>
+            <Card className={styles.engagementCard}>
               <Statistic
                 title="Workshop Engaged"
                 value={metrics?.userEngagement.workshop_engaged_users || 0}
                 valueStyle={{ color: "#1677ff" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={value}
+                    duration={2.5}
+                    separator=","
+                  />
+                )}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} className={styles.engagementCard}>
+            <Card className={styles.engagementCard}>
               <Statistic
                 title="Content Engaged"
                 value={metrics?.userEngagement.content_engaged_users || 0}
                 valueStyle={{ color: "#52c41a" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={value}
+                    duration={2.5}
+                    separator=","
+                  />
+                )}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} className={styles.engagementCard}>
+            <Card className={styles.engagementCard}>
               <Statistic
                 title="Stress Tracking"
                 value={metrics?.userEngagement.stress_tracking_users || 0}
                 valueStyle={{ color: "#fa8c16" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={value}
+                    duration={2.5}
+                    separator=","
+                  />
+                )}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
-            <Card bordered={false} className={styles.engagementCard}>
+            <Card className={styles.engagementCard}>
               <Statistic
                 title="Assessment Complete"
                 value={metrics?.userEngagement.assessment_complete_users || 0}
                 valueStyle={{ color: "#eb2f96" }}
+                formatter={(value) => (
+                  <CountUp
+                    end={value}
+                    duration={2.5}
+                    separator=","
+                  />
+                )}
               />
             </Card>
           </Col>
@@ -337,7 +433,7 @@ const Home = () => {
         <Title level={4} className={styles.sectionTitle}>
           Top Companies
         </Title>
-        <Card bordered={false} className={styles.tableCard}>
+        <Card className={styles.tableCard}>
           <Table
             dataSource={metrics?.topCompanies || []}
             columns={columns}
