@@ -363,16 +363,16 @@ export const getGalleryItems = async (params = {}) => {
       limit: params.limit || 10,
       type: params.type
     };
-    
+
     // Add conditional parameters
     if (params.companyId !== undefined) {
       queryParams.companyId = params.companyId;
     }
-    
+
     if (params.showUnassigned !== undefined) {
       queryParams.showUnassigned = params.showUnassigned;
     }
-    
+
     const response = await api.get(`/getGalleryItems`, {
       params: queryParams
     });
@@ -427,7 +427,7 @@ export const getSoundscapes = async (params = {}) => {
         limit: params.limit || 10,
       },
     });
-    return response.data;     
+    return response.data;
   }
   catch (error) {
     throw error.response?.data || error;
@@ -606,7 +606,7 @@ export const updateAnnouncement = async (data) => {
 export const deleteAnnouncement = async (announcementId) => {
   try {
     const response = await api.delete(`/announcements/delete/${announcementId}`);
-    return response.data;   
+    return response.data;
   }
   catch (error) {
     throw error.response?.data || error;
@@ -634,6 +634,15 @@ export const deactivationRequests = async (params = {}) => {
 export const processDeactivationRequest = async (data) => {
   try {
     const response = await api.post("/company/processDeactivationRequest", data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const getFeedback = async (params = {}) => {
+  try {
+    const response = await api.get("/company/getFeedback", { params });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;

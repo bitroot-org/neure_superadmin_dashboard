@@ -24,6 +24,7 @@ import Notifications from "./pages/Notifications";
 import Announcements from "./pages/Announcements/Announcements";
 import Analytics from "./pages/Analytics/Analytics";
 import AccountsDeactivation from "./pages/AccountsDeactivation/AccountsDeactivation";
+import Feedback from "./pages/Feedback/Feedback";
 
 const App = () => (
   <ConfigProvider
@@ -114,6 +115,7 @@ const App = () => (
             <Route path="/resources" element={<Resources />} />
             <Route path="/assessments" element={<Assessments />} />
             <Route path="/announcements" element={<Announcements />} />
+            <Route path="/feedback" element={<Feedback />} />
             <Route path="/accountsDeactivation" element={<AccountsDeactivation />} />
           </Route>
         </Route>
