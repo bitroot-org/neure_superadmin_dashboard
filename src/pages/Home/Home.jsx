@@ -3,7 +3,6 @@ import {
   Card,
   Row,
   Col,
-  Statistic,
   Typography,
   Table,
   Avatar,
@@ -11,17 +10,7 @@ import {
   Spin,
 } from "antd";
 import CountUp from 'react-countup';
-import {
-  TeamOutlined,
-  UserOutlined,
-  SoundOutlined,
-  FileTextOutlined,
-  VideoCameraOutlined,
-  RiseOutlined,
-  HeartOutlined,
-  LineChartOutlined,
-  TrophyOutlined,
-} from "@ant-design/icons";
+import { FaUsers, FaUser, FaHeadphones, FaFileAlt, FaVideo, FaChartLine, FaHeart, FaTrophy } from 'react-icons/fa';
 import styles from "./Home.module.css";
 import { metricsData } from "../../services/api";
 
@@ -171,93 +160,83 @@ const Home = () => {
         <Title level={4} className={styles.sectionTitle}>
           Platform Statistics
         </Title>
-        <Row gutter={[24, 24]}>
-          <Col xs={24} sm={12} lg={8} xl={4}>
-            <Card className={styles.statsCard}>
-              <Statistic
-                title="Companies"
-                value={metrics?.totalStats.total_companies || 0}
-                prefix={<TeamOutlined />}
-                valueStyle={{ color: "#1677ff" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={value}
-                    duration={2.5}
-                    separator=","
-                  />
-                )}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={8} xl={4}>
-            <Card className={styles.statsCard}>
-              <Statistic
-                title="Users"
-                value={metrics?.totalStats.total_users || 0}
-                prefix={<UserOutlined />}
-                valueStyle={{ color: "#52c41a" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={value}
-                    duration={2.5}
-                    separator=","
-                  />
-                )}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={8} xl={4}>
-            <Card className={styles.statsCard}>
-              <Statistic
-                title="Soundscapes"
-                value={metrics?.totalStats.total_soundscapes || 0}
-                prefix={<SoundOutlined />}
-                valueStyle={{ color: "#722ed1" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={value}
-                    duration={2.5}
-                    separator=","
-                  />
-                )}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={8} xl={4}>
-            <Card className={styles.statsCard}>
-              <Statistic
-                title="Articles"
-                value={metrics?.totalStats.total_articles || 0}
-                prefix={<FileTextOutlined />}
-                valueStyle={{ color: "#fa8c16" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={value}
-                    duration={2.5}
-                    separator=","
-                  />
-                )}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={8} xl={4}>
-            <Card className={styles.statsCard}>
-              <Statistic
-                title="Workshops"
-                value={metrics?.totalStats.total_workshops || 0}
-                prefix={<VideoCameraOutlined />}
-                valueStyle={{ color: "#eb2f96" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={value}
-                    duration={2.5}
-                    separator=","
-                  />
-                )}
-              />
-            </Card>
-          </Col>
-        </Row>
+        <div className={styles.statsGrid}>
+          <div className={styles.statsBox}>
+            <div className={styles.statTitle}>Companies</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: '#1677ff' }}>
+                <FaUsers />
+              </div>
+              <div className={styles.statValue}>
+                <CountUp
+                  end={metrics?.totalStats.total_companies || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
+            </div>
+          </div>
+          <div className={styles.statsBox}>
+            <div className={styles.statTitle}>Users</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: '#52c41a' }}>
+                <FaUser />
+              </div>
+              <div className={styles.statValue}>
+                <CountUp
+                  end={metrics?.totalStats.total_users || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
+            </div>
+          </div>
+          <div className={styles.statsBox}>
+            <div className={styles.statTitle}>Soundscapes</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: '#722ed1' }}>
+                <FaHeadphones />
+              </div>
+              <div className={styles.statValue}>
+                <CountUp
+                  end={metrics?.totalStats.total_soundscapes || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
+            </div>
+          </div>
+          <div className={styles.statsBox}>
+            <div className={styles.statTitle}>Articles</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: '#fa8c16' }}>
+                <FaFileAlt />
+              </div>
+              <div className={styles.statValue}>
+                <CountUp
+                  end={metrics?.totalStats.total_articles || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
+            </div>
+          </div>
+          <div className={styles.statsBox}>
+            <div className={styles.statTitle}>Workshops</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: '#eb2f96' }}>
+                <FaVideo />
+              </div>
+              <div className={styles.statValue}>
+                <CountUp
+                  end={metrics?.totalStats.total_workshops || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Company Metrics Section */}
@@ -265,94 +244,72 @@ const Home = () => {
         <Title level={4} className={styles.sectionTitle}>
           Company Performance
         </Title>
-        <Row gutter={[24, 24]}>
-          <Col xs={24} sm={12} lg={6}>
-            <Card className={styles.metricsCard}>
-              <Statistic
-                title="Avg. Stress Level"
-                value={parseFloat(
-                  metrics?.companyMetrics.average_stress_level || 0
-                ).toFixed(1)}
-                suffix="%"
-                prefix={<HeartOutlined />}
-                valueStyle={{ color: "#ff4d4f" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={parseFloat(value)}
-                    duration={2.5}
-                    decimals={1}
-                    decimal="."
-                  />
-                )}
-              />
-              <Text type="secondary">Across all companies</Text>
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card className={styles.metricsCard}>
-              <Statistic
-                title="Avg. PSI"
-                value={parseFloat(
-                  metrics?.companyMetrics.average_psi || 0
-                ).toFixed(1)}
-                suffix="%"
-                prefix={<RiseOutlined />}
-                valueStyle={{ color: "#1677ff" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={parseFloat(value)}
-                    duration={2.5}
-                    decimals={1}
-                    decimal="."
-                  />
-                )}
-              />
-              <Text type="secondary">Psychological Safety Index</Text>
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card className={styles.metricsCard}>
-              <Statistic
-                title="Avg. Retention Rate"
-                value={metrics?.companyMetrics.average_retention_rate || 0}
-                suffix="%"
-                prefix={<TrophyOutlined />}
-                valueStyle={{ color: "#52c41a" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={parseFloat(value)}
-                    duration={2.5}
-                    decimals={0}
-                    decimal="."
-                  />
-                )}
-              />
-              <Text type="secondary">Employee retention</Text>
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card className={styles.metricsCard}>
-              <Statistic
-                title="Avg. Engagement"
-                value={parseFloat(
-                  metrics?.companyMetrics.average_engagement_score || 0
-                ).toFixed(1)}
-                suffix="%"
-                prefix={<LineChartOutlined />}
-                valueStyle={{ color: "#722ed1" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={parseFloat(value)}
-                    duration={2.5}
-                    decimals={1}
-                    decimal="."
-                  />
-                )}
-              />
-              <Text type="secondary">Platform engagement</Text>
-            </Card>
-          </Col>
-        </Row>
+        <div className={styles.metricsGrid}>
+          <div className={styles.metricsBox}>
+            <div className={styles.statTitle}>Avg. Stress Level</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: "#ff4d4f" }}>
+                <FaHeart />
+              </div>
+              <div className={styles.statValue} style={{ color: "#ff4d4f" }}>
+                <CountUp
+                  end={parseFloat(metrics?.companyMetrics.average_stress_level || 0)}
+                  duration={2.5}
+                  decimals={1}
+                />
+                <span className={styles.percentSymbol}>%</span>
+              </div>
+            </div>
+          </div>
+          <div className={styles.metricsBox}>
+            <div className={styles.statTitle}>Avg. PSI</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: "#1677ff" }}>
+                <FaChartLine />
+              </div>
+              <div className={styles.statValue} style={{ color: "#1677ff" }}>
+                <CountUp
+                  end={parseFloat(metrics?.companyMetrics.average_psi || 0)}
+                  duration={2.5}
+                  decimals={1}
+                />
+                <span className={styles.percentSymbol}>%</span>
+              </div>
+            </div>
+          </div>
+          <div className={styles.metricsBox}>
+            <div className={styles.statTitle}>Avg. Retention Rate</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: "#52c41a" }}>
+                <FaTrophy />
+              </div>
+              <div className={styles.statValue} style={{ color: "#52c41a" }}>
+                <CountUp
+                  end={parseFloat(metrics?.companyMetrics.average_retention_rate || 0)}
+                  duration={2.5}
+                  decimals={0}
+                />
+                <span className={styles.percentSymbol}>%</span>
+              </div>
+            </div>
+          </div>
+          <div className={styles.metricsBox}>
+            <div className={styles.statTitle}>Avg. Engagement</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: "#722ed1" }}>
+                <FaChartLine />
+              </div>
+              <div className={styles.statValue} style={{ color: "#722ed1" }}>
+                <CountUp
+                  end={parseFloat(metrics?.companyMetrics.average_engagement_score || 0)}
+                  duration={2.5}
+                  decimals={1}
+                />
+                <span className={styles.percentSymbol}>%</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* User Engagement Section */}
@@ -363,66 +320,50 @@ const Home = () => {
         <Row gutter={[24, 24]}>
           <Col xs={24} sm={12} lg={6}>
             <Card className={styles.engagementCard}>
-              <Statistic
-                title="Workshop Engaged"
-                value={metrics?.userEngagement.workshop_engaged_users || 0}
-                valueStyle={{ color: "#1677ff" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={value}
-                    duration={2.5}
-                    separator=","
-                  />
-                )}
-              />
+              <div className={styles.statTitle}>Workshop Engaged</div>
+              <div className={styles.statValue} style={{ color: "#1677ff" }}>
+                <CountUp
+                  end={metrics?.userEngagement.workshop_engaged_users || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <Card className={styles.engagementCard}>
-              <Statistic
-                title="Content Engaged"
-                value={metrics?.userEngagement.content_engaged_users || 0}
-                valueStyle={{ color: "#52c41a" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={value}
-                    duration={2.5}
-                    separator=","
-                  />
-                )}
-              />
+              <div className={styles.statTitle}>Content Engaged</div>
+              <div className={styles.statValue} style={{ color: "#52c41a" }}>
+                <CountUp
+                  end={metrics?.userEngagement.content_engaged_users || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <Card className={styles.engagementCard}>
-              <Statistic
-                title="Stress Tracking"
-                value={metrics?.userEngagement.stress_tracking_users || 0}
-                valueStyle={{ color: "#fa8c16" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={value}
-                    duration={2.5}
-                    separator=","
-                  />
-                )}
-              />
+              <div className={styles.statTitle}>Stress Tracking</div>
+              <div className={styles.statValue} style={{ color: "#fa8c16" }}>
+                <CountUp
+                  end={metrics?.userEngagement.stress_tracking_users || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
             </Card>
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <Card className={styles.engagementCard}>
-              <Statistic
-                title="Assessment Complete"
-                value={metrics?.userEngagement.assessment_complete_users || 0}
-                valueStyle={{ color: "#eb2f96" }}
-                formatter={(value) => (
-                  <CountUp
-                    end={value}
-                    duration={2.5}
-                    separator=","
-                  />
-                )}
-              />
+              <div className={styles.statTitle}>Assessment Complete</div>
+              <div className={styles.statValue} style={{ color: "#eb2f96" }}>
+                <CountUp
+                  end={metrics?.userEngagement.assessment_complete_users || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
             </Card>
           </Col>
         </Row>

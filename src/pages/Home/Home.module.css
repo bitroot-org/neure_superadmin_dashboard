@@ -4,20 +4,6 @@
   min-height: 100vh;
 }
 
-.header {
-  margin-bottom: 32px;
-}
-
-.title {
-  margin-bottom: 0 !important;
-  font-weight: 600 !important;
-  color: var(--primary-dark);
-}
-
-.subtitle {
-  font-size: 16px;
-}
-
 .section {
   margin-bottom: 32px;
 }
@@ -28,61 +14,84 @@
   color: var(--primary-dark);
 }
 
-.statsCard,
-.metricsCard,
-.engagementCard,
-.tableCard {
+/* Grid layouts */
+.statsGrid,
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+/* Common box styles */
+.statsBox,
+.metricsBox {
+  background: #ffffff;
   border-radius: 16px;
+  padding: 20px;
   box-shadow: 0 1px 2px rgba(0, 106, 113, 0.04),
               0 2px 4px rgba(0, 106, 113, 0.04),
               0 4px 8px rgba(0, 106, 113, 0.04);
   transition: all 0.3s ease;
-  height: 100%;
-  background: #ffffff;
   border: 1px solid rgba(154, 203, 208, 0.2);
 }
 
-.statsCard:hover,
-.metricsCard:hover,
-.engagementCard:hover {
+.statsBox:hover,
+.metricsBox:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 8px rgba(0, 106, 113, 0.08),
               0 8px 16px rgba(0, 106, 113, 0.08);
   border-color: var(--primary-light);
 }
 
-.metricsCard {
-  padding-bottom: 8px;
+.statContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.loadingContainer,
-.errorContainer {
+.statIcon {
+  font-size: 24px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  gap: 16px;
 }
 
-/* Modern scrollbar with color palette */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+.statValue {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--primary-dark);
 }
 
-::-webkit-scrollbar-track {
-  background: var(--background);
-  border-radius: 10px;
+.statTitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--primary-light);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
+/* Table card styles */
+.tableCard {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 106, 113, 0.04),
+              0 2px 4px rgba(0, 106, 113, 0.04),
+              0 4px 8px rgba(0, 106, 113, 0.04);
+  
+  :global(.ant-card-body) {
+    padding: 0 !important;
+  }
+  
+  :global(.ant-table) {
+    padding: 0 !important;
+  }
+  
+  :global(.ant-table-wrapper) {
+    padding: 0 !important;
+  }
+  
+  :global(.ant-table-container) {
+    padding: 0 !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -90,9 +99,14 @@
     padding: 16px;
   }
 
-  .statsCard,
-  .metricsCard,
-  .engagementCard,
+  .statsGrid,
+  .metricsGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .statsBox,
+  .metricsBox,
   .tableCard {
     border-radius: 12px;
   }
