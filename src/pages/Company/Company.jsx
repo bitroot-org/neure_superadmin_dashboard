@@ -294,47 +294,6 @@ const Company = () => {
       ),
     },
     {
-      title: "Status",
-      dataIndex: "active",
-      key: "active",
-      filters: [
-        { text: "Active", value: 1 },
-        { text: "Inactive", value: 0 },
-      ],
-      onFilter: (value, record) => record.active === value,
-      render: (status) => {
-        const isActive = status === 1;
-        return (
-          <span
-            className={`${styles.statusBadge} ${
-              isActive ? styles.active : styles.inactive
-            }`}
-          >
-            {isActive ? "Active" : "Inactive"}
-          </span>
-        );
-      },
-    },
-    {
-      title: "Company Size",
-      dataIndex: "company_size",
-      key: "company_size",
-      filters: [
-        { text: "1-100", value: "100" },
-        { text: "101-200", value: "200" },
-        { text: "201-300", value: "300" },
-        { text: "301-500", value: "500" },
-        { text: "500+", value: "501" },
-      ],
-      onFilter: (value, record) => {
-        const size = parseInt(value);
-        if (size === 501) {
-          return record.company_size >= 500;
-        }
-        return record.company_size <= size && record.company_size > size - 100;
-      },
-    },
-    {
       title: "Departments",
       key: "departments",
       width: 200,
@@ -364,28 +323,63 @@ const Company = () => {
       },
     },
     {
-      title: "Engagement Score",
-      dataIndex: "engagement_score", 
-      key: "engagement_score",
-      render: (score) => {
-        const displayScore = score === null ? 0 : score;
-        return (
-          <div className={styles.engagementScoreContainer}>
-            <div
-              className={styles.engagementScoreBar}
-              style={{ width: `${displayScore}%` }}
-            />
-            <div className={styles.engagementScoreText}>{displayScore}%</div>
-          </div>
-        );
+      title: "Company Size",
+      dataIndex: "company_size",
+      key: "company_size",
+      filters: [
+        { text: "1-100", value: "100" },
+        { text: "101-200", value: "200" },
+        { text: "201-300", value: "300" },
+        { text: "301-500", value: "500" },
+        { text: "500+", value: "501" },
+      ],
+      onFilter: (value, record) => {
+        const size = parseInt(value);
+        if (size === 501) {
+          return record.company_size >= 500;
+        }
+        return record.company_size <= size && record.company_size > size - 100;
       },
     },
     {
-      title: "Created At",
-      dataIndex: "created_at",
-      key: "created_at",
-      render: (date) => new Date(date).toLocaleDateString(),
+      title: "Status",
+      dataIndex: "active",
+      key: "active",
+      filters: [
+        { text: "Active", value: 1 },
+        { text: "Inactive", value: 0 },
+      ],
+      onFilter: (value, record) => record.active === value,
+      render: (status) => {
+        const isActive = status === 1;
+        return (
+          <span
+            className={`${styles.statusBadge} ${
+              isActive ? styles.active : styles.inactive
+            }`}
+          >
+            {isActive ? "Active" : "Inactive"}
+          </span>
+        );
+      },
     },
+    // {
+    //   title: "Engagement Score",
+    //   dataIndex: "engagement_score", 
+    //   key: "engagement_score",
+    //   render: (score) => {
+    //     const displayScore = score === null ? 0 : score;
+    //     return (
+    //       <div className={styles.engagementScoreContainer}>
+    //         <div
+    //           className={styles.engagementScoreBar}
+    //           style={{ width: `${displayScore}%` }}
+    //         />
+    //         <div className={styles.engagementScoreText}>{displayScore}%</div>
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       title: "Analytics",
       key: "analytics",

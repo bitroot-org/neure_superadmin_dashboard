@@ -277,9 +277,7 @@ export const updateWorkshop = async (data) => {
 
 export const deleteWorkshop = async (data) => {
   try {
-    const response = await api.delete(`/workshop/deleteWorkshop`, {
-      data: data,
-    });
+    const response = await api.delete(`/workshop/deleteWorkshop/${data.id}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
@@ -325,6 +323,8 @@ export const getAllWorkshopSchedules = async (params = {}) => {
       params: {
         page: params.page || 1,
         limit: params.limit || 10,
+        search_term: params.search_term || '',
+        ...params,
       },
     });
     return response.data;
@@ -648,3 +648,63 @@ export const getFeedback = async (params = {}) => {
     throw error.response?.data || error;
   }
 }
+
+export const getRewards = async (params = {}) => {
+  try {
+    const response = await api.get("/rewards/getAllRewards", { params });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const createReward = async (formData) => {
+  try {
+    const response = await api.post("/rewards/createReward", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const updateReward = async (formData) => {
+  try {
+    const rewardId = formData.get('id');
+    if (!rewardId) {
+      throw new Error('Reward ID is required for update');
+    }
+    const response = await api.put(`/rewards/${rewardId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const deleteReward = async (id) => {
+  try {
+    if (!id) {
+      throw new Error('Reward ID is required for deletion');
+    }
+    const response = await api.delete(`/rewards/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const removeEmployee = async (data) => {
+  try {
+    const response = await api.delete(`/company/removeEmployee`, {data});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
