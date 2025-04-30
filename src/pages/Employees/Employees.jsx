@@ -12,14 +12,16 @@ import {
   Descriptions,
   Upload,
   message,
+  Modal, // Add Modal import
 } from "antd";
-import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import { PlusOutlined, UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
   getAllCompanies,
   getCompanyEmployees,
   getDepartments,
   createEmployee,
-  bulkCreateEmployees
+  bulkCreateEmployees,
+  removeEmployee,
 } from "../../services/api";
 
 const { Option } = Select;
@@ -36,6 +38,7 @@ const Employees = () => {
   const [isFormDisabled, setIsFormDisabled] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [departments, setDepartments] = useState([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Add new state for selected row keys
 
   const [form] = Form.useForm();
   const [pagination, setPagination] = useState({
@@ -101,11 +104,14 @@ const Employees = () => {
   };
 
   const onRowClick = (record) => ({
-    onClick: () => {
-      setSelectedEmployee(record);
-      setDrawerVisible(true);
+    onClick: (e) => {
+      // Only trigger drawer if the click is not on the checkbox
+      if (e.target.type !== 'checkbox' && !e.target.closest('.ant-checkbox-wrapper')) {
+        setSelectedEmployee(record);
+        setDrawerVisible(true);
+      }
     },
-    style: { cursor: "pointer" },
+    style: { cursor: 'pointer' }
   });
 
   const handleCreateEmployee = async (values) => {
@@ -204,6 +210,47 @@ const Employees = () => {
     },
   ];
 
+  const handleRemoveEmployees = () => {
+    if (!selectedRowKeys.length) {
+      message.warning('Please select employees to remove');
+      return;
+    }
+
+    Modal.confirm({
+      title: 'Are you sure you want to remove these employees?',
+      content: `This will remove ${selectedRowKeys.length} employee(s).`,
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk: async () => {
+        try {
+          const payload = {
+            company_id: selectedCompany,
+            user_ids: selectedRowKeys.filter(id => id !== null) // Filter out any null values
+          };
+          
+          await removeEmployee(payload);
+          message.success('Employees removed successfully');
+          setSelectedRowKeys([]); // Clear selection
+          handleCompanyChange(selectedCompany); // Refresh the list
+        } catch (error) {
+          message.error('Failed to remove employees');
+        }
+      }
+    });
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+    getCheckboxProps: (record) => ({
+      // Use the correct ID field from your data
+      id: record.id || record.user_id,
+    }),
+  };
+
   return (
     <div>
       <h1>Employee Management</h1>
@@ -231,24 +278,37 @@ const Employees = () => {
           ))}
         </Select>
 
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setCreateDrawerVisible(true)}
-        >
-          Add Employee
-        </Button>
+        <Space>
+          <Button
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={handleRemoveEmployees}
+            disabled={!selectedRowKeys.length}
+          >
+            Remove Employee{selectedRowKeys.length > 1 ? 's' : ''}
+            {selectedRowKeys.length > 0 && ` (${selectedRowKeys.length})`}
+          </Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setCreateDrawerVisible(true)}
+          >
+            Add Employee
+          </Button>
+        </Space>
       </Space>
 
       <div style={{ width: "100%", overflowX: "auto" }}>
         <Table
           dataSource={employees}
           columns={columns}
-          rowKey="id"
+          rowKey={(record) => record.id || record.user_id} // Use the correct ID field
           loading={loading}
           pagination={pagination}
           scroll={{ x: "max-content" }}
           onRow={onRowClick}
+          rowSelection={rowSelection}
         />
       </div>
 

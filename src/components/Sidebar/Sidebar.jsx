@@ -15,6 +15,7 @@ import {
   SettingOutlined,
   LogoutOutlined,
   CommentOutlined,
+  GiftOutlined,
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
@@ -107,6 +108,11 @@ const Sidebar = () => {
       path: '/AccountsDeactivation',
       name: 'Accounts Deactivation',
       icon: <NotificationOutlined />,
+    },
+    {
+      path: "/rewards",
+      name: "Rewards",
+      icon: <GiftOutlined />,
     },
     // {
     //   path: "/activitylog",

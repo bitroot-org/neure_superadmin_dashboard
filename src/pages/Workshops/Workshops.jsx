@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Tabs,
-  DatePicker,
   Button,
   Table,
   Space,
@@ -13,13 +12,19 @@ import {
   TimePicker,
   message,
   Modal,
+  DatePicker,
+  Tooltip,
 } from "antd";
 import {
   FilterOutlined,
   PlusOutlined,
   UploadOutlined,
   ArrowLeftOutlined,
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
+import debounce from 'lodash/debounce';
 import styles from "./Workshops.module.css";
 import {
   deleteWorkshop,
@@ -34,7 +39,6 @@ import {
   cancelWorkshopSchedule
 } from "../../services/api";
 
-const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
 const Workshops = () => {
@@ -49,7 +53,6 @@ const Workshops = () => {
   const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(false);
   const [coverImage, setCoverImage] = useState(null);
-  const [worksheetFile, setWorksheetFile] = useState(null);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 1,
@@ -65,6 +68,27 @@ const Workshops = () => {
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [rescheduleModalVisible, setRescheduleModalVisible] = useState(false);
   const [rescheduleForm] = Form.useForm();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [editingWorkshop, setEditingWorkshop] = useState(null);
+  const [coverImageFile, setCoverImageFile] = useState(null);
+  const [worksheetFile, setWorksheetFile] = useState(null);
+  const [detailsDrawerVisible, setDetailsDrawerVisible] = useState(false);
+
+  // Create a debounced version of fetchWorkshopSchedules
+  const debouncedSearch = useCallback(
+    debounce((searchValue) => {
+      fetchWorkshopSchedules(searchValue);
+    }, 500),
+    []
+  );
+
+  // Cleanup debounce on component unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
   // Fetch workshops on component mount
   useEffect(() => {
     fetchWorkshops();
@@ -121,19 +145,34 @@ const Workshops = () => {
 
   const handleUpdateWorkshop = async (values) => {
     try {
-      const payload = {
-        id: selectedWorkshop.id,
+      // First update the basic workshop information
+      const response = await updateWorkshop({
+        id: editingWorkshop.id,
         title: values.title,
         description: values.description,
-        location: values.location || "",
-      };
+        host_name: values.host_name,
+        agenda: values.agenda || "",
+      });
 
-      await updateWorkshop(payload);
+      // If files were selected, upload them
+      if (coverImageFile || worksheetFile) {
+        await uploadWorkshopFiles(
+          editingWorkshop.id,
+          coverImageFile,
+          worksheetFile
+        );
+      }
+
       message.success("Workshop updated successfully");
       setEditDrawerVisible(false);
-      fetchWorkshops(pagination.current, pagination.pageSize);
+      fetchWorkshops();
+      
+      // Reset the states
+      setCoverImageFile(null);
+      setWorksheetFile(null);
+      setEditingWorkshop(null);
+      form.resetFields();
     } catch (error) {
-      console.error("Error updating workshop:", error);
       message.error("Failed to update workshop");
     }
   };
@@ -159,12 +198,13 @@ const Workshops = () => {
   };
 
   const handleEditWorkshop = (workshop) => {
-    setSelectedWorkshop(workshop);
+    console.log("Workshop data:", workshop); // Debug log to see the data structure
+    setEditingWorkshop(workshop);
     editForm.setFieldsValue({
       title: workshop.title,
       description: workshop.description,
-      location: workshop.location,
-      host_name: workshop.organizer,
+      host_name: workshop.host_name || workshop.organizer, // Try both fields
+      agenda: workshop.agenda || "",
     });
     setEditDrawerVisible(true);
   };
@@ -284,6 +324,7 @@ const Workshops = () => {
         company_id: values.company,
         date: values.date.format("YYYY-MM-DD"),
         time: values.time.format("HH:mm:ss"),
+        duration_minutes: parseInt(values.duration) // Add this line to include duration
       };
 
       const response = await scheduleWorkshop(payload);
@@ -305,17 +346,23 @@ const Workshops = () => {
     setViewDetailsDrawerVisible(true);
   };
 
+  const handleWorkshopClick = (record) => {
+    setSelectedWorkshop(record);
+    setDetailsDrawerVisible(true);
+  };
 
   // Add this new function to fetch workshop schedules
-  const fetchWorkshopSchedules = async (dateFilter = dateRange) => {
+  const fetchWorkshopSchedules = async (search = searchTerm) => {
     setScheduleLoading(true);
     try {
-      const params = {};
+      const params = {
+        page: 1,
+        limit: 10,
+      };
 
-      // Add date filters if they exist
-      if (dateFilter && dateFilter[0] && dateFilter[1]) {
-        params.start_date = dateFilter[0].format("YYYY-MM-DD");
-        params.end_date = dateFilter[1].format("YYYY-MM-DD");
+      // Add search term to params if it exists
+      if (search) {
+        params.search_term = search;
       }
 
       const response = await getAllWorkshopSchedules(params);
@@ -345,52 +392,77 @@ const Workshops = () => {
     }
   };
 
+  // Handle search input change with debounce
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    debouncedSearch(value);
+  };
+
   const scheduleColumns = [
     {
       title: "Workshop",
       dataIndex: "workshop",
       key: "workshop",
+      width: 200,
+      ellipsis: true,
+      render: (text) => (
+        <Tooltip placement="topLeft" title={text}>
+          {text}
+        </Tooltip>
+      ),
     },
     {
       title: "Company",
       dataIndex: "company",
       key: "company",
+      width: 150,
+      ellipsis: true,
     },
     {
-      title: "Shedule Date",
+      title: "Date",
       dataIndex: "date",
       key: "date",
+      width: 120,
     },
     {
-      title: " Shedule Time",
+      title: "Time",
       dataIndex: "time",
       key: "time",
+      width: 120,
     },
     {
       title: "Worksheet",
       dataIndex: "worksheet",
       key: "worksheet",
-      render: (text, record) =>
-        record.pdf_url ? (
-          <a href={record.pdf_url} target="_blank" rel="noopener noreferrer">
-            View PDF
-          </a>
-        ) : (
-          "Not available"
-        ),
+      width: 120,
+    },
+    {
+      title: "Date Added",
+      dataIndex: "dateAdded",
+      key: "dateAdded",
+      width: 120,
     },
     {
       title: "Actions",
-      key: "action",
+      key: "actions",
       render: (_, record) => (
         <Space>
-          <Button type="link" onClick={() => handleViewDetails(record)}>
-            View Details
+          <Button
+            type="primary"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click event
+              handleRescheduleWorkshop(record);
+            }}
+          >
+            Reschedule
           </Button>
-          <Button 
-            type="link" 
+          <Button
+            type="primary"
             danger
-            onClick={() => handleCancelWorkshop(record.id)}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click event
+              handleCancelWorkshop(record.id);
+            }}
           >
             Cancel
           </Button>
@@ -404,11 +476,15 @@ const Workshops = () => {
       title: "Title",
       dataIndex: "title",
       key: "title",
+      width: 200,
+      ellipsis: true,
     },
     {
       title: "Host",
       dataIndex: "organizer",
       key: "organizer",
+      width: 150,
+      ellipsis: true,
     },
     {
       title: "Description",
@@ -416,11 +492,24 @@ const Workshops = () => {
       key: "description",
       width: 300,
       ellipsis: true,
+      render: (description) => (
+        <Tooltip placement="topLeft" title={description}>
+          <div style={{ 
+            maxWidth: 300,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}>
+            {description}
+          </div>
+        </Tooltip>
+      ),
     },
     {
       title: "Image",
       dataIndex: "poster_image",
       key: "poster_image",
+      width: 100,
       render: (image) => (
         <img
           src={image || "/placeholder-image.png"}
@@ -433,23 +522,28 @@ const Workshops = () => {
       title: "Date Added",
       dataIndex: "created_at",
       key: "created_at",
+      width: 150,
       render: (date) => new Date(date).toLocaleDateString(),
     },
     {
       title: "Actions",
-      key: "action",
+      key: "actions",
+      width: 150,
       render: (_, record) => (
-        <Space>
-          <Button type="link" onClick={() => handleEditWorkshop(record)}>
+        <Space size="middle">
+          <Button
+            type="text"
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("Edit button clicked"); // Debug log
+              handleEditWorkshop(record);
+            }}
+            icon={<EditOutlined />}
+            style={{ color: "#1890ff" }}
+          >
             Edit
           </Button>
-          <Button
-            type="link"
-            danger
-            onClick={() => handleDeleteWorkshop(record.id)}
-          >
-            Delete
-          </Button>
+          <Button type="link" danger icon={<DeleteOutlined />}>Delete</Button>
         </Space>
       ),
     },
@@ -478,12 +572,19 @@ const Workshops = () => {
       />
 
       <div className={styles.actionBar}>
-        <RangePicker
-          className={styles.datePicker}
-          placeholder={["Start Date", "End Date"]}
-          onChange={handleDateRangeChange}
-          value={dateRange}
-        />
+        {activeTab === "schedule" ? (
+          <Input.Search
+            placeholder="Search workshops..."
+            allowClear
+            className={styles.searchBar}
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
+            style={{ width: 300 }}
+            loading={scheduleLoading}
+          />
+        ) : (
+          <div />
+        )}
         <Space>
           <Button icon={<FilterOutlined />}>Filter</Button>
           <Button
@@ -514,6 +615,14 @@ const Workshops = () => {
           }
           onChange={activeTab === "workshops" ? handleTableChange : undefined}
           scroll={{ x: "max-content" }}
+          onRow={(record) => ({
+            onClick: () => {
+              if (activeTab === "workshops") {
+                handleWorkshopClick(record);
+              }
+            },
+            style: { cursor: activeTab === "workshops" ? 'pointer' : 'default' }
+          })}
         />
       </div>
 
@@ -618,27 +727,29 @@ const Workshops = () => {
         title={
           <Space>
             <ArrowLeftOutlined onClick={() => setEditDrawerVisible(false)} />
-            Edit workshop
+            Edit Workshop
           </Space>
         }
-        width={720}
-        onClose={() => setEditDrawerVisible(false)}
         open={editDrawerVisible}
-        bodyStyle={{ paddingBottom: 80 }}
+        onClose={() => {
+          setEditDrawerVisible(false);
+          setEditingWorkshop(null);
+          setCoverImageFile(null);
+          setWorksheetFile(null);
+          editForm.resetFields();
+        }}
+        width={720}
+        destroyOnClose
       >
-        <Form form={editForm} layout="vertical" onFinish={handleUpdateWorkshop}>
+        <Form
+          form={editForm}
+          layout="vertical"
+          onFinish={handleUpdateWorkshop}
+        >
           <Form.Item
             name="title"
             label="Title"
-            rules={[{ required: true, message: "Please enter title" }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="host_name"
-            label="Host name"
-            rules={[{ required: true, message: "Please enter host name" }]}
+            rules={[{ required: true, message: "Please enter workshop title" }]}
           >
             <Input />
           </Form.Item>
@@ -646,18 +757,113 @@ const Workshops = () => {
           <Form.Item
             name="description"
             label="Description"
-            rules={[{ required: true, message: "Please enter description" }]}
+            rules={[{ required: true, message: "Please enter workshop description" }]}
           >
             <TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className={styles.submitButton}
+          <Form.Item
+            name="host_name"
+            label="Host Name"
+            rules={[{ required: true, message: "Please enter host name" }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="agenda"
+            label="Agenda"
+          >
+            <TextArea rows={4} />
+          </Form.Item>
+
+          <Form.Item 
+            label="Cover Image"
+            extra="Supported formats: JPG, PNG. Max size: 5MB"
+          >
+            <Upload
+              maxCount={1}
+              beforeUpload={(file) => {
+                const isImage = file.type.startsWith('image/');
+                const isLt5M = file.size / 1024 / 1024 < 5;
+                
+                if (!isImage) {
+                  message.error('You can only upload image files!');
+                  return false;
+                }
+                
+                if (!isLt5M) {
+                  message.error('Image must be smaller than 5MB!');
+                  return false;
+                }
+
+                setCoverImageFile(file);
+                return false;
+              }}
+              onRemove={() => setCoverImageFile(null)}
+              fileList={coverImageFile ? [coverImageFile] : []}
             >
-              Update workshop
+              <Button icon={<UploadOutlined />}>
+                {editingWorkshop?.poster_image 
+                  ? 'Replace cover image' 
+                  : 'Upload cover image'}
+              </Button>
+            </Upload>
+            {editingWorkshop?.poster_image && !coverImageFile && (
+              <div style={{ marginTop: 8 }}>
+                <img 
+                  src={editingWorkshop.poster_image} 
+                  alt="Current cover" 
+                  style={{ maxWidth: '200px', marginTop: '8px' }} 
+                />
+              </div>
+            )}
+          </Form.Item>
+
+          <Form.Item 
+            label="Worksheet"
+            extra="Supported format: PDF. Max size: 10MB"
+          >
+            <Upload
+              maxCount={1}
+              beforeUpload={(file) => {
+                const isPdf = file.type === 'application/pdf';
+                const isLt10M = file.size / 1024 / 1024 < 10;
+                
+                if (!isPdf) {
+                  message.error('You can only upload PDF files!');
+                  return false;
+                }
+                
+                if (!isLt10M) {
+                  message.error('PDF must be smaller than 10MB!');
+                  return false;
+                }
+
+                setWorksheetFile(file);
+                return false;
+              }}
+              onRemove={() => setWorksheetFile(null)}
+              fileList={worksheetFile ? [worksheetFile] : []}
+            >
+              <Button icon={<UploadOutlined />}>
+                {editingWorkshop?.pdf_url 
+                  ? 'Replace worksheet' 
+                  : 'Upload worksheet'}
+              </Button>
+            </Upload>
+            {editingWorkshop?.pdf_url && !worksheetFile && (
+              <div style={{ marginTop: 8 }}>
+                <a href={editingWorkshop.pdf_url} target="_blank" rel="noopener noreferrer">
+                  View current worksheet
+                </a>
+              </div>
+            )}
+          </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Update Workshop
             </Button>
           </Form.Item>
         </Form>
@@ -684,6 +890,20 @@ const Workshops = () => {
           className={styles.fullWidthForm}
         >
           <Form.Item
+            name="company"
+            label="Select company"
+            rules={[{ required: true, message: "Please select a company" }]}
+          >
+            <Select placeholder="Select company" loading={companiesLoading}>
+              {companies.map((company) => (
+                <Select.Option key={company.id} value={company.id}>
+                  {company.company_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
             name="workshop_template"
             label="Select workshop template"
             rules={[{ required: true, message: "Please select a workshop" }]}
@@ -700,20 +920,6 @@ const Workshops = () => {
                   workshop={workshop}
                 >
                   {workshop.title}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="company"
-            label="Select company"
-            rules={[{ required: true, message: "Please select a company" }]}
-          >
-            <Select placeholder="Select company" loading={companiesLoading}>
-              {companies.map((company) => (
-                <Select.Option key={company.id} value={company.id}>
-                  {company.company_name}
                 </Select.Option>
               ))}
             </Select>
@@ -738,6 +944,19 @@ const Workshops = () => {
               <TimePicker style={{ width: "100%" }} format="HH:mm" />
             </Form.Item>
           </div>
+
+          <Form.Item
+            name="duration"
+            label="Duration"
+            rules={[{ required: true, message: "Please enter duration" }]}
+          >
+            <Input 
+              type="number" 
+              min={1}
+              addonAfter="minutes"
+              placeholder="Enter duration in minutes" 
+            />
+          </Form.Item>
 
           <Form.Item>
             <Button
@@ -877,6 +1096,86 @@ const Workshops = () => {
                   </Form.Item>
                 </Form>
               </Modal>
+
+      {/* Add this new Details Drawer component after your other drawers */}
+      <Drawer
+        title={
+          <Space>
+            <ArrowLeftOutlined onClick={() => setDetailsDrawerVisible(false)} />
+            Workshop Details
+          </Space>
+        }
+        width={720}
+        onClose={() => setDetailsDrawerVisible(false)}
+        open={detailsDrawerVisible}
+        destroyOnClose
+      >
+        {selectedWorkshop && (
+          <div className={styles.detailsContainer}>
+            <div className={styles.imageContainer}>
+              <img
+                src={selectedWorkshop.poster_image || "/placeholder-image.png"}
+                alt={selectedWorkshop.title}
+                style={{ 
+                  width: '100%', 
+                  maxHeight: 300, 
+                  objectFit: 'cover',
+                  borderRadius: 8 
+                }}
+              />
+            </div>
+
+            <div className={styles.detailItem}>
+              <h3>Title</h3>
+              <p>{selectedWorkshop.title}</p>
+            </div>
+
+            <div className={styles.detailItem}>
+              <h3>Host</h3>
+              <p>{selectedWorkshop.host_name || selectedWorkshop.organizer}</p>
+            </div>
+
+            <div className={styles.detailItem}>
+              <h3>Description</h3>
+              <p>{selectedWorkshop.description}</p>
+            </div>
+
+            <div className={styles.detailItem}>
+              <h3>Agenda</h3>
+              <p>{selectedWorkshop.agenda || 'No agenda available'}</p>
+            </div>
+
+            <div className={styles.detailItem}>
+              <h3>Date Added</h3>
+              <p>{new Date(selectedWorkshop.created_at).toLocaleDateString()}</p>
+            </div>
+
+            <div className={styles.actionButtons}>
+              <Button 
+                type="primary" 
+                icon={<EditOutlined />}
+                onClick={() => {
+                  setDetailsDrawerVisible(false);
+                  handleEditWorkshop(selectedWorkshop);
+                }}
+              >
+                Edit Workshop
+              </Button>
+              <Button 
+                type="primary" 
+                danger 
+                icon={<DeleteOutlined />}
+                onClick={() => {
+                  setDetailsDrawerVisible(false);
+                  handleDelete(selectedWorkshop.id);
+                }}
+              >
+                Delete Workshop
+              </Button>
+            </div>
+          </div>
+        )}
+      </Drawer>
     </div>
   );
 };
