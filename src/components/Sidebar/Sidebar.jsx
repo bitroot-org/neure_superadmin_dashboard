@@ -16,6 +16,7 @@ import {
   LogoutOutlined,
   CommentOutlined,
   GiftOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
@@ -113,6 +114,11 @@ const Sidebar = () => {
       path: "/rewards",
       name: "Rewards",
       icon: <GiftOutlined />,
+    },
+    {
+      path: "/faq",
+      name: "FAQ",
+      icon: <QuestionCircleOutlined />,
     },
     // {
     //   path: "/activitylog",

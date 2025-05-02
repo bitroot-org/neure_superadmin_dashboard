@@ -258,6 +258,9 @@ export const getAllWorkshops = async (params = {}) => {
       params: {
         page: params.page || 1,
         limit: params.limit || 10,
+        search_term: params.search_term || '',
+        start_date: params.start_date || '',
+        end_date: params.end_date || '',
       },
     });
     return response.data;
@@ -348,6 +351,7 @@ export const getArticles = async (params = {}) => {
       params: {
         page: params.page || 1,
         limit: params.limit || 10,
+        search_term: params.search_term || '',
       },
     });
     return response.data;
@@ -361,7 +365,8 @@ export const getGalleryItems = async (params = {}) => {
     const queryParams = {
       page: params.page || 1,
       limit: params.limit || 10,
-      type: params.type
+      type: params.type,
+      search_term: params.search_term || '',
     };
 
     // Add conditional parameters
@@ -703,6 +708,55 @@ export const deleteReward = async (id) => {
 export const removeEmployee = async (data) => {
   try {
     const response = await api.delete(`/company/removeEmployee`, {data});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const updateWorkshopScheduleStatus = async (data) => {
+  try {
+    const response = await api.put(`/workshop/updateWorkshopScheduleStatus`, data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+// Get all FAQ items
+export const getQnA = async () => {
+  try {
+    const response = await api.get("/qna/list");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Create a new FAQ item
+export const createQnA = async (data) => {
+  try {
+    const response = await api.post("/qna/create", data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Update an existing FAQ item
+export const updateQnA = async (data) => {
+  try {
+    const response = await api.put("/qna/update", data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// Delete a FAQ item
+export const deleteQnA = async (id) => {
+  try {
+    const response = await api.delete(`/qna/${id}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;

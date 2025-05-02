@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Tabs,
   Button,
   Table,
   Space,
-  DatePicker,
   Drawer,
   Form,
   Input,
@@ -12,13 +11,16 @@ import {
   Select,
   message,
   Modal,
+  DatePicker,
 } from "antd";
 import {
   FilterOutlined,
   PlusOutlined,
   UploadOutlined,
   ArrowLeftOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
+import debounce from "lodash/debounce";
 import styles from "./Resources.module.css";
 import {
   getArticles,
@@ -72,6 +74,42 @@ const Resources = () => {
     total: 0,
   });
 
+  // Add state for search terms
+  const [articlesSearchTerm, setArticlesSearchTerm] = useState("");
+  const [imagesSearchTerm, setImagesSearchTerm] = useState("");
+  const [videosSearchTerm, setVideosSearchTerm] = useState("");
+  const [documentsSearchTerm, setDocumentsSearchTerm] = useState("");
+
+  // Create debounced search functions
+  const debouncedArticlesSearch = useCallback(
+    debounce((searchValue) => {
+      fetchArticles(pagination.current, pagination.pageSize, searchValue);
+    }, 500),
+    [pagination.current, pagination.pageSize]
+  );
+
+  const debouncedGallerySearch = useCallback(
+    debounce((searchValue, type) => {
+      fetchGalleryItems(
+        type, 
+        type === "image" ? imagesPagination.current : 
+        type === "video" ? videosPagination.current : 
+        documentsPagination.current, 
+        10, 
+        searchValue
+      );
+    }, 500),
+    [imagesPagination.current, videosPagination.current, documentsPagination.current]
+  );
+
+  // Cleanup debounce on component unmount
+  useEffect(() => {
+    return () => {
+      debouncedArticlesSearch.cancel();
+      debouncedGallerySearch.cancel();
+    };
+  }, [debouncedArticlesSearch, debouncedGallerySearch]);
+
   // Fetch articles on component mount
   useEffect(() => {
     if (activeTab === "articles") {
@@ -86,10 +124,17 @@ const Resources = () => {
   }, [activeTab]);
 
   // Function to fetch articles
-  const fetchArticles = async (page = 1, limit = 10) => {
+  const fetchArticles = async (page = 1, limit = 10, searchTerm = "") => {
     setLoading(true);
     try {
-      const response = await getArticles({ page, limit });
+      const params = { page, limit };
+      
+      // Add search term if it exists
+      if (searchTerm) {
+        params.search_term = searchTerm;
+      }
+      
+      const response = await getArticles(params);
       if (response.status && response.data) {
         setArticles(response.data.articles || []);
         setPagination({
@@ -106,7 +151,7 @@ const Resources = () => {
     }
   };
 
-  const fetchGalleryItems = async (type, page = 1, limit = 10) => {
+  const fetchGalleryItems = async (type, page = 1, limit = 10, searchTerm = "") => {
     let setLoadingFunc, setDataFunc, setPaginationFunc;
 
     switch (type) {
@@ -131,7 +176,14 @@ const Resources = () => {
 
     setLoadingFunc(true);
     try {
-      const response = await getGalleryItems({ type, page, limit });
+      const params = { type, page, limit };
+      
+      // Add search term if it exists
+      if (searchTerm) {
+        params.search_term = searchTerm;
+      }
+      
+      const response = await getGalleryItems(params);
       if (response.status && response.data) {
         setDataFunc(response.data.items || []);
         setPaginationFunc({
@@ -957,6 +1009,29 @@ const Resources = () => {
     });
   };
 
+  // Handle search input changes
+  const handleArticlesSearch = (value) => {
+    setArticlesSearchTerm(value);
+    debouncedArticlesSearch(value);
+  };
+
+  const handleGallerySearch = (value, type) => {
+    switch (type) {
+      case "image":
+        setImagesSearchTerm(value);
+        break;
+      case "video":
+        setVideosSearchTerm(value);
+        break;
+      case "document":
+        setDocumentsSearchTerm(value);
+        break;
+      default:
+        return;
+    }
+    debouncedGallerySearch(value, type);
+  };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Resources</h1>
@@ -969,9 +1044,39 @@ const Resources = () => {
       />
 
       <div className={styles.actionBar}>
-        <DatePicker.RangePicker className={styles.datePicker} />
+        <Input
+          placeholder={`Search ${activeTab}...`}
+          allowClear
+          prefix={<SearchOutlined />}
+          className={styles.searchBar}
+          value={
+            activeTab === "articles" ? articlesSearchTerm :
+            activeTab === "images" ? imagesSearchTerm :
+            activeTab === "videos" ? videosSearchTerm :
+            documentsSearchTerm
+          }
+          onChange={(e) => {
+            const value = e.target.value;
+            if (activeTab === "articles") {
+              handleArticlesSearch(value);
+            } else if (activeTab === "images") {
+              handleGallerySearch(value, "image");
+            } else if (activeTab === "videos") {
+              handleGallerySearch(value, "video");
+            } else if (activeTab === "documents") {
+              handleGallerySearch(value, "document");
+            }
+          }}
+          style={{ width: 300 }}
+          // Make sure the input is not disabled
+          disabled={
+            activeTab === "articles" ? loading :
+            activeTab === "images" ? imagesLoading :
+            activeTab === "videos" ? videosLoading :
+            activeTab === "documents" ? documentsLoading : false
+          }
+        />
         <Space>
-          {/* <Button icon={<FilterOutlined />}>Filter</Button> */}
           <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -1064,6 +1169,7 @@ const Resources = () => {
                   handleGalleryTableChange(newPagination, "document")
               : undefined
           }
+          scroll={{ x: "max-content" }}
         />
       </div>
 

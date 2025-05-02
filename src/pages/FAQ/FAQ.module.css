@@ -1,0 +1,47 @@
+.container {
+  padding: 24px;
+  background-color: var(--background);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.pageTitle {
+  margin: 0 !important;
+}
+
+.tableContainer {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.answerCell {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+.expandedAnswer {
+  margin: 0;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.drawerFooter {
+  text-align: right;
+}
+
+.cancelButton {
+  margin-right: 8px;
+}
+
+.faqForm {
+  margin-top: 16px;
+}

@@ -43,8 +43,7 @@ const Announcements = () => {
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [companyLoading, setCompanyLoading] = useState(false);
-  const [isGlobal, setIsGlobal] = useState(false);
-  const [selectedAudienceType, setSelectedAudienceType] = useState("employees");
+  const [selectedAudienceType, setSelectedAudienceType] = useState("all");
   const [form] = Form.useForm();
 
   const fetchAnnouncements = async (page = 1) => {
@@ -86,15 +85,13 @@ const Announcements = () => {
   };
 
   const handleCreate = async (values) => {
-    console.log(values);
     try {
       const payload = {
         title: values.title,
         content: values.content,
         link: values.link || undefined,
-        is_global: values.is_global ? 1 : 0,
         audience_type: values.audience_type,
-        company_ids: !values.is_global ? values.company_id : undefined,
+        company_ids: values.audience_type === "company" ? values.company_id : undefined,
       };
 
       if (editingAnnouncement) {
@@ -121,7 +118,6 @@ const Announcements = () => {
     // Fetch companies first to ensure the dropdown has data
     fetchCompanies().then(() => {
       setEditingAnnouncement(record);
-      setIsGlobal(record.is_global === 1);
       setSelectedAudienceType(record.audience_type);
 
       // Set form values after a short delay to ensure state updates
@@ -130,9 +126,8 @@ const Announcements = () => {
           title: record.title,
           content: record.content,
           link: record.link || '',
-          is_global: record.is_global === 1,
           audience_type: record.audience_type,
-          company_ids: record.company_id,
+          company_id: record.company_id,
         });
       }, 100);
 
@@ -214,7 +209,15 @@ const Announcements = () => {
       title: "Created At",
       dataIndex: "created_at",
       key: "created_at",
-      render: (date) => dayjs(date).format("MMMM D, YYYY"),
+      render: (date) => (
+        <span style={{ whiteSpace: 'nowrap' }}>
+          {dayjs(date).format("MMM D, YYYY")}
+          <br />
+          <span style={{ color: '#8c8c8c', fontSize: '12px' }}>
+            {dayjs(date).format("hh:mm A")}
+          </span>
+        </span>
+      ),
     },
     {
       title: "Actions",
@@ -249,12 +252,10 @@ const Announcements = () => {
             // Fetch companies first to ensure the dropdown has data
             fetchCompanies().then(() => {
               setEditingAnnouncement(null);
-              setIsGlobal(false);
-              setSelectedAudienceType("employees");
+              setSelectedAudienceType("all");
               form.resetFields();
               form.setFieldsValue({
-                is_global: false,
-                audience_type: "employees",
+                audience_type: "all",
               });
               setDrawerVisible(true);
             });
@@ -283,7 +284,6 @@ const Announcements = () => {
         open={drawerVisible}
         onClose={() => {
           setDrawerVisible(false);
-          setIsGlobal(false);
           setEditingAnnouncement(null);
           form.resetFields();
         }}
@@ -294,7 +294,6 @@ const Announcements = () => {
             <Button
               onClick={() => {
                 setDrawerVisible(false);
-                setIsGlobal(false);
                 setEditingAnnouncement(null);
                 form.resetFields();
               }}
@@ -316,8 +315,7 @@ const Announcements = () => {
           form={form}
           layout="vertical"
           initialValues={{
-            is_global: false,
-            audience_type: "employees",
+            audience_type: "all",
           }}
           onFinish={handleCreate}
           preserve={false}
@@ -332,26 +330,6 @@ const Announcements = () => {
           </Form.Item>
 
           <Form.Item
-            name="is_global"
-            valuePropName="checked"
-            label="Announcement Type"
-          >
-            <Switch
-              checkedChildren="Global"
-              unCheckedChildren="Not Global"
-              onChange={(checked) => {
-                setIsGlobal(checked);
-                if (checked) {
-                  form.setFieldsValue({
-                    audience_type: "employees",
-                    company_id: undefined,
-                  });
-                }
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item
             name="audience_type"
             label="Target Audience"
             rules={[
@@ -362,37 +340,36 @@ const Announcements = () => {
               placeholder="Select target audience"
               onChange={(value) => setSelectedAudienceType(value)}
             >
+              <Option value="all">All</Option>
               <Option value="employees">Employees</Option>
               <Option value="company">Company</Option>
             </Select>
           </Form.Item>
 
-          {!isGlobal && (
-            <>
-              <Form.Item
-                name="company_id"
-                label="Select Company"
-                rules={[{ required: true, message: "Please select a company" }]}
+          {selectedAudienceType === "company" && (
+            <Form.Item
+              name="company_id"
+              label="Select Company"
+              rules={[{ required: true, message: "Please select a company" }]}
+            >
+              <Select
+                mode="multiple"
+                showSearch
+                placeholder="Search and select company"
+                loading={companyLoading}
+                onSearch={fetchCompanies}
+                filterOption={false}
+                notFoundContent={
+                  companyLoading ? <Spin size="small" /> : null
+                }
               >
-                <Select
-                  mode="multiple"
-                  showSearch
-                  placeholder="Search and select company"
-                  loading={companyLoading}
-                  onSearch={fetchCompanies}
-                  filterOption={false}
-                  notFoundContent={
-                    companyLoading ? <Spin size="small" /> : null
-                  }
-                >
-                  {companies.map((company) => (
-                    <Option key={company.id} value={company.id}>
-                      {company.company_name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </>
+                {companies.map((company) => (
+                  <Option key={company.id} value={company.id}>
+                    {company.company_name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
           )}
 
           <Form.Item
