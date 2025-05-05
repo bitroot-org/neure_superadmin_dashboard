@@ -26,6 +26,7 @@ import Analytics from "./pages/Analytics/Analytics";
 import AccountsDeactivation from "./pages/AccountsDeactivation/AccountsDeactivation";
 import Feedback from "./pages/Feedback/Feedback";
 import Rewards from "./pages/Rewards/Rewards";
+import FAQ from "./pages/FAQ/FAQ";
 
 const App = () => (
   <ConfigProvider
@@ -119,6 +120,7 @@ const App = () => (
             <Route path="/feedback" element={<Feedback />} />
             <Route path="/accountsDeactivation" element={<AccountsDeactivation />} />
             <Route path="/rewards" element={<Rewards />} />
+            <Route path="/faq" element={<FAQ />} />
           </Route>
         </Route>
 

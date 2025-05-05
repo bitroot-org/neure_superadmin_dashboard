@@ -14,6 +14,8 @@ import {
   Modal,
   DatePicker,
   Tooltip,
+  Dropdown,
+  Menu,
 } from "antd";
 import {
   FilterOutlined,
@@ -24,7 +26,8 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import debounce from 'lodash/debounce';
+import { DownOutlined } from "@ant-design/icons";
+import debounce from "lodash/debounce";
 import styles from "./Workshops.module.css";
 import {
   deleteWorkshop,
@@ -36,7 +39,8 @@ import {
   scheduleWorkshop,
   getAllCompanies,
   rescheduleWorkshop,
-  cancelWorkshopSchedule
+  cancelWorkshopSchedule,
+  updateWorkshopScheduleStatus,
 } from "../../services/api";
 
 const { TextArea } = Input;
@@ -73,6 +77,7 @@ const Workshops = () => {
   const [coverImageFile, setCoverImageFile] = useState(null);
   const [worksheetFile, setWorksheetFile] = useState(null);
   const [detailsDrawerVisible, setDetailsDrawerVisible] = useState(false);
+  const [workshopSearchTerm, setWorkshopSearchTerm] = useState("");
 
   // Create a debounced version of fetchWorkshopSchedules
   const debouncedSearch = useCallback(
@@ -82,12 +87,22 @@ const Workshops = () => {
     []
   );
 
+  // Create a debounced version for workshop search
+  const debouncedWorkshopSearch = useCallback(
+    debounce((searchValue) => {
+      console.log("Debounced workshop search with:", searchValue);
+      fetchWorkshops(pagination.current, pagination.pageSize, dateRange, searchValue);
+    }, 500),
+    [pagination.current, pagination.pageSize, dateRange]
+  );
+
   // Cleanup debounce on component unmount
   useEffect(() => {
     return () => {
       debouncedSearch.cancel();
+      debouncedWorkshopSearch.cancel();
     };
-  }, [debouncedSearch]);
+  }, [debouncedSearch, debouncedWorkshopSearch]);
 
   // Fetch workshops on component mount
   useEffect(() => {
@@ -114,7 +129,8 @@ const Workshops = () => {
   const fetchWorkshops = async (
     page = 1,
     limit = 10,
-    dateFilter = dateRange
+    dateFilter = dateRange,
+    search = ""
   ) => {
     setLoading(true);
     try {
@@ -124,6 +140,11 @@ const Workshops = () => {
       if (dateFilter && dateFilter[0] && dateFilter[1]) {
         params.start_date = dateFilter[0].format("YYYY-MM-DD");
         params.end_date = dateFilter[1].format("YYYY-MM-DD");
+      }
+
+      // Add search term if it exists
+      if (search) {
+        params.search_term = search;
       }
 
       const response = await getAllWorkshops(params);
@@ -166,7 +187,7 @@ const Workshops = () => {
       message.success("Workshop updated successfully");
       setEditDrawerVisible(false);
       fetchWorkshops();
-      
+
       // Reset the states
       setCoverImageFile(null);
       setWorksheetFile(null);
@@ -210,7 +231,12 @@ const Workshops = () => {
   };
 
   const handleTableChange = (newPagination) => {
-    fetchWorkshops(newPagination.current, newPagination.pageSize);
+    fetchWorkshops(
+      newPagination.current, 
+      newPagination.pageSize, 
+      dateRange, 
+      workshopSearchTerm
+    );
   };
 
   const handleDateRangeChange = (dates) => {
@@ -279,11 +305,19 @@ const Workshops = () => {
   const handleRescheduleSubmit = async (values) => {
     try {
       const scheduleId = selectedSchedule.id;
-      const newStartTime = `${values.date.format("YYYY-MM-DD")} ${values.startTime.format("HH:mm:ss")}`;
-      const newEndTime = `${values.date.format("YYYY-MM-DD")} ${values.endTime.format("HH:mm:ss")}`;
-      
-      const response = await rescheduleWorkshop(scheduleId, newStartTime, newEndTime);
-      
+      const newStartTime = `${values.date.format(
+        "YYYY-MM-DD"
+      )} ${values.startTime.format("HH:mm:ss")}`;
+      const newEndTime = `${values.date.format(
+        "YYYY-MM-DD"
+      )} ${values.endTime.format("HH:mm:ss")}`;
+
+      const response = await rescheduleWorkshop(
+        scheduleId,
+        newStartTime,
+        newEndTime
+      );
+
       if (response.status) {
         message.success("Workshop rescheduled successfully");
         setRescheduleModalVisible(false);
@@ -295,23 +329,38 @@ const Workshops = () => {
     }
   };
 
-  const handleCancelWorkshop = (scheduleId) => {
+  const handleWorkshopStatusUpdate = (scheduleId, status) => {
+    const statusMessages = {
+      completed: "Mark as completed",
+      cancelled: "Cancel",
+      pending: "Mark as pending",
+      "in-progress": "Mark as in-progress",
+    };
+
     Modal.confirm({
-      title: "Are you sure you want to cancel this workshop?",
-      content: "This action cannot be undone.",
-      okText: "Yes, Cancel Workshop",
-      okType: "danger",
+      title: `Are you sure you want to ${statusMessages[status]} this workshop?`,
+      content: status === "cancelled" ? "This action cannot be undone." : "",
+      okText: `Yes, ${statusMessages[status]}`,
+      okType: status === "cancelled" ? "danger" : "primary",
       cancelText: "No",
       onOk: async () => {
         try {
-          const response = await cancelWorkshopSchedule(scheduleId);
+          const response = await updateWorkshopScheduleStatus({
+            schedule_id: scheduleId,
+            status: status,
+          });
+
           if (response.status) {
-            message.success("Workshop cancelled successfully");
+            message.success(
+              `Workshop ${
+                status === "cancelled" ? "cancelled" : "status updated"
+              } successfully`
+            );
             fetchWorkshopSchedules();
           }
         } catch (error) {
-          console.error("Error cancelling workshop:", error);
-          message.error("Failed to cancel workshop");
+          console.error(`Error updating workshop status to ${status}:`, error);
+          message.error(`Failed to update workshop status`);
         }
       },
     });
@@ -324,7 +373,7 @@ const Workshops = () => {
         company_id: values.company,
         date: values.date.format("YYYY-MM-DD"),
         time: values.time.format("HH:mm:ss"),
-        duration_minutes: parseInt(values.duration) // Add this line to include duration
+        duration_minutes: parseInt(values.duration), // Add this line to include duration
       };
 
       const response = await scheduleWorkshop(payload);
@@ -342,11 +391,13 @@ const Workshops = () => {
   };
 
   const handleViewDetails = (schedule) => {
+    console.log("Opening details drawer for schedule:", schedule);
     setSelectedSchedule(schedule);
     setViewDetailsDrawerVisible(true);
   };
 
   const handleWorkshopClick = (record) => {
+    console.log("Opening details drawer for workshop:", record);
     setSelectedWorkshop(record);
     setDetailsDrawerVisible(true);
   };
@@ -381,6 +432,7 @@ const Workshops = () => {
           worksheet: schedule.pdf_url ? "Available" : "Not available",
           dateAdded: new Date(schedule.schedule_date).toLocaleDateString(),
           pdf_url: schedule.pdf_url,
+          status: schedule.status || 'pending', // Include status in the formatted data
         }));
         setScheduleData(formattedData);
       }
@@ -396,6 +448,12 @@ const Workshops = () => {
   const handleSearch = (value) => {
     setSearchTerm(value);
     debouncedSearch(value);
+  };
+
+  // Add this function to handle workshop search input changes
+  const handleWorkshopSearch = (value) => {
+    setWorkshopSearchTerm(value);
+    debouncedWorkshopSearch(value);
   };
 
   const scheduleColumns = [
@@ -453,16 +511,29 @@ const Workshops = () => {
               e.stopPropagation(); // Prevent row click event
               handleRescheduleWorkshop(record);
             }}
+            // disabled={record.status === 'completed' || record.status === 'cancelled'}
           >
             Reschedule
+          </Button>
+          <Button
+            type="primary"
+            style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click event
+              handleWorkshopStatusUpdate(record.id, 'completed');
+            }}
+            disabled={record.status === 'completed' || record.status === 'cancelled'}
+          >
+            Mark as Completed
           </Button>
           <Button
             type="primary"
             danger
             onClick={(e) => {
               e.stopPropagation(); // Prevent row click event
-              handleCancelWorkshop(record.id);
+              handleWorkshopStatusUpdate(record.id, 'cancelled');
             }}
+            disabled={record.status === 'completed' || record.status === 'cancelled'}
           >
             Cancel
           </Button>
@@ -494,12 +565,14 @@ const Workshops = () => {
       ellipsis: true,
       render: (description) => (
         <Tooltip placement="topLeft" title={description}>
-          <div style={{ 
-            maxWidth: 300,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
-          }}>
+          <div
+            style={{
+              maxWidth: 300,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
             {description}
           </div>
         </Tooltip>
@@ -543,7 +616,18 @@ const Workshops = () => {
           >
             Edit
           </Button>
-          <Button type="link" danger icon={<DeleteOutlined />}>Delete</Button>
+          <Button
+            type="link"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("Delete button clicked"); // Debug log
+              handleDeleteWorkshop(record.id);
+            }}
+          >
+            Delete
+          </Button>
         </Space>
       ),
     },
@@ -573,17 +657,26 @@ const Workshops = () => {
 
       <div className={styles.actionBar}>
         {activeTab === "schedule" ? (
-          <Input.Search
-            placeholder="Search workshops..."
+          <Input
+            placeholder="Search workshop schedules..."
             allowClear
+            prefix={<SearchOutlined />}
             className={styles.searchBar}
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             style={{ width: 300 }}
-            loading={scheduleLoading}
+            disabled={scheduleLoading}
           />
         ) : (
-          <div />
+          <Input
+            placeholder="Search workshops..."
+            allowClear
+            prefix={<SearchOutlined />}
+            className={styles.searchBar}
+            value={workshopSearchTerm}
+            onChange={(e) => handleWorkshopSearch(e.target.value)}
+            style={{ width: 300 }}
+          />
         )}
         <Space>
           <Button icon={<FilterOutlined />}>Filter</Button>
@@ -619,9 +712,13 @@ const Workshops = () => {
             onClick: () => {
               if (activeTab === "workshops") {
                 handleWorkshopClick(record);
+              } else if (activeTab === "schedule") {
+                handleViewDetails(record);
               }
             },
-            style: { cursor: activeTab === "workshops" ? 'pointer' : 'default' }
+            style: {
+              cursor: "pointer",
+            },
           })}
         />
       </div>
@@ -630,7 +727,7 @@ const Workshops = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setCreateDrawerVisible(false)} />
+            {/* <ArrowLeftOutlined onClick={() => setCreateDrawerVisible(false)} /> */}
             Create workshop
           </Space>
         }
@@ -741,11 +838,7 @@ const Workshops = () => {
         width={720}
         destroyOnClose
       >
-        <Form
-          form={editForm}
-          layout="vertical"
-          onFinish={handleUpdateWorkshop}
-        >
+        <Form form={editForm} layout="vertical" onFinish={handleUpdateWorkshop}>
           <Form.Item
             name="title"
             label="Title"
@@ -757,7 +850,9 @@ const Workshops = () => {
           <Form.Item
             name="description"
             label="Description"
-            rules={[{ required: true, message: "Please enter workshop description" }]}
+            rules={[
+              { required: true, message: "Please enter workshop description" },
+            ]}
           >
             <TextArea rows={4} />
           </Form.Item>
@@ -770,30 +865,27 @@ const Workshops = () => {
             <Input />
           </Form.Item>
 
-          <Form.Item
-            name="agenda"
-            label="Agenda"
-          >
+          <Form.Item name="agenda" label="Agenda">
             <TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Cover Image"
             extra="Supported formats: JPG, PNG. Max size: 5MB"
           >
             <Upload
               maxCount={1}
               beforeUpload={(file) => {
-                const isImage = file.type.startsWith('image/');
+                const isImage = file.type.startsWith("image/");
                 const isLt5M = file.size / 1024 / 1024 < 5;
-                
+
                 if (!isImage) {
-                  message.error('You can only upload image files!');
+                  message.error("You can only upload image files!");
                   return false;
                 }
-                
+
                 if (!isLt5M) {
-                  message.error('Image must be smaller than 5MB!');
+                  message.error("Image must be smaller than 5MB!");
                   return false;
                 }
 
@@ -804,39 +896,39 @@ const Workshops = () => {
               fileList={coverImageFile ? [coverImageFile] : []}
             >
               <Button icon={<UploadOutlined />}>
-                {editingWorkshop?.poster_image 
-                  ? 'Replace cover image' 
-                  : 'Upload cover image'}
+                {editingWorkshop?.poster_image
+                  ? "Replace cover image"
+                  : "Upload cover image"}
               </Button>
             </Upload>
             {editingWorkshop?.poster_image && !coverImageFile && (
               <div style={{ marginTop: 8 }}>
-                <img 
-                  src={editingWorkshop.poster_image} 
-                  alt="Current cover" 
-                  style={{ maxWidth: '200px', marginTop: '8px' }} 
+                <img
+                  src={editingWorkshop.poster_image}
+                  alt="Current cover"
+                  style={{ maxWidth: "200px", marginTop: "8px" }}
                 />
               </div>
             )}
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Worksheet"
             extra="Supported format: PDF. Max size: 10MB"
           >
             <Upload
               maxCount={1}
               beforeUpload={(file) => {
-                const isPdf = file.type === 'application/pdf';
+                const isPdf = file.type === "application/pdf";
                 const isLt10M = file.size / 1024 / 1024 < 10;
-                
+
                 if (!isPdf) {
-                  message.error('You can only upload PDF files!');
+                  message.error("You can only upload PDF files!");
                   return false;
                 }
-                
+
                 if (!isLt10M) {
-                  message.error('PDF must be smaller than 10MB!');
+                  message.error("PDF must be smaller than 10MB!");
                   return false;
                 }
 
@@ -847,14 +939,18 @@ const Workshops = () => {
               fileList={worksheetFile ? [worksheetFile] : []}
             >
               <Button icon={<UploadOutlined />}>
-                {editingWorkshop?.pdf_url 
-                  ? 'Replace worksheet' 
-                  : 'Upload worksheet'}
+                {editingWorkshop?.pdf_url
+                  ? "Replace worksheet"
+                  : "Upload worksheet"}
               </Button>
             </Upload>
             {editingWorkshop?.pdf_url && !worksheetFile && (
               <div style={{ marginTop: 8 }}>
-                <a href={editingWorkshop.pdf_url} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={editingWorkshop.pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   View current worksheet
                 </a>
               </div>
@@ -950,11 +1046,11 @@ const Workshops = () => {
             label="Duration"
             rules={[{ required: true, message: "Please enter duration" }]}
           >
-            <Input 
-              type="number" 
+            <Input
+              type="number"
               min={1}
               addonAfter="minutes"
-              placeholder="Enter duration in minutes" 
+              placeholder="Enter duration in minutes"
             />
           </Form.Item>
 
@@ -972,130 +1068,132 @@ const Workshops = () => {
 
       {/* Add this at the end of the return statement, after the other drawers */}
       {/* Update the view details drawer */}
-            <Drawer
-              title={
-                <Space>
-                  <ArrowLeftOutlined onClick={() => setViewDetailsDrawerVisible(false)} />
-                  Workshop Schedule Details
-                </Space>
-              }
-              width={720}
-              onClose={() => setViewDetailsDrawerVisible(false)}
-              open={viewDetailsDrawerVisible}
-            >
-              {selectedSchedule && (
-                <div className={styles.detailsContainer}>
-                  <div className={styles.detailItem}>
-                    <h3>Workshop</h3>
-                    <p>{selectedSchedule.workshop}</p>
-                  </div>
-                  
-                  <div className={styles.detailItem}>
-                    <h3>Company</h3>
-                    <p>{selectedSchedule.company}</p>
-                  </div>
-                  
-                  <div className={styles.detailItem}>
-                    <h3>Date</h3>
-                    <p>{selectedSchedule.date}</p>
-                  </div>
-                  
-                  <div className={styles.detailItem}>
-                    <h3>Time</h3>
-                    <p>{selectedSchedule.time}</p>
-                  </div>
-                  
-                  <div className={styles.detailItem}>
-                    <h3>Date Added</h3>
-                    <p>{selectedSchedule.dateAdded}</p>
-                  </div>
-                  
-                  <div className={styles.detailItem}>
-                    <h3>Worksheet</h3>
-                    {selectedSchedule.pdf_url ? (
-                      <a 
-                        href={selectedSchedule.pdf_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className={styles.pdfLink}
-                      >
-                        <Button type="primary">View PDF</Button>
-                      </a>
-                    ) : (
-                      <p>No worksheet available</p>
-                    )}
-                  </div>
-            
-                  <div className={styles.actionButtons}>
-                    <Button 
-                      type="primary" 
-                      onClick={() => handleRescheduleWorkshop(selectedSchedule)}
-                    >
-                      Reschedule Workshop
-                    </Button>
-                    <Button 
-                      type="primary" 
-                      danger 
-                      onClick={() => {
-                        handleCancelWorkshop(selectedSchedule.id);
-                        setViewDetailsDrawerVisible(false);
-                      }}
-                    >
-                      Cancel Workshop
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </Drawer>
-      
-            {/* Update the reschedule modal */}
-              <Modal
-                title="Reschedule Workshop"
-                open={rescheduleModalVisible}
-                onCancel={() => setRescheduleModalVisible(false)}
-                footer={null}
-              >
-                <Form
-                  form={rescheduleForm}
-                  layout="vertical"
-                  onFinish={handleRescheduleSubmit}
+      <Drawer
+        title={
+          <Space>
+            <ArrowLeftOutlined
+              onClick={() => setViewDetailsDrawerVisible(false)}
+            />
+            Workshop Schedule Details
+          </Space>
+        }
+        width={720}
+        onClose={() => setViewDetailsDrawerVisible(false)}
+        open={viewDetailsDrawerVisible}
+      >
+        {selectedSchedule && (
+          <div className={styles.detailsContainer}>
+            <div className={styles.detailItem}>
+              <h3>Workshop</h3>
+              <p>{selectedSchedule.workshop}</p>
+            </div>
+
+            <div className={styles.detailItem}>
+              <h3>Company</h3>
+              <p>{selectedSchedule.company}</p>
+            </div>
+
+            <div className={styles.detailItem}>
+              <h3>Date</h3>
+              <p>{selectedSchedule.date}</p>
+            </div>
+
+            <div className={styles.detailItem}>
+              <h3>Time</h3>
+              <p>{selectedSchedule.time}</p>
+            </div>
+
+            <div className={styles.detailItem}>
+              <h3>Date Added</h3>
+              <p>{selectedSchedule.dateAdded}</p>
+            </div>
+
+            <div className={styles.detailItem}>
+              <h3>Worksheet</h3>
+              {selectedSchedule.pdf_url ? (
+                <a
+                  href={selectedSchedule.pdf_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.pdfLink}
                 >
-                  <Form.Item
-                    name="date"
-                    label="New Date"
-                    rules={[{ required: true, message: "Please select a new date" }]}
-                  >
-                    <DatePicker style={{ width: "100%" }} />
-                  </Form.Item>
-            
-                  <Form.Item
-                    name="startTime"
-                    label="Start Time"
-                    rules={[{ required: true, message: "Please select a start time" }]}
-                  >
-                    <TimePicker format="HH:mm" style={{ width: "100%" }} />
-                  </Form.Item>
-            
-                  <Form.Item
-                    name="endTime"
-                    label="End Time"
-                    rules={[{ required: true, message: "Please select an end time" }]}
-                  >
-                    <TimePicker format="HH:mm" style={{ width: "100%" }} />
-                  </Form.Item>
-            
-                  <Form.Item>
-                    <div className={styles.modalButtons}>
-                      <Button onClick={() => setRescheduleModalVisible(false)}>
-                        Cancel
-                      </Button>
-                      <Button type="primary" htmlType="submit">
-                        Reschedule
-                      </Button>
-                    </div>
-                  </Form.Item>
-                </Form>
-              </Modal>
+                  <Button type="primary">View PDF</Button>
+                </a>
+              ) : (
+                <p>No worksheet available</p>
+              )}
+            </div>
+
+            {/* <div className={styles.actionButtons}>
+              <Button
+                type="primary"
+                onClick={() => handleRescheduleWorkshop(selectedSchedule)}
+              >
+                Reschedule Workshop
+              </Button>
+              <Button
+                type="primary"
+                danger
+                onClick={() => {
+                  handleCancelWorkshop(selectedSchedule.id);
+                  setViewDetailsDrawerVisible(false);
+                }}
+              >
+                Cancel Workshop
+              </Button>
+            </div> */}
+          </div>
+        )}
+      </Drawer>
+
+      {/* Update the reschedule modal */}
+      <Modal
+        title="Reschedule Workshop"
+        open={rescheduleModalVisible}
+        onCancel={() => setRescheduleModalVisible(false)}
+        footer={null}
+      >
+        <Form
+          form={rescheduleForm}
+          layout="vertical"
+          onFinish={handleRescheduleSubmit}
+        >
+          <Form.Item
+            name="date"
+            label="New Date"
+            rules={[{ required: true, message: "Please select a new date" }]}
+          >
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item
+            name="startTime"
+            label="Start Time"
+            rules={[{ required: true, message: "Please select a start time" }]}
+          >
+            <TimePicker format="HH:mm" style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item
+            name="endTime"
+            label="End Time"
+            rules={[{ required: true, message: "Please select an end time" }]}
+          >
+            <TimePicker format="HH:mm" style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item>
+            <div className={styles.modalButtons}>
+              <Button onClick={() => setRescheduleModalVisible(false)}>
+                Cancel
+              </Button>
+              <Button type="primary" htmlType="submit">
+                Reschedule
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
 
       {/* Add this new Details Drawer component after your other drawers */}
       <Drawer
@@ -1116,11 +1214,11 @@ const Workshops = () => {
               <img
                 src={selectedWorkshop.poster_image || "/placeholder-image.png"}
                 alt={selectedWorkshop.title}
-                style={{ 
-                  width: '100%', 
-                  maxHeight: 300, 
-                  objectFit: 'cover',
-                  borderRadius: 8 
+                style={{
+                  width: "100%",
+                  maxHeight: 300,
+                  objectFit: "cover",
+                  borderRadius: 8,
                 }}
               />
             </div>
@@ -1142,17 +1240,19 @@ const Workshops = () => {
 
             <div className={styles.detailItem}>
               <h3>Agenda</h3>
-              <p>{selectedWorkshop.agenda || 'No agenda available'}</p>
+              <p>{selectedWorkshop.agenda || "No agenda available"}</p>
             </div>
 
             <div className={styles.detailItem}>
               <h3>Date Added</h3>
-              <p>{new Date(selectedWorkshop.created_at).toLocaleDateString()}</p>
+              <p>
+                {new Date(selectedWorkshop.created_at).toLocaleDateString()}
+              </p>
             </div>
 
             <div className={styles.actionButtons}>
-              <Button 
-                type="primary" 
+              <Button
+                type="primary"
                 icon={<EditOutlined />}
                 onClick={() => {
                   setDetailsDrawerVisible(false);
@@ -1161,9 +1261,9 @@ const Workshops = () => {
               >
                 Edit Workshop
               </Button>
-              <Button 
-                type="primary" 
-                danger 
+              <Button
+                type="primary"
+                danger
                 icon={<DeleteOutlined />}
                 onClick={() => {
                   setDetailsDrawerVisible(false);
