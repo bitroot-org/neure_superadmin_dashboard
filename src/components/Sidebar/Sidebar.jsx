@@ -120,11 +120,11 @@ const Sidebar = () => {
       name: "FAQ",
       icon: <QuestionCircleOutlined />,
     },
-    // {
-    //   path: "/activitylog",
-    //   name: "Activity Log",
-    //   icon: <HistoryOutlined />,
-    // },
+    {
+      path: "/activitylog",
+      name: "Activity History",
+      icon: <HistoryOutlined />,
+    },
     // {
     //   path: "/profile",
     //   name: "Profile",
