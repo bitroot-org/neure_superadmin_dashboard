@@ -91,7 +91,12 @@ const Workshops = () => {
   const debouncedWorkshopSearch = useCallback(
     debounce((searchValue) => {
       console.log("Debounced workshop search with:", searchValue);
-      fetchWorkshops(pagination.current, pagination.pageSize, dateRange, searchValue);
+      fetchWorkshops(
+        pagination.current,
+        pagination.pageSize,
+        dateRange,
+        searchValue
+      );
     }, 500),
     [pagination.current, pagination.pageSize, dateRange]
   );
@@ -232,9 +237,9 @@ const Workshops = () => {
 
   const handleTableChange = (newPagination) => {
     fetchWorkshops(
-      newPagination.current, 
-      newPagination.pageSize, 
-      dateRange, 
+      newPagination.current,
+      newPagination.pageSize,
+      dateRange,
       workshopSearchTerm
     );
   };
@@ -432,7 +437,7 @@ const Workshops = () => {
           worksheet: schedule.pdf_url ? "Available" : "Not available",
           dateAdded: new Date(schedule.schedule_date).toLocaleDateString(),
           pdf_url: schedule.pdf_url,
-          status: schedule.status || 'pending', // Include status in the formatted data
+          status: schedule.status || "pending", // Include status in the formatted data
         }));
         setScheduleData(formattedData);
       }
@@ -517,12 +522,14 @@ const Workshops = () => {
           </Button>
           <Button
             type="primary"
-            style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+            style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
             onClick={(e) => {
               e.stopPropagation(); // Prevent row click event
-              handleWorkshopStatusUpdate(record.id, 'completed');
+              handleWorkshopStatusUpdate(record.id, "completed");
             }}
-            disabled={record.status === 'completed' || record.status === 'cancelled'}
+            disabled={
+              record.status === "completed" || record.status === "cancelled"
+            }
           >
             Mark as Completed
           </Button>
@@ -531,9 +538,11 @@ const Workshops = () => {
             danger
             onClick={(e) => {
               e.stopPropagation(); // Prevent row click event
-              handleWorkshopStatusUpdate(record.id, 'cancelled');
+              handleWorkshopStatusUpdate(record.id, "cancelled");
             }}
-            disabled={record.status === 'completed' || record.status === 'cancelled'}
+            disabled={
+              record.status === "completed" || record.status === "cancelled"
+            }
           >
             Cancel
           </Button>
@@ -707,7 +716,7 @@ const Workshops = () => {
                 }
           }
           onChange={activeTab === "workshops" ? handleTableChange : undefined}
-          scroll={{ x: "max-content" }}
+          scroll={{ x: 1250}}
           onRow={(record) => ({
             onClick: () => {
               if (activeTab === "workshops") {

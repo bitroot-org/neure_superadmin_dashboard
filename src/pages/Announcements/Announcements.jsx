@@ -270,7 +270,7 @@ const Announcements = () => {
         dataSource={announcements}
         loading={loading}
         rowKey="id"
-        scroll={{ x: "max-content" }}
+        scroll={{ x: 1300 }}
         pagination={{
           ...pagination,
           showSizeChanger: false,

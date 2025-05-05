@@ -429,7 +429,7 @@ const Company = () => {
             pageSize: 10,
             showSizeChanger: false,
           }}
-          scroll={{ x: "max-content" }}
+          scroll={{ x: 1600 }}
           onRow={onRowClick}
         />
       </div>

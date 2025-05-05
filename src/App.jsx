@@ -27,6 +27,7 @@ import AccountsDeactivation from "./pages/AccountsDeactivation/AccountsDeactivat
 import Feedback from "./pages/Feedback/Feedback";
 import Rewards from "./pages/Rewards/Rewards";
 import FAQ from "./pages/FAQ/FAQ";
+import ActivityHistory from "./pages/ActivityHistory/ActivityHistory";
 
 const App = () => (
   <ConfigProvider
@@ -121,6 +122,7 @@ const App = () => (
             <Route path="/accountsDeactivation" element={<AccountsDeactivation />} />
             <Route path="/rewards" element={<Rewards />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/activitylog" element={<ActivityHistory />} />
           </Route>
         </Route>
 

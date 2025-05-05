@@ -282,7 +282,7 @@ const Assessments = () => {
           loading={loading}
           onChange={handleTableChange}
           pagination={pagination}
-          scroll={{ x: "max-content" }}
+          scroll={{ x: 1200 }}
           // Remove the onRow click handler
         />
       </div>

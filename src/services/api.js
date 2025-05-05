@@ -762,3 +762,12 @@ export const deleteQnA = async (id) => {
     throw error.response?.data || error;
   }
 };
+
+export const getActivityLogs = async (params = {}) => {
+  try {
+    const response = await api.get("/logs/list", { params });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}

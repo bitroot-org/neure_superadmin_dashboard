@@ -687,11 +687,31 @@ const Resources = () => {
         formData.append("type", "article");
 
         response = await createArticle(formData);
-
-        // ... rest of the article handling code remains the same
       }
 
-      // ... rest of the function remains the same
+      if (response && response.status) {
+        message.success(`${resourceType} created successfully`);
+        
+        // Close the drawer
+        setCreateDrawerVisible(false);
+        
+        // Reset form and selected resource type
+        form.resetFields();
+        setSelectedResourceType(null);
+        
+        // Refresh the resources list based on current active tab
+        if (activeTab === "articles") {
+          fetchArticles(pagination.current, pagination.pageSize);
+        } else if (activeTab === "images") {
+          fetchGalleryItems("image", imagesPagination.current, imagesPagination.pageSize);
+        } else if (activeTab === "videos") {
+          fetchGalleryItems("video", videosPagination.current, videosPagination.pageSize);
+        } else if (activeTab === "documents") {
+          fetchGalleryItems("document", documentsPagination.current, documentsPagination.pageSize);
+        }
+      } else {
+        throw new Error(`Failed to create ${resourceType}`);
+      }
     } catch (error) {
       console.error("Error creating resource:", error);
       message.error(

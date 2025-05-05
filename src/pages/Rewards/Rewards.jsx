@@ -301,7 +301,7 @@ const Rewards = () => {
         columns={columns}
         dataSource={rewards}
         loading={loading}
-        scroll={{ x: "max-content" }}
+        scroll={{ x: 1400 }}
         rowKey="id"
         onRow={(record) => ({
           onClick: () => handleRowClick(record),
@@ -311,6 +311,7 @@ const Rewards = () => {
           pageSize: 10,
           showSizeChanger: false,
         }}
+
       />
 
       {/* Create/Edit Drawer */}
