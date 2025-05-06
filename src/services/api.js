@@ -771,3 +771,44 @@ export const getActivityLogs = async (params = {}) => {
     throw error.response?.data || error;
   }
 }
+
+export const getAssessmentsList = async () => {
+  try {
+    const response = await api.get("/assessments/list");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const deleteAssessment = async (id) => {
+  try {
+    const response = await api.delete(`/assessments/deleteAssessment/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const getAssessmentCompletionList = async (params = {}) => {
+  try {
+    const response = await api.get("/assessments/getAssessmentCompletionList", { params });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+
+export const getUserAssessmentResponses = async (params = {}) => {
+  try {
+    const response = await api.get(`/assessments/responses/${params.assessmentId}`, { 
+      params: {
+        user_id: params.user_id
+      } 
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}

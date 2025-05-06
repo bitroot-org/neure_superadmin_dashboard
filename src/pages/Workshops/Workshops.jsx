@@ -716,7 +716,7 @@ const Workshops = () => {
                 }
           }
           onChange={activeTab === "workshops" ? handleTableChange : undefined}
-          scroll={{ x: 1250}}
+          scroll={{ x: 1400}}
           onRow={(record) => ({
             onClick: () => {
               if (activeTab === "workshops") {

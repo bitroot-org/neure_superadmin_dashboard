@@ -17,6 +17,7 @@ import {
   CommentOutlined,
   GiftOutlined,
   QuestionCircleOutlined,
+  FormOutlined,
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
@@ -53,6 +54,15 @@ const Sidebar = () => {
       }
     });
   };
+
+  // Get the current path to determine selected keys
+  const currentPath = location.pathname;
+  
+  // Define selected keys based on current path
+  const selectedKeys = [currentPath];
+  
+  // Define open keys for submenus
+  const openKeys = currentPath.includes('/employees/assessment') ? ['assessments'] : [];
 
   const menuData = [
     {
@@ -91,9 +101,21 @@ const Sidebar = () => {
       icon: <FolderOpenOutlined />,
     },
     {
-      path: "/assessments",
-      name: "Assessments",
-      icon: <FolderOpenOutlined /> ,
+      key: 'assessments',
+      name: 'Assessments',
+      icon: <FormOutlined />,
+      children: [
+        {
+          key: '/employees/assessments',  // Use path as key
+          name: 'Manage Assessments',
+          path: '/employees/assessments',
+        },
+        {
+          key: '/employees/assessment-reports',  // Use path as key
+          name: 'Assessment Reports',
+          path: '/employees/assessment-reports',
+        }
+      ]
     },
     {
       path: '/announcements',
@@ -125,16 +147,6 @@ const Sidebar = () => {
       name: "Activity History",
       icon: <HistoryOutlined />,
     },
-    // {
-    //   path: "/profile",
-    //   name: "Profile",
-    //   icon: <ProfileOutlined />,
-    // },
-    // {
-    //   path: "/settings",
-    //   name: "Settings",
-    //   icon: <SettingOutlined />,
-    // },
     {
       key: "logout",
       path: "#",
@@ -148,40 +160,51 @@ const Sidebar = () => {
       title="Neure Dashboard"
       menuDataRender={() => menuData}
       logo={neurelogo}
-      menuItemRender={(item, dom) => (
-        item.key === "logout" ?
-        // For logout item, use a button with onClick instead of Link
-        <button
-          onClick={handleLogout}
-          style={{
-            cursor: 'pointer',
-            color: location.pathname === item.path ? 'white' : undefined,
-            background: 'transparent',
-            border: 'none',
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-            width: '100%',
-            textAlign: 'left'
-          }}
-        >
-          {dom}
-        </button>
-        :
-        // For regular menu items, use Link as before
-        <Link
-          to={item.path}
-          style={{
-            color: location.pathname === item.path ? 'white' : undefined,
-          }}
-        >
-          {dom}
-        </Link>
-      )}
+      menuItemRender={(item, dom) => {
+        // For logout item, use a button with onClick
+        if (item.key === "logout") {
+          return (
+            <button
+              onClick={handleLogout}
+              style={{
+                cursor: 'pointer',
+                color: location.pathname === item.path ? 'white' : undefined,
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
+                textAlign: 'left'
+              }}
+            >
+              {dom}
+            </button>
+          );
+        }
+        
+        // For regular menu items with a path, use Link
+        if (item.path) {
+          return (
+            <Link
+              to={item.path}
+              style={{
+                color: location.pathname === item.path ? 'white' : undefined,
+              }}
+            >
+              {dom}
+            </Link>
+          );
+        }
+        
+        // For items without a path (like parent menu items), just return the DOM
+        return dom;
+      }}
       contentStyle={{ margin: 0, padding: 0 }}
       fixSiderbar
       menuProps={{
-        selectedKeys: [location.pathname],
+        selectedKeys: selectedKeys,
+        defaultOpenKeys: openKeys,
       }}
     >
       <div

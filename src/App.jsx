@@ -28,6 +28,7 @@ import Feedback from "./pages/Feedback/Feedback";
 import Rewards from "./pages/Rewards/Rewards";
 import FAQ from "./pages/FAQ/FAQ";
 import ActivityHistory from "./pages/ActivityHistory/ActivityHistory";
+import AssessmentReports from './pages/Assessments/AssessmentReports';
 
 const App = () => (
   <ConfigProvider
@@ -110,6 +111,7 @@ const App = () => (
             <Route path="/companies/:companyId/analytics" element={<CompanyAnalytics />} />
             <Route path="/employees" element={<Employees />} />
             <Route path="/employees/assessments" element={<Assessments />} />
+            <Route path="/employees/assessment-reports" element={<AssessmentReports />} />
             <Route path="/therapists" element={<Therapists />} />
             <Route path="/workshops" element={<Workshops />} />
             <Route path="/notifications" element={<Notifications />} />
