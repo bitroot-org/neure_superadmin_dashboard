@@ -51,14 +51,55 @@
 }
 
 
+/* Target all possible ProLayout menu item selectors */
+:global(.ant-pro-menu-item),
+:global(.ant-pro-menu-submenu-title),
+:global(.ant-menu-item),
+:global(.ant-menu-submenu-title) {
+  transition: background-color 0.3s !important;
+}
+
+/* Selected state for all menu items */
+:global(.ant-pro-menu-item-selected),
 :global(.ant-menu-item-selected) {
-  background-color: var(--primary-dark) !important;
+  background-color: #48A6A7 !important;
+  color: white !important;
 }
 
-:global(.ant-menu-item:hover) {
-  background-color: var(--primary) !important;
+/* Hover state for all menu items */
+:global(.ant-pro-menu-item:hover),
+:global(.ant-pro-menu-submenu-title:hover),
+:global(.ant-menu-item:hover),
+:global(.ant-menu-submenu-title:hover) {
+  background-color: #48A6A7 !important; /* lighter green for hover */
 }
 
-:global(.ant-menu-item-selected::after) {
-  border-right-color: var(--primary-light) !important;
+/* Submenu specific selectors */
+:global(.ant-pro-menu-submenu .ant-pro-menu-item-selected),
+:global(.ant-menu-submenu .ant-menu-item-selected),
+:global(.ant-pro-menu-submenu-popup .ant-pro-menu-item-selected),
+:global(.ant-menu-submenu-popup .ant-menu-item-selected) {
+  background-color: green !important;
+  color: white !important;
+}
+
+/* Force override any inline styles with !important */
+:global(.ant-pro-menu-item-selected),
+:global(.ant-menu-item-selected),
+:global(.ant-pro-menu-submenu .ant-pro-menu-item-selected),
+:global(.ant-menu-submenu .ant-menu-item-selected) {
+  background-color: #48A6A7 !important;
+}
+
+/* Additional selectors for nested items */
+:global(.ant-pro-menu-inline .ant-pro-menu-item-selected),
+:global(.ant-menu-inline .ant-menu-item-selected) {
+  background-color: #48A6A7 !important;
+}
+
+/* Target the specific submenu items by their paths */
+:global([data-menu-id="/employees/assessments"]),
+:global([data-menu-id="/employees/assessment-reports"]) {
+  background-color: #48A6A7 !important;
+  color: white !important;
 }

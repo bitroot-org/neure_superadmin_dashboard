@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, DatePicker, Drawer, Form, Input, message, Select, Tag } from 'antd';
-import { FilterOutlined, PlusOutlined, ArrowLeftOutlined, CloseOutlined } from '@ant-design/icons';
+import { Table, Button, Space, DatePicker, Drawer, Form, Input, message, Select, Tag, Modal } from 'antd';
+import { FilterOutlined, PlusOutlined, ArrowLeftOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import styles from './Assessments.module.css';
-import { createAssessment, getAllAssessments } from '../../services/api';
+import { createAssessment, getAllAssessments, deleteAssessment } from '../../services/api';
 
 const Assessments = () => {
   const [createDrawerVisible, setCreateDrawerVisible] = useState(false);
@@ -66,6 +66,26 @@ const Assessments = () => {
     fetchAssessments(newPagination.current, newPagination.pageSize);
   };
 
+  const handleDeleteAssessment = (id) => {
+    Modal.confirm({
+      title: 'Are you sure you want to delete this assessment?',
+      content: 'This action cannot be undone.',
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await deleteAssessment(id);
+          message.success('Assessment deleted successfully');
+          fetchAssessments(); // Refresh the list
+        } catch (error) {
+          console.error('Error deleting assessment:', error);
+          message.error('Failed to delete assessment');
+        }
+      },
+    });
+  };
+
   const columns = [
     {
       title: 'Title',
@@ -108,19 +128,20 @@ const Assessments = () => {
             type="link" 
             onClick={(e) => {
               e.stopPropagation(); // Prevent row click event
-              handleViewAssessment(record, false);
-            }}
-          >
-            View
-          </Button>
-          <Button 
-            type="link" 
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent row click event
               handleViewAssessment(record, true);
             }}
           >
             Edit
+          </Button>
+          <Button 
+            type="link" 
+            danger
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click event
+              handleDeleteAssessment(record.id);
+            }}
+          >
+            Delete
           </Button>
         </Space>
       ),
@@ -283,7 +304,10 @@ const Assessments = () => {
           onChange={handleTableChange}
           pagination={pagination}
           scroll={{ x: 1200 }}
-          // Remove the onRow click handler
+          onRow={(record) => ({
+            onClick: () => handleViewAssessment(record, false),
+            style: { cursor: 'pointer' }
+          })}
         />
       </div>
 
