@@ -380,6 +380,7 @@ const Home = () => {
             columns={columns}
             rowKey="id"
             pagination={false}
+            scroll={{ x: 1200 }}
           />
         </Card>
       </div>
