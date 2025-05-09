@@ -313,7 +313,7 @@ const Home = () => {
       </div>
 
       {/* User Engagement Section */}
-      <div className={styles.section}>
+      {/* <div className={styles.section}>
         <Title level={4} className={styles.sectionTitle}>
           User Engagement
         </Title>
@@ -367,7 +367,7 @@ const Home = () => {
             </Card>
           </Col>
         </Row>
-      </div>
+      </div> */}
 
       {/* Top Companies Table */}
       <div className={styles.section}>
@@ -380,6 +380,7 @@ const Home = () => {
             columns={columns}
             rowKey="id"
             pagination={false}
+            scroll={{ x: 1200 }}
           />
         </Card>
       </div>

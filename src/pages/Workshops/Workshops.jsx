@@ -424,21 +424,33 @@ const Workshops = () => {
       const response = await getAllWorkshopSchedules(params);
       if (response.status && response.data) {
         // Transform the data to match the table columns
-        const formattedData = response.data.map((schedule) => ({
-          key: schedule.session_id,
-          id: schedule.session_id,
-          workshop: schedule.workshop_title,
-          company: schedule.company_name,
-          date: new Date(schedule.schedule_date).toLocaleDateString(),
-          time: new Date(schedule.start_time).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          worksheet: schedule.pdf_url ? "Available" : "Not available",
-          dateAdded: new Date(schedule.schedule_date).toLocaleDateString(),
-          pdf_url: schedule.pdf_url,
-          status: schedule.status || "pending", // Include status in the formatted data
-        }));
+        const formattedData = response.data.map((schedule) => {
+          // Format date as "11 JAN 25"
+          const scheduleDate = new Date(schedule.schedule_date);
+          const formattedDate = `${scheduleDate.getDate()} ${scheduleDate.toLocaleString('en-US', { month: 'short' }).toUpperCase()} ${String(scheduleDate.getFullYear()).slice(2)}`;
+          
+          // Format time as "01:11 PM"
+          const startTime = new Date(schedule.start_time);
+          const formattedTime = startTime.toLocaleString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: true 
+          });
+          
+          return {
+            key: schedule.session_id,
+            id: schedule.session_id,
+            workshop: schedule.workshop_title,
+            company: schedule.company_name,
+            date: formattedDate,
+            time: formattedTime,
+            worksheet: schedule.pdf_url ? "Available" : "Not available",
+            dateAdded: formattedDate, // Using same format for dateAdded
+            pdf_url: schedule.pdf_url,
+            status: schedule.status || "pending",
+            description: schedule.description || "",
+          };
+        });
         setScheduleData(formattedData);
       }
     } catch (error) {
@@ -482,10 +494,11 @@ const Workshops = () => {
       ellipsis: true,
     },
     {
-      title: "Date",
+      title: "Schedule Date",
       dataIndex: "date",
       key: "date",
       width: 120,
+
     },
     {
       title: "Time",
@@ -497,12 +510,6 @@ const Workshops = () => {
       title: "Worksheet",
       dataIndex: "worksheet",
       key: "worksheet",
-      width: 120,
-    },
-    {
-      title: "Date Added",
-      dataIndex: "dateAdded",
-      key: "dateAdded",
       width: 120,
     },
     {
