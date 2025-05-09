@@ -252,8 +252,8 @@ const Employees = () => {
   };
 
   return (
-    <div>
-      <h1>Employee Management</h1>
+    <div style={{ padding: '24px' }}>
+      <h2 style={{ color: 'var(--primary-dark)' }}>Employee Management</h2>
       {error && <Alert message={error} type="error" closable />}
 
       <Space

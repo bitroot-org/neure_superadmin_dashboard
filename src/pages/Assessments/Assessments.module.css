@@ -1,12 +1,11 @@
 .container {
   padding: 24px;
-  background-color: #ffffff;
 }
 
 .title {
   font-size: 24px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--primary-dark);
   margin-bottom: 24px;
 }
 

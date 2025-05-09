@@ -154,9 +154,9 @@ const FAQ = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <Title level={2} className={styles.pageTitle}>
+        <h1 className={styles.pageTitle}>
           Frequently Asked Questions
-        </Title>
+        </h1>
         <Button
           type="primary"
           icon={<PlusOutlined />}
