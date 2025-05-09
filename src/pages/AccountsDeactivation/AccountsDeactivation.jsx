@@ -169,9 +169,9 @@ const AccountsDeactivation = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <Title level={2} className={styles.title}>
+        <h1 className={styles.title}>
           Accounts Deactivation
-        </Title>
+        </h1>
       </div>
 
       <Tabs 

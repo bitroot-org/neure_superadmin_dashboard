@@ -242,9 +242,9 @@ const Announcements = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <Title level={2} className={styles.pageTitle}>
+        <h1 level={2} className={styles.title}>
           Announcements
-        </Title>
+        </h1>
         <Button
           type="primary"
           icon={<PlusOutlined />}

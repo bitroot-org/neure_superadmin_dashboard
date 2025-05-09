@@ -10,7 +10,10 @@
 }
 
 .title {
-  margin: 0 !important;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin: 0;
 }
 
 .filterCard {

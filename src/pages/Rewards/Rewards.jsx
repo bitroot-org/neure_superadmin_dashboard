@@ -283,7 +283,7 @@ const Rewards = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Rewards Management</h1>
+        <h1 className={styles.title}>Rewards Management</h1>
         <Button
           type="primary"
           icon={<PlusOutlined />}

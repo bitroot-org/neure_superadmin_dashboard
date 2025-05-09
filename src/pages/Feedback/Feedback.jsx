@@ -215,9 +215,9 @@ const Feedback = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <Title level={2} className={styles.pageTitle}>
+        <h1 className={styles.pageTitle}>
           Feedback
-        </Title>
+        </h1>
       </div>
 
       <div className={styles.actionBar}>

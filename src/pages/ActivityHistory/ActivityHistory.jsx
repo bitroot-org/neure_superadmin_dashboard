@@ -18,6 +18,7 @@ import {
 import dayjs from "dayjs";
 import { getActivityLogs } from "../../services/api";
 import styles from "./ActivityHistory.module.css";
+import { HiH1 } from "react-icons/hi2";
 
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -215,9 +216,9 @@ const ActivityHistory = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <Title level={2} className={styles.title}>
+        <h1 className={styles.title}>
           <HistoryOutlined /> Activity History
-        </Title>
+        </h1>
       </div>
 
       <div className={styles.actionBar}>
