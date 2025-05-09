@@ -38,10 +38,14 @@ api.interceptors.response.use(
           return api(originalRequest);
         }
       } catch (refreshError) {
+        // Only clear localStorage and redirect for auth errors
         localStorage.clear();
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }
+    } else if (error.response?.status === 500) {
+      // For 500 errors, just reject the promise without logout
+      return Promise.reject(error);
     }
     return Promise.reject(error);
   }
