@@ -176,7 +176,6 @@ const Workshops = () => {
         id: editingWorkshop.id,
         title: values.title,
         description: values.description,
-        host_name: values.host_name,
         agenda: values.agenda || "",
       });
 
@@ -259,7 +258,6 @@ const Workshops = () => {
       const payload = {
         title: values.title,
         description: values.description,
-        host_name: values.host_name,
         agenda: values.agenda || "",
       };
 
@@ -376,9 +374,10 @@ const Workshops = () => {
       const payload = {
         workshop_id: values.workshop_template,
         company_id: values.company,
+        host_name: values.host_name,
         date: values.date.format("YYYY-MM-DD"),
         time: values.time.format("HH:mm:ss"),
-        duration_minutes: parseInt(values.duration), // Add this line to include duration
+        duration_minutes: parseInt(values.duration),
       };
 
       const response = await scheduleWorkshop(payload);
@@ -442,6 +441,7 @@ const Workshops = () => {
             id: schedule.session_id,
             workshop: schedule.workshop_title,
             company: schedule.company_name,
+            host_name: schedule.host_name || "Not specified",
             date: formattedDate,
             time: formattedTime,
             worksheet: schedule.pdf_url ? "Available" : "Not available",
@@ -494,11 +494,17 @@ const Workshops = () => {
       ellipsis: true,
     },
     {
+      title: "Host",
+      dataIndex: "host_name",
+      key: "host_name",
+      width: 150,
+      ellipsis: true,
+    },
+    {
       title: "Schedule Date",
       dataIndex: "date",
       key: "date",
       width: 120,
-
     },
     {
       title: "Time",
@@ -564,13 +570,6 @@ const Workshops = () => {
       dataIndex: "title",
       key: "title",
       width: 200,
-      ellipsis: true,
-    },
-    {
-      title: "Host",
-      dataIndex: "organizer",
-      key: "organizer",
-      width: 150,
       ellipsis: true,
     },
     {
@@ -791,14 +790,6 @@ const Workshops = () => {
           </Form.Item>
 
           <Form.Item
-            name="host_name"
-            label="Host name"
-            rules={[{ required: true, message: "Please enter host name" }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
             name="description"
             label="Description"
             rules={[{ required: true, message: "Please enter description" }]}
@@ -873,35 +864,29 @@ const Workshops = () => {
             <TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item
-            name="host_name"
-            label="Host Name"
-            rules={[{ required: true, message: "Please enter host name" }]}
-          >
-            <Input />
-          </Form.Item>
-
           <Form.Item name="agenda" label="Agenda">
             <TextArea rows={4} />
           </Form.Item>
 
+          {/* Cover image upload */}
           <Form.Item
             label="Cover Image"
             extra="Supported formats: JPG, PNG. Max size: 5MB"
           >
             <Upload
+              listType="picture-card"
               maxCount={1}
               beforeUpload={(file) => {
-                const isImage = file.type.startsWith("image/");
+                const isImage = file.type.startsWith('image/');
                 const isLt5M = file.size / 1024 / 1024 < 5;
 
                 if (!isImage) {
-                  message.error("You can only upload image files!");
+                  message.error('You can only upload image files!');
                   return false;
                 }
 
                 if (!isLt5M) {
-                  message.error("Image must be smaller than 5MB!");
+                  message.error('Image must be smaller than 5MB!');
                   return false;
                 }
 
@@ -911,18 +896,19 @@ const Workshops = () => {
               onRemove={() => setCoverImageFile(null)}
               fileList={coverImageFile ? [coverImageFile] : []}
             >
-              <Button icon={<UploadOutlined />}>
-                {editingWorkshop?.poster_image
-                  ? "Replace cover image"
-                  : "Upload cover image"}
-              </Button>
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>
+                  {editingWorkshop?.poster_image ? 'Replace image' : 'Upload'}
+                </div>
+              </div>
             </Upload>
             {editingWorkshop?.poster_image && !coverImageFile && (
               <div style={{ marginTop: 8 }}>
-                <img
-                  src={editingWorkshop.poster_image}
-                  alt="Current cover"
-                  style={{ maxWidth: "200px", marginTop: "8px" }}
+                <img 
+                  src={editingWorkshop.poster_image} 
+                  alt="Current cover" 
+                  style={{ width: 100, height: 100, objectFit: 'cover' }} 
                 />
               </div>
             )}
@@ -1035,6 +1021,14 @@ const Workshops = () => {
                 </Select.Option>
               ))}
             </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="host_name"
+            label="Host name"
+            rules={[{ required: true, message: "Please enter host name" }]}
+          >
+            <Input placeholder="Enter host name" />
           </Form.Item>
 
           <div className={styles.dateTimeContainer}>

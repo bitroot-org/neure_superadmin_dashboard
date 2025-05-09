@@ -103,3 +103,25 @@
   background-color: #48A6A7 !important;
   color: white !important;
 }
+
+/* Add these more specific selectors to target the active menu item */
+:global(.ant-menu-item-selected),
+:global(.ant-menu-item-active),
+:global(.ant-pro-menu-item-selected),
+:global(.ant-pro-menu-item-active),
+:global(.ant-menu-submenu-selected) {
+  background-color: #48A6A7 !important;
+  color: white !important;
+}
+
+/* Add this to ensure the active state persists */
+:global(.ant-layout-sider .ant-menu-item-selected),
+:global(.ant-layout-sider .ant-pro-menu-item-selected) {
+  background-color: #48A6A7 !important;
+}
+
+/* Increase specificity for the active route */
+:global([data-menu-id].ant-menu-item-selected),
+:global([data-path].ant-menu-item-selected) {
+  background-color: #48A6A7 !important;
+}

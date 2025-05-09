@@ -20,7 +20,6 @@ import Therapists from "./pages/Therapists/Therapists";
 import Soundscapes from "./pages/Soundscapes/Soundscapes";
 import Resources from "./pages/Resources/Resources";
 import Workshops from "./pages/Workshops/Workshops";
-import Notifications from "./pages/Notifications";
 import Announcements from "./pages/Announcements/Announcements";
 import Analytics from "./pages/Analytics/Analytics";
 import AccountsDeactivation from "./pages/AccountsDeactivation/AccountsDeactivation";
@@ -114,7 +113,6 @@ const App = () => (
             <Route path="/employees/assessment-reports" element={<AssessmentReports />} />
             <Route path="/therapists" element={<Therapists />} />
             <Route path="/workshops" element={<Workshops />} />
-            <Route path="/notifications" element={<Notifications />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/soundscapes" element={<Soundscapes />} />
             <Route path="/resources" element={<Resources />} />
