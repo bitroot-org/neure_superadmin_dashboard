@@ -51,7 +51,7 @@ const Employees = () => {
     const fetchCompanies = async () => {
       setLoading(true);
       try {
-        const response = await getAllCompanies();
+        const response = await getAllCompanies({ all: true });
         setCompanies(response.data.companies);
         // Set default company and fetch its employees
         if (response.data.companies.length > 0) {

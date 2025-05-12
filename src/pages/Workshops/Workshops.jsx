@@ -119,7 +119,7 @@ const Workshops = () => {
   const fetchCompanies = async () => {
     setCompaniesLoading(true);
     try {
-      const response = await getAllCompanies();
+      const response = await getAllCompanies({ all: true });
       if (response.status && response.data) {
         setCompanies(response.data.companies || []);
       }
