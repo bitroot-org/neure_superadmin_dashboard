@@ -30,21 +30,47 @@
 
 .responseCard {
   margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .responseAnswer {
   margin-top: 16px;
+}
+
+.allOptions {
+  margin-top: 16px;
+}
+
+.answerContent,
+.optionsColumn {
+  margin-top: 8px;
+}
+
+.optionsColumn {
   display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.answerContent {
-  flex: 1;
+.optionTag {
+  margin-bottom: 8px;
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 14px;
 }
 
 .feedback {
   margin-top: 16px;
-  background-color: #f5f5f5;
+  background-color: #f9f9f9;
   padding: 12px;
   border-radius: 4px;
+}
+
+.userPoints {
+  margin-top: 16px;
+  background-color: #f0f7ff;
+  padding: 12px;
+  border-radius: 4px;
+  border-left: 4px solid #1890ff;
 }

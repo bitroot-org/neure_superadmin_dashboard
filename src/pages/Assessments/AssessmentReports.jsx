@@ -477,44 +477,50 @@ const AssessmentReports = () => {
                   <List.Item>
                     <Card className={styles.responseCard}>
                       <Title level={5}>Question {index + 1}: {item.question_text}</Title>
-                      <Text type="secondary">Type: {item.question_type.replace('_', ' ')}</Text>
                       
                       <div className={styles.responseAnswer}>
-                        <Text strong>Selected Option(s):</Text>
+                        <Text strong>Selected Option:</Text>
                         <div className={styles.answerContent}>
-                          {item.question_type === 'text' ? (
-                            item.user_text_response
-                          ) : (
-                            <div>
-                              {item.options
-                                .filter(option => item.user_selected_options.includes(option.id))
-                                .map(option => (
-                                  <Tag 
-                                    key={option.id} 
-                                    color={option.is_correct ? 'green' : 'red'}
-                                  >
-                                    {option.option_text}
-                                  </Tag>
-                                ))}
-                            </div>
-                          )}
+                          {item.options
+                            .filter(option => {
+                              // Check if user_selected_options is an array or a single value
+                              if (Array.isArray(item.user_selected_options)) {
+                                return item.user_selected_options.includes(option.id);
+                              } else {
+                                return item.user_selected_options === option.id;
+                              }
+                            })
+                            .map(option => (
+                              <Tag 
+                                key={option.id} 
+                                color="blue"
+                                className={styles.optionTag}
+                              >
+                                {option.option_text} ({option.points} points)
+                              </Tag>
+                            ))}
                         </div>
                       </div>
                       
-                      <div className={styles.correctAnswer}>
-                        <Text strong>Correct Answer:</Text>
-                        <div className={styles.answerContent}>
-                          {item.question_type !== 'text' && (
-                            <div>
-                              {item.options
-                                .filter(option => option.is_correct)
-                                .map(option => (
-                                  <Tag key={option.id} color="green">
-                                    {option.option_text}
-                                  </Tag>
-                                ))}
-                            </div>
-                          )}
+                      <div className={styles.allOptions}>
+                        <Text strong>All Options:</Text>
+                        <div className={styles.optionsColumn}>
+                          {item.options.map(option => (
+                            <Tag 
+                              key={option.id} 
+                              color={
+                                // Check if user_selected_options is an array or a single value
+                                (Array.isArray(item.user_selected_options) && 
+                                 item.user_selected_options.includes(option.id)) || 
+                                item.user_selected_options === option.id 
+                                  ? 'blue' 
+                                  : 'default'
+                              }
+                              className={styles.optionTag}
+                            >
+                              {option.option_text} ({option.points} points)
+                            </Tag>
+                          ))}
                         </div>
                       </div>
                       
@@ -524,6 +530,11 @@ const AssessmentReports = () => {
                           <div>{item.feedback}</div>
                         </div>
                       )}
+                      
+                      <div className={styles.userPoints}>
+                        <Text strong>Points earned:</Text>
+                        <div>{item.user_points} points</div>
+                      </div>
                     </Card>
                   </List.Item>
                 )}

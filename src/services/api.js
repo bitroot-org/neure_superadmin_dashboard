@@ -816,3 +816,12 @@ export const getUserAssessmentResponses = async (params = {}) => {
     throw error.response?.data || error;
   }
 }
+
+export const getSuperAdminList = async () => {
+  try {
+    const response = await api.get("/user/getSuperadmins");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
