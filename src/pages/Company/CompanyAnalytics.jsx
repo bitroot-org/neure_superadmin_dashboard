@@ -13,6 +13,7 @@ import {
   Progress,
   Timeline,
   Select,
+  message,
 } from "antd";
 import {
   BarChartOutlined,
@@ -20,11 +21,12 @@ import {
   TeamOutlined,
   DashboardOutlined,
   ArrowLeftOutlined,
+  SendOutlined,
 } from "@ant-design/icons";
 // Removed unused import
 import dayjs from "dayjs";
 import styles from "./CompanyAnalytics.module.css";
-import { getCompanyAnalytics, getCompanyList } from "../../services/api";
+import { getCompanyAnalytics, getCompanyList, generateReport } from "../../services/api";
 import {
   LineChart,
   Line,
@@ -85,6 +87,19 @@ const CompanyAnalytics = () => {
       console.error("Error fetching analytics:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSendReport = async () => {
+    try {
+      await generateReport(companyId, {
+        startDate: dateRange[0].format("YYYY-MM-DD"),
+        endDate: dateRange[1].format("YYYY-MM-DD")
+      });
+      message.success('Report sent successfully');
+    } catch (error) {
+      console.error('Error sending report:', error);
+      message.error('Failed to send report');
     }
   };
 
@@ -183,6 +198,13 @@ const CompanyAnalytics = () => {
             onChange={handleDateRangeChange}
             className={styles.datePicker}
           />
+          <Button 
+            type="primary"
+            icon={<SendOutlined />} 
+            onClick={handleSendReport}
+          >
+            Send Report
+          </Button>
           <Button icon={<ArrowLeftOutlined />} onClick={handleBackClick}>
             Back
           </Button>

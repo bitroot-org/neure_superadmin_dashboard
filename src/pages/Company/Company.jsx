@@ -15,15 +15,8 @@ import {
   Tag,
   List,
   Typography,
-  Modal, // Add Modal import
+  Modal,
 } from "antd";
-import {
-  getAllCompanies,
-  getDepartments,
-  createCompany,
-  getGalleryItems,
-  assignResourcesToCompany,
-} from "../../services/api";
 import {
   SearchOutlined,
   PlusOutlined,
@@ -34,7 +27,16 @@ import {
   LineChartOutlined,
   PieChartOutlined,
   DashboardOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
+import {
+  getAllCompanies,
+  getDepartments,
+  createCompany,
+  getGalleryItems,
+  assignResourcesToCompany,
+  deleteCompany,
+} from "../../services/api";
 import moment from "moment";
 import styles from "./Company.module.css";
 import debounce from "lodash/debounce";
@@ -233,16 +235,38 @@ const Company = () => {
   const handleViewAnalytics = (company) => {
     navigate(`/companies/${company.id}/analytics`);
   };
-  
+
+  const handleDeleteCompany = (company) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this company?",
+      content: "This action cannot be undone.",
+      okText: "Yes, Delete",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk: async () => {
+        try {
+          await deleteCompany(company.id);
+          message.success("Company deleted successfully");
+          fetchCompanies(); // Refresh the list
+        } catch (error) {
+          console.error("Error deleting company:", error);
+          message.error("Failed to delete company");
+        }
+      },
+    });
+  };
+
   const columns = [
     {
       title: "Company Name",
       dataIndex: "company_name",
       key: "company_name",
+      width: 150, // Set a reasonable width
     },
     {
       title: "Contact Person",
       key: "contact_person_name",
+      width: 150, // Set a reasonable width
       render: (_, record) => {
         if (record.contact_person_info) {
           return `${record.contact_person_info.first_name} ${record.contact_person_info.last_name}`;
@@ -253,6 +277,7 @@ const Company = () => {
     {
       title: "Contact Email",
       key: "contact_person_email",
+      width: 200, // Set a reasonable width
       render: (_, record) => {
         if (record.contact_person_info) {
           return record.contact_person_info.email;
@@ -263,6 +288,7 @@ const Company = () => {
     {
       title: "Contact Number",
       key: "contact_person_phone",
+      width: 150, // Set a reasonable width
       render: (_, record) => {
         if (record.contact_person_info) {
           return record.contact_person_info.phone;
@@ -274,6 +300,7 @@ const Company = () => {
       title: "Onboarding Date",
       dataIndex: "onboarding_date",
       key: "onboarding_date",
+      width: 150, // Set a reasonable width
       render: (date) => new Date(date).toLocaleDateString(),
       filterDropdown: ({
         setSelectedKeys,
@@ -383,17 +410,33 @@ const Company = () => {
     {
       title: "Analytics",
       key: "analytics",
+      width: 180, // Reduced width
       render: (_, record) => (
-        <Button 
-          type="primary" 
-          icon={<BarChartOutlined />} 
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent row click event
-            handleViewAnalytics(record);
-          }}
-        >
-          View Metrics
-        </Button>
+        <Space size="small" direction="vertical">
+          <Button 
+            type="primary" 
+            size="small"
+            icon={<BarChartOutlined />} 
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click event
+              handleViewAnalytics(record);
+            }}
+          >
+            View Metrics
+          </Button>
+          <Button
+            type="primary"
+            danger
+            size="small"
+            icon={<DeleteOutlined />}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click event
+              handleDeleteCompany(record);
+            }}
+          >
+            Delete
+          </Button>
+        </Space>
       ),
     },
   ];
@@ -418,7 +461,7 @@ const Company = () => {
         </Button>
       </div>
 
-      <div style={{ width: "100%", overflowX: "auto" }}>
+      <div style={{ width: "100%", overflowX: "auto", paddingBottom: "10px" }}>
         <Table
           dataSource={companies}
           columns={columns}
@@ -429,7 +472,7 @@ const Company = () => {
             pageSize: 10,
             showSizeChanger: false,
           }}
-          scroll={{ x: 1600 }}
+          scroll={{ x: "max-content" }} // Use max-content instead of fixed width
           onRow={onRowClick}
         />
       </div>

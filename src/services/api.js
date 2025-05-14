@@ -825,3 +825,28 @@ export const getSuperAdminList = async () => {
     throw error.response?.data || error;
   }
 }
+
+export const generateReport = async (companyId, dateParams = {}) => {
+  try {
+    const params = {};
+    
+    // Add date range parameters if provided
+    if (dateParams.startDate) params.start_date = dateParams.startDate;
+    if (dateParams.endDate) params.end_date = dateParams.endDate;
+    
+    const response = await api.get(`company/reports/wellbeing/email/${companyId}`, { params });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  } 
+}
+
+
+export const deleteCompany = async (companyId) => {
+  try {
+    const response = await api.delete(`/company/delete/${companyId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
