@@ -77,3 +77,22 @@ h1, h2, h3, h4, h5,
   display: flex;
   flex: 1;
 }
+
+/* Add these global styles to ensure menu items are properly styled */
+.ant-menu-item-selected,
+.ant-pro-menu-item-selected {
+  background-color: #006A71 !important;
+  color: white !important;
+}
+
+.ant-menu-item:hover,
+.ant-pro-menu-item:hover {
+  background-color: #48A6A7 !important;
+  color: white !important;
+}
+
+/* Ensure these styles are applied globally */
+body .ant-menu-item-selected,
+body .ant-pro-menu-item-selected {
+  background-color: #006A71 !important;
+}

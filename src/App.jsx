@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ConfigProvider } from 'antd';
 import enUS from 'antd/es/locale/en_US';
 import {
@@ -8,7 +8,6 @@ import {
   Navigate,
 } from "react-router-dom";
 import Sidebar from "./components/Sidebar/Sidebar";
-import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/Login";
 import Header from "./components/Header";
 import Home from "./pages/Home/Home";
@@ -29,82 +28,87 @@ import FAQ from "./pages/FAQ/FAQ";
 import ActivityHistory from "./pages/ActivityHistory/ActivityHistory";
 import AssessmentReports from './pages/Assessments/AssessmentReports';
 
-const App = () => (
-  <ConfigProvider
-    locale={enUS}
-    theme={{
-      token: {
-        fontFamily: 'Archivo, sans-serif',
-        // Primary colors
-        colorPrimary: '#48A6A7',
-        colorPrimaryHover: '#006A71',
-        colorPrimaryActive: '#006A71',
-        colorPrimaryBg: '#9ACBD0',
-        colorPrimaryBgHover: '#48A6A7',
+// Add this authentication check function
+const isAuthenticated = () => {
+  const token = localStorage.getItem('accessToken');
+  return !!token;
+};
 
-        // Background colors
-        colorBgBase: '#F2EFE7',
-        colorBgContainer: '#ffffff',
-        colorBgElevated: '#ffffff',
-        colorBgLayout: '#F2EFE7',
+const App = () => {
+  // Add this effect to log authentication state on app load
+  useEffect(() => {
+    console.log("App mounted, auth state:", isAuthenticated());
+    console.log("Token exists:", !!localStorage.getItem('accessToken'));
+    console.log("Refresh token exists:", !!localStorage.getItem('refreshToken'));
+  }, []);
 
-        // Border radius
-        borderRadius: 8,
-        borderRadiusLG: 12,
-
-        // Other customizations
-        boxShadow: '0 2px 8px rgba(0, 106, 113, 0.1)',
-        boxShadowSecondary: '0 4px 12px rgba(0, 106, 113, 0.12)',
-      },
-      components: {
-        Typography: {
-          titleFontFamily: 'Clash Display, sans-serif',
-          fontWeightStrong: 600,
-          colorTextHeading: '#006A71',
-        },
-        Table: {
-          headerFontSize: 14,
-          headerFontWeight: 600,
-          headerBg: '#9ACBD0',
-          headerColor: '#006A71',
-          fontWeightStrong: 600,
-          colorBgContainer: '#ffffff',
-        },
-        Button: {
+  return (
+    <ConfigProvider
+      locale={enUS}
+      theme={{
+        token: {
+          fontFamily: 'Archivo, sans-serif',
+          // Primary colors
           colorPrimary: '#48A6A7',
           colorPrimaryHover: '#006A71',
           colorPrimaryActive: '#006A71',
-          borderRadius: 6,
-        },
-        Card: {
-          colorBgContainer: '#ffffff',
-          borderRadiusLG: 12,
-          boxShadow: '0 2px 8px rgba(0, 106, 113, 0.08)',
-        },
-        Layout: {
-          colorBgHeader: '#006A71',
-          colorBgBody: '#F2EFE7',
-          colorBgTrigger: '#48A6A7',
-        },
-        Menu: {
-          colorItemBg: 'transparent',
-          colorItemText: '#F2EFE7',
-          colorItemTextSelected: '#ffffff',
-          colorItemBgSelected: '#006A71',
-          colorItemBgHover: 'rgba(154, 203, 208, 0.3)',
-        },
-      },
-    }}
-  >
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<LoginPage />} />
+          colorPrimaryBg: '#9ACBD0',
+          colorPrimaryBgHover: '#48A6A7',
 
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<Sidebar />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          // Background colors
+          colorBgBase: '#F2EFE7',
+          colorBgContainer: '#ffffff',
+          colorBgElevated: '#ffffff',
+          colorBgLayout: '#F2EFE7',
+
+          // Border radius
+          borderRadius: 8,
+          borderRadiusLG: 12,
+
+          // Other customizations
+          boxShadow: '0 2px 8px rgba(0, 106, 113, 0.1)',
+          boxShadowSecondary: '0 4px 12px rgba(0, 106, 113, 0.12)',
+        },
+        components: {
+          Typography: {
+            titleFontFamily: 'Clash Display, sans-serif',
+            fontWeightStrong: 600,
+            colorTextHeading: '#006A71',
+          },
+          Table: {
+            headerFontSize: 14,
+            headerFontWeight: 600,
+            headerBg: '#9ACBD0',
+            headerColor: '#006A71',
+            fontWeightStrong: 600,
+            colorBgContainer: '#ffffff',
+          },
+          Button: {
+            colorPrimary: '#48A6A7',
+            colorPrimaryHover: '#006A71',
+            colorPrimaryActive: '#006A71',
+            borderRadius: 6,
+          },
+          Card: {
+            colorBgContainer: '#ffffff',
+            borderRadiusLG: 12,
+            boxShadow: '0 2px 8px rgba(0, 106, 113, 0.08)',
+          },
+        },
+      }}
+    >
+      <Router>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={
+            isAuthenticated() ? <Navigate to="/home" replace /> : <LoginPage />
+          } />
+
+          {/* Protected Routes - simplified approach */}
+          <Route path="/" element={
+            isAuthenticated() ? <Sidebar /> : <Navigate to="/login" replace />
+          }>
+            <Route index element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
             <Route path="/companies" element={<Company />} />
             <Route path="/companies/:companyId/analytics" element={<CompanyAnalytics />} />
@@ -124,13 +128,10 @@ const App = () => (
             <Route path="/faq" element={<FAQ />} />
             <Route path="/activitylog" element={<ActivityHistory />} />
           </Route>
-        </Route>
-
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </Router>
-  </ConfigProvider>
-);
+        </Routes>
+      </Router>
+    </ConfigProvider>
+  );
+};
 
 export default App;
