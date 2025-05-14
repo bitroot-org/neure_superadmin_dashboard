@@ -91,7 +91,9 @@ const Announcements = () => {
         content: values.content,
         link: values.link || undefined,
         audience_type: values.audience_type,
-        company_ids: values.audience_type === "company" ? values.company_id : undefined,
+        company_ids: (values.audience_type === "company" || values.audience_type === "company_employees") 
+          ? values.company_id 
+          : undefined,
       };
 
       if (editingAnnouncement) {
@@ -186,11 +188,23 @@ const Announcements = () => {
       title: "Audience",
       dataIndex: "audience_type",
       key: "audience_type",
-      render: (type) => (
-        <Tag color={type === "employees" ? "blue" : "green"}>
-          {type.toUpperCase()}
-        </Tag>
-      ),
+      render: (type) => {
+        let color = "green";
+        let displayText = type.toUpperCase();
+        
+        if (type === "employees") {
+          color = "blue";
+        } else if (type === "company_employees") {
+          color = "purple";
+          displayText = "COMPANY EMPLOYEES";
+        }
+        
+        return (
+          <Tag color={color}>
+            {displayText}
+          </Tag>
+        );
+      },
     },
     {
       title: "Link",
@@ -343,10 +357,11 @@ const Announcements = () => {
               <Option value="all">All</Option>
               <Option value="employees">Employees</Option>
               <Option value="company">Company</Option>
+              <Option value="company_employees">Company Employees</Option>
             </Select>
           </Form.Item>
 
-          {selectedAudienceType === "company" && (
+          {(selectedAudienceType === "company" || selectedAudienceType === "company_employees") && (
             <Form.Item
               name="company_id"
               label="Select Company"

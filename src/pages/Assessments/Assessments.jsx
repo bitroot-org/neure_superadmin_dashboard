@@ -9,10 +9,9 @@ const Assessments = () => {
   const [questions, setQuestions] = useState([{ 
     id: 1, 
     options: [
-      { text: 'Option 1', isCorrect: false },
-      { text: 'Option 2', isCorrect: false }
-    ],
-    type: 'single_choice'
+      { text: 'Option 1', points: 0 },
+      { text: 'Option 2', points: 0 }
+    ]
   }]);
   const [form] = Form.useForm();
   const [assessments, setAssessments] = useState([]);
@@ -20,31 +19,7 @@ const Assessments = () => {
   const [selectedAssessment, setSelectedAssessment] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // Add this function to create PSI questions
-  const createPsiQuestions = () => {
-    const psiQuestions = [
-      "I feel comfortable sharing my thoughts and opinions at work.",
-      "I can admit mistakes without fear of punishment or humiliation.",
-      "I feel included and respected by my colleagues and leaders.",
-      "I am encouraged to take risks and experiment with new ideas.",
-      "I believe that my contributions are valued by my team and organization."
-    ];
-    
-    const options = [
-      { text: "Strongly Disagree", isCorrect: true },
-      { text: "Disagree", isCorrect: true },
-      { text: "Neutral", isCorrect: true },
-      { text: "Agree", isCorrect: true },
-      { text: "Strongly Agree", isCorrect: true }
-    ];
-    
-    return psiQuestions.map((question, index) => ({
-      id: index + 1,
-      type: "single_choice",
-      options: [...options],
-      prompt: question
-    }));
-  };
+  // Remove the createPsiQuestions function and any other PSI-related code
 
   // Fetch assessments on component mount
   useEffect(() => {
@@ -129,26 +104,7 @@ const Assessments = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       render: (date) => new Date(date).toLocaleDateString(),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'is_active',
-      key: 'is_active',
-      render: (status) => (
-        <Tag color={status ? 'green' : 'red'}>
-          {status ? 'Active' : 'Inactive'}
-        </Tag>
-      ),
-    },
-    {
-      title: 'PSI Assessment',
-      dataIndex: 'is_psi_assessment',
-      key: 'is_psi_assessment',
-      render: (isPsi) => (
-        <Tag color={isPsi ? 'blue' : 'default'}>
-          {isPsi ? 'PSI' : 'Standard'}
-        </Tag>
-      ),
+      width: 150,
     },
     {
       title: 'Actions',
@@ -186,10 +142,9 @@ const Assessments = () => {
     // Transform the assessment data to match our form structure
     const transformedQuestions = assessment.questions.map((q, index) => ({
       id: index + 1,
-      type: q.question_type,
       options: q.options.map(opt => ({
         text: opt.option_text,
-        isCorrect: opt.is_correct === 1
+        points: opt.points || 0
       }))
     }));
     
@@ -199,7 +154,6 @@ const Assessments = () => {
     form.setFieldsValue({
       title: assessment.title,
       description: assessment.description,
-      is_psi_assessment: assessment.is_psi_assessment === 1,
       questions: assessment.questions.map(q => ({
         prompt: q.question_text
       }))
@@ -212,10 +166,9 @@ const Assessments = () => {
     const newQuestion = {
       id: questions.length + 1,
       options: [
-        { text: 'Option 1', isCorrect: false },
-        { text: 'Option 2', isCorrect: false }
-      ],
-      type: 'single_choice'
+        { text: 'Option 1', points: 0 },
+        { text: 'Option 2', points: 0 }
+      ]
     };
     setQuestions([...questions, newQuestion]);
   };
@@ -227,7 +180,7 @@ const Assessments = () => {
           ...q,
           options: [...q.options, { 
             text: `Option ${q.options.length + 1}`, 
-            isCorrect: false 
+            points: 0 
           }]
         };
       }
@@ -255,21 +208,12 @@ const Assessments = () => {
             description: values.description || '',
             questions: questions.map((q, index) => ({
               question_text: values.questions[index]?.prompt || '',
-              question_type: q.type,
               options: q.options.map(opt => ({
                 option_text: opt.text,
-                is_correct: opt.isCorrect
+                points: opt.points || 0
               }))
             }))
           };
-          
-          // Only include is_psi_assessment for new assessments or if it was already a PSI assessment
-          if (!selectedAssessment || selectedAssessment?.is_psi_assessment === 1) {
-            formattedData.is_psi_assessment = values.is_psi_assessment ? 1 : 0;
-          } else if (selectedAssessment) {
-            // For existing standard assessments, keep it as standard
-            formattedData.is_psi_assessment = 0;
-          }
           
           // If editing, add the assessment ID
           if (isEditMode && selectedAssessment) {
@@ -295,17 +239,13 @@ const Assessments = () => {
 
   const resetForm = () => {
     form.resetFields();
-    // Only reset to default question if not a PSI assessment
-    if (!form.getFieldValue('is_psi_assessment')) {
-      setQuestions([{ 
-        id: 1, 
-        options: [
-          { text: 'Option 1', isCorrect: false },
-          { text: 'Option 2', isCorrect: false }
-        ],
-        type: 'single_choice'
-      }]);
-    }
+    setQuestions([{ 
+      id: 1, 
+      options: [
+        { text: 'Option 1', points: 0 },
+        { text: 'Option 2', points: 0 }
+      ]
+    }]);
     setSelectedAssessment(null);
     setIsEditMode(false);
   };
@@ -389,44 +329,6 @@ const Assessments = () => {
             <Input.TextArea placeholder="Enter assessment description" rows={4} />
           </Form.Item>
 
-          {/* Only show PSI switch for new assessments or if the assessment is already a PSI assessment */}
-          {(!selectedAssessment || selectedAssessment?.is_psi_assessment === 1) && (
-            <Form.Item
-              name="is_psi_assessment"
-              label="PSI Assessment"
-              valuePropName="checked"
-              initialValue={false}
-            >
-              <Switch 
-                checkedChildren="Yes" 
-                unCheckedChildren="No" 
-                disabled={selectedAssessment && !isEditMode}
-                onChange={(checked) => {
-                  if (checked) {
-                    // Create PSI questions
-                    const psiQuestions = createPsiQuestions();
-                    setQuestions(psiQuestions.map(q => ({
-                      id: q.id,
-                      type: q.type,
-                      options: q.options
-                    })));
-                    
-                    // Set form values for questions
-                    form.setFieldsValue({
-                      questions: psiQuestions.map(q => ({
-                        prompt: q.prompt
-                      }))
-                    });
-                  } else if (!selectedAssessment || !selectedAssessment.is_psi_assessment) {
-                    // Reset to default single question if turning off PSI for a new assessment
-                    resetForm();
-                    setCreateDrawerVisible(true);
-                  }
-                }}
-              />
-            </Form.Item>
-          )}
-
           {questions.map((question, questionIndex) => (
             <div key={question.id} className={styles.questionBox}>
               <Form.Item
@@ -435,23 +337,6 @@ const Assessments = () => {
                 rules={[{ required: true, message: 'Please enter question' }]}
               >
                 <Input placeholder="Question/ prompt" />
-              </Form.Item>
-
-              <Form.Item
-                label="Question Type"
-              >
-                <Select
-                  value={question.type}
-                  onChange={(value) => {
-                    if (selectedAssessment && !isEditMode) return;
-                    const newQuestions = [...questions];
-                    newQuestions[questionIndex].type = value;
-                    setQuestions(newQuestions);
-                  }}
-                >
-                  <Select.Option value="single_choice">Single Choice</Select.Option>
-                  <Select.Option value="multiple_choice">Multiple Choice</Select.Option>
-                </Select>
               </Form.Item>
 
               <div className={styles.optionsContainer}>
@@ -468,19 +353,18 @@ const Assessments = () => {
                         setQuestions(newQuestions);
                       }}
                     />
-                    <Select
-                      value={option.isCorrect}
-                      onChange={(value) => {
+                    <Input
+                      type="number"
+                      placeholder="Points"
+                      value={option.points}
+                      onChange={(e) => {
                         if (selectedAssessment && !isEditMode) return;
                         const newQuestions = [...questions];
-                        newQuestions[questionIndex].options[optionIndex].isCorrect = value;
+                        newQuestions[questionIndex].options[optionIndex].points = parseInt(e.target.value) || 0;
                         setQuestions(newQuestions);
                       }}
                       style={{ width: 120, marginLeft: 8 }}
-                    >
-                      <Select.Option value={true}>Correct</Select.Option>
-                      <Select.Option value={false}>Incorrect</Select.Option>
-                    </Select>
+                    />
                     {(isEditMode || !selectedAssessment) && (
                       <CloseOutlined
                         className={styles.removeOption}
