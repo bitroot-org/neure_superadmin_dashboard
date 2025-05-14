@@ -62,7 +62,7 @@
 /* Selected state for all menu items - increase specificity */
 :global(.ant-layout-sider) :global(.ant-pro-menu-item-selected),
 :global(.ant-layout-sider) :global(.ant-menu-item-selected) {
-  background-color: var(--primary) !important;
+  background-color: #48A6A7 !important; /* Use direct hex instead of var */
   color: white !important;
 }
 
@@ -71,7 +71,8 @@
 :global(.ant-layout-sider) :global(.ant-pro-menu-submenu-title:hover),
 :global(.ant-layout-sider) :global(.ant-menu-item:hover),
 :global(.ant-layout-sider) :global(.ant-menu-submenu-title:hover) {
-  background-color: var(--primary) !important;
+  background-color: #48A6A7 !important; /* Use direct hex instead of var */
+  color: white !important;
 }
 
 /* Submenu specific selectors */
@@ -86,13 +87,13 @@
 /* Force important with higher specificity */
 :global(body) :global(.ant-pro-menu-item-selected),
 :global(body) :global(.ant-menu-item-selected) {
-  background-color: var(--primary) !important;
+  background-color: #48A6A7 !important; /* Use direct hex instead of var */
 }
 
 /* Additional selectors for nested items */
 :global(.ant-pro-menu-inline .ant-pro-menu-item-selected),
 :global(.ant-menu-inline .ant-menu-item-selected) {
-  background-color: var(--primary) !important;
+  background-color: #48A6A7 !important; /* Use direct hex instead of var */
 }
 
 /* Target the specific submenu items by their paths */
