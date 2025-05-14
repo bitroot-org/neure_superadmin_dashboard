@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { ConfigProvider } from 'antd';
-import enUS from 'antd/es/locale/en_US';
+import { ConfigProvider } from "antd";
+import enUS from "antd/es/locale/en_US";
 import {
   BrowserRouter as Router,
   Route,
@@ -26,20 +26,22 @@ import Feedback from "./pages/Feedback/Feedback";
 import Rewards from "./pages/Rewards/Rewards";
 import FAQ from "./pages/FAQ/FAQ";
 import ActivityHistory from "./pages/ActivityHistory/ActivityHistory";
-import AssessmentReports from './pages/Assessments/AssessmentReports';
+import AssessmentReports from "./pages/Assessments/AssessmentReports";
 
-// Add this authentication check function
+// Authentication check function
 const isAuthenticated = () => {
-  const token = localStorage.getItem('accessToken');
+  const token = localStorage.getItem("accessToken");
   return !!token;
 };
 
 const App = () => {
-  // Add this effect to log authentication state on app load
   useEffect(() => {
     console.log("App mounted, auth state:", isAuthenticated());
-    console.log("Token exists:", !!localStorage.getItem('accessToken'));
-    console.log("Refresh token exists:", !!localStorage.getItem('refreshToken'));
+    console.log("Token exists:", !!localStorage.getItem("accessToken"));
+    console.log(
+      "Refresh token exists:",
+      !!localStorage.getItem("refreshToken")
+    );
   }, []);
 
   return (
@@ -47,52 +49,52 @@ const App = () => {
       locale={enUS}
       theme={{
         token: {
-          fontFamily: 'Archivo, sans-serif',
+          fontFamily: "Archivo, sans-serif",
           // Primary colors
-          colorPrimary: '#48A6A7',
-          colorPrimaryHover: '#006A71',
-          colorPrimaryActive: '#006A71',
-          colorPrimaryBg: '#9ACBD0',
-          colorPrimaryBgHover: '#48A6A7',
+          colorPrimary: "#48A6A7",
+          colorPrimaryHover: "#006A71",
+          colorPrimaryActive: "#006A71",
+          colorPrimaryBg: "#9ACBD0",
+          colorPrimaryBgHover: "#48A6A7",
 
           // Background colors
-          colorBgBase: '#F2EFE7',
-          colorBgContainer: '#ffffff',
-          colorBgElevated: '#ffffff',
-          colorBgLayout: '#F2EFE7',
+          colorBgBase: "#F2EFE7",
+          colorBgContainer: "#ffffff",
+          colorBgElevated: "#ffffff",
+          colorBgLayout: "#F2EFE7",
 
           // Border radius
           borderRadius: 8,
           borderRadiusLG: 12,
 
           // Other customizations
-          boxShadow: '0 2px 8px rgba(0, 106, 113, 0.1)',
-          boxShadowSecondary: '0 4px 12px rgba(0, 106, 113, 0.12)',
+          boxShadow: "0 2px 8px rgba(0, 106, 113, 0.1)",
+          boxShadowSecondary: "0 4px 12px rgba(0, 106, 113, 0.12)",
         },
         components: {
           Typography: {
-            titleFontFamily: 'Clash Display, sans-serif',
+            titleFontFamily: "Clash Display, sans-serif",
             fontWeightStrong: 600,
-            colorTextHeading: '#006A71',
+            colorTextHeading: "#006A71",
           },
           Table: {
             headerFontSize: 14,
             headerFontWeight: 600,
-            headerBg: '#9ACBD0',
-            headerColor: '#006A71',
+            headerBg: "#9ACBD0",
+            headerColor: "#006A71",
             fontWeightStrong: 600,
-            colorBgContainer: '#ffffff',
+            colorBgContainer: "#ffffff",
           },
           Button: {
-            colorPrimary: '#48A6A7',
-            colorPrimaryHover: '#006A71',
-            colorPrimaryActive: '#006A71',
+            colorPrimary: "#48A6A7",
+            colorPrimaryHover: "#006A71",
+            colorPrimaryActive: "#006A71",
             borderRadius: 6,
           },
           Card: {
-            colorBgContainer: '#ffffff',
+            colorBgContainer: "#ffffff",
             borderRadiusLG: 12,
-            boxShadow: '0 2px 8px rgba(0, 106, 113, 0.08)',
+            boxShadow: "0 2px 8px rgba(0, 106, 113, 0.08)",
           },
         },
       }}
@@ -100,21 +102,37 @@ const App = () => {
       <Router>
         <Routes>
           {/* Public Routes */}
-          <Route path="/login" element={
-            isAuthenticated() ? <Navigate to="/home" replace /> : <LoginPage />
-          } />
+          <Route
+            path="/login"
+            element={
+              isAuthenticated() ? (
+                <Navigate to="/home" replace />
+              ) : (
+                <LoginPage />
+              )
+            }
+          />
 
           {/* Protected Routes - simplified approach */}
-          <Route path="/" element={
-            isAuthenticated() ? <Sidebar /> : <Navigate to="/login" replace />
-          }>
+          <Route
+            path="/"
+            element={
+              isAuthenticated() ? <Sidebar /> : <Navigate to="/login" replace />
+            }
+          >
             <Route index element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
             <Route path="/companies" element={<Company />} />
-            <Route path="/companies/:companyId/analytics" element={<CompanyAnalytics />} />
+            <Route
+              path="/companies/:companyId/analytics"
+              element={<CompanyAnalytics />}
+            />
             <Route path="/employees" element={<Employees />} />
             <Route path="/employees/assessments" element={<Assessments />} />
-            <Route path="/employees/assessment-reports" element={<AssessmentReports />} />
+            <Route
+              path="/employees/assessment-reports"
+              element={<AssessmentReports />}
+            />
             <Route path="/therapists" element={<Therapists />} />
             <Route path="/workshops" element={<Workshops />} />
             <Route path="/analytics" element={<Analytics />} />
@@ -123,10 +141,24 @@ const App = () => {
             <Route path="/assessments" element={<Assessments />} />
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/feedback" element={<Feedback />} />
-            <Route path="/accountsDeactivation" element={<AccountsDeactivation />} />
+            <Route
+              path="/accountsDeactivation"
+              element={<AccountsDeactivation />}
+            />
             <Route path="/rewards" element={<Rewards />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/activitylog" element={<ActivityHistory />} />
+
+            <Route
+              path="*"
+              element={
+                isAuthenticated() ? (
+                  <Navigate to="/home" replace />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
           </Route>
         </Routes>
       </Router>
