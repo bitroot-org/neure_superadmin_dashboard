@@ -22,6 +22,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    console.log('API error:', error.response?.status);
 
     if (
       (error.response?.status === 401 || error.response?.status === 403) &&
@@ -29,8 +30,18 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
+        console.log('Attempting token refresh');
+        const refreshToken = localStorage.getItem('refreshToken');
+        
+        // Only attempt refresh if we have a refresh token
+        if (!refreshToken) {
+          console.log('No refresh token available');
+          throw new Error('No refresh token');
+        }
+        
         const response = await refreshToken();
         if (response.data.accessToken) {
+          console.log('Token refresh successful');
           localStorage.setItem("accessToken", response.data.accessToken);
           api.defaults.headers.common[
             "Authorization"
@@ -38,6 +49,7 @@ api.interceptors.response.use(
           return api(originalRequest);
         }
       } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
         // Only clear localStorage and redirect for auth errors
         localStorage.clear();
         window.location.href = "/login";
