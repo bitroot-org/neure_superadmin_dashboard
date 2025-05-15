@@ -101,21 +101,19 @@ const App = () => {
     >
       <Router>
         <Routes>
-          {/* Public Routes */}
           <Route
             path="/login"
             element={
-              isAuthenticated() ? (
-                <Navigate to="/home" replace />
-              ) : (
-                <LoginPage />
-              )
+              isAuthenticated() ? <Navigate to="/home" replace /> : <LoginPage />
             }
           />
 
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<Sidebar />}>
+          {/* Protected Routes */}
+          <Route 
+            element={
+              isAuthenticated() ? <Sidebar /> : <Navigate to="/login" replace />
+            }
+          >
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
             <Route path="/companies" element={<Company />} />
