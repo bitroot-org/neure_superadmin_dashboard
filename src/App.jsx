@@ -113,14 +113,10 @@ const App = () => {
             }
           />
 
-          {/* Protected Routes - simplified approach */}
-          <Route
-            path="/"
-            element={
-              isAuthenticated() ? <Sidebar /> : <Navigate to="/login" replace />
-            }
-          >
-            <Route index element={<Navigate to="/home" replace />} />
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Sidebar />}>
+            <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
             <Route path="/companies" element={<Company />} />
             <Route
