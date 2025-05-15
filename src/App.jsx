@@ -44,6 +44,14 @@ const App = () => {
       "Refresh token exists:",
       !!localStorage.getItem("refreshToken")
     );
+    
+    // Force a check and redirect if needed
+    const path = window.location.pathname;
+    if (path !== '/login' && !isAuthenticated()) {
+      window.location.href = '/login';
+    } else if (path === '/login' && isAuthenticated()) {
+      window.location.href = '/home';
+    }
   }, []);
 
   return (

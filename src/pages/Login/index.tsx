@@ -26,7 +26,6 @@ const LoginPage: React.FC = () => {
         localStorage.setItem('expiresAt', expiresAt);
         localStorage.setItem('userData', JSON.stringify(user));
         
-        // Add this console log to verify tokens are set
         console.log('Tokens set in localStorage:', {
           accessToken: !!accessToken,
           refreshToken: !!refreshToken
@@ -34,9 +33,9 @@ const LoginPage: React.FC = () => {
         
         message.success('Login successful!');
         
-        // Force a small delay to ensure localStorage is updated
+        // Force a hard navigation instead of using React Router
         setTimeout(() => {
-          navigate('/home');
+          window.location.href = '/home';
         }, 100);
       } else {
         message.error(response.message || 'Login failed');
