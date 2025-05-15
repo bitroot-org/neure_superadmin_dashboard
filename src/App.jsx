@@ -31,7 +31,9 @@ import AssessmentReports from "./pages/Assessments/AssessmentReports";
 // Authentication check function
 const isAuthenticated = () => {
   const token = localStorage.getItem("accessToken");
-  return !!token;
+  const refreshToken = localStorage.getItem("refreshToken");
+  console.log("Auth check - token:", !!token, "refresh:", !!refreshToken);
+  return !!(token && refreshToken);
 };
 
 const App = () => {
