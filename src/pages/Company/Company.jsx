@@ -59,6 +59,7 @@ const Company = () => {
   const [resourceForm] = Form.useForm();
   const [resourceType, setResourceType] = useState("image");
   const [previewResources, setPreviewResources] = useState([]);
+  const [createButtonLoading, setCreateButtonLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -128,6 +129,7 @@ const Company = () => {
 
   const handleCreateCompany = async (values) => {
     try {
+      setCreateButtonLoading(true); // Set button loading state to true
       setLoading(true);
 
       // Transform the industry values (department names) to department IDs
@@ -168,6 +170,7 @@ const Company = () => {
       );
     } finally {
       setLoading(false);
+      setCreateButtonLoading(false); // Reset button loading state
     }
   };
 
@@ -559,7 +562,14 @@ const Company = () => {
           <Form.Item
             name="company_name"
             label="Company Name"
-            rules={[{ required: true, message: "Please enter company name" }]}
+            rules={[
+              { required: true, message: "Please enter company name" },
+              { max: 100, message: "Company name cannot exceed 100 characters" },
+              { 
+                pattern: /^[a-zA-Z0-9\s&.,'-]+$/, 
+                message: "Company name can only contain letters, numbers, spaces and basic punctuation" 
+              }
+            ]}
           >
             <Input />
           </Form.Item>
@@ -575,7 +585,14 @@ const Company = () => {
           <Form.Item
             name="first_name"
             label="First Name"
-            rules={[{ required: true, message: "Please enter first name" }]}
+            rules={[
+              { required: true, message: "Please enter first name" },
+              { max: 50, message: "First name cannot exceed 50 characters" },
+              { 
+                pattern: /^[a-zA-Z\s-]+$/, 
+                message: "First name can only contain letters, spaces and hyphens" 
+              }
+            ]}
           >
             <Input />
           </Form.Item>
@@ -583,7 +600,14 @@ const Company = () => {
           <Form.Item
             name="last_name"
             label="Last Name"
-            rules={[{ required: true, message: "Please enter last name" }]}
+            rules={[
+              { required: true, message: "Please enter last name" },
+              { max: 50, message: "Last name cannot exceed 50 characters" },
+              { 
+                pattern: /^[a-zA-Z\s-]+$/, 
+                message: "Last name can only contain letters, spaces and hyphens" 
+              }
+            ]}
           >
             <Input />
           </Form.Item>
@@ -594,6 +618,7 @@ const Company = () => {
             rules={[
               { required: true, message: "Please enter contact email" },
               { type: "email", message: "Please enter a valid email" },
+              { max: 100, message: "Email cannot exceed 100 characters" }
             ]}
           >
             <Input />
@@ -602,9 +627,15 @@ const Company = () => {
           <Form.Item
             name="phone"
             label="Phone"
-            rules={[{ required: true, message: "Please enter contact phone" }]}
+            rules={[
+              { required: true, message: "Please enter contact phone" },
+              { 
+                pattern: /^\d{10}$/, 
+                message: "Phone number must be exactly 10 digits" 
+              }
+            ]}
           >
-            <Input />
+            <Input type="tel" maxLength={10} />
           </Form.Item>
 
           <Form.Item
@@ -629,9 +660,23 @@ const Company = () => {
           <Form.Item
             name="company_size"
             label="Company Size"
-            rules={[{ required: true }]}
+            rules={[
+              { required: true, message: "Please enter company size" },
+              { 
+                pattern: /^[0-9]+$/, 
+                message: "Company size must be a number" 
+              },
+              {
+                validator: (_, value) => {
+                  if (value && parseInt(value) <= 0) {
+                    return Promise.reject("Company size must be greater than 0");
+                  }
+                  return Promise.resolve();
+                }
+              }
+            ]}
           >
-            <Input type="number" />
+            <Input type="number" min={1} />
           </Form.Item>
 
           {/* <Form.Item
@@ -659,7 +704,12 @@ const Company = () => {
             <Button onClick={() => setCreateDrawerVisible(false)}>
               Cancel
             </Button>
-            <Button type="primary" htmlType="submit">
+            <Button 
+              type="primary" 
+              htmlType="submit"
+              loading={createButtonLoading} // Use the new loading state
+              disabled={createButtonLoading} // Also disable the button while loading
+            >
               Create
             </Button>
           </Space>

@@ -14,7 +14,6 @@ import {
 import {
   FilterOutlined,
   PlusOutlined,
-  ArrowLeftOutlined,
   UploadOutlined,
   PlayCircleOutlined,
   DeleteOutlined,
@@ -40,6 +39,9 @@ const Soundscapes = () => {
   const [currentAudio, setCurrentAudio] = useState(null);
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // Add a new state for button loading
+  const [createButtonLoading, setCreateButtonLoading] = useState(false);
 
   // Function to fetch soundscapes (simplified)
   const fetchSoundscapes = async (page = 1, limit = 10) => {
@@ -221,12 +223,15 @@ const Soundscapes = () => {
 
   const handleCreateSoundscape = async (values) => {
     try {
+      setCreateButtonLoading(true); // Set button loading state to true
+      
       // Get the file objects from the Upload components
       const coverImageFile = values.cover_image?.fileList[0]?.originFileObj;
       const audioFile = values.music_file?.fileList[0]?.originFileObj;
 
       if (!coverImageFile || !audioFile) {
         message.error("Please upload both cover image and audio file");
+        setCreateButtonLoading(false);
         return;
       }
 
@@ -265,6 +270,8 @@ const Soundscapes = () => {
       message.error(
         "Failed to create soundscape: " + (error.message || "Unknown error")
       );
+    } finally {
+      setCreateButtonLoading(false); // Reset button loading state
     }
   };
 
@@ -349,7 +356,6 @@ const Soundscapes = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setCreateDrawerVisible(false)} />
             Add new soundscape
           </Space>
         }
@@ -364,6 +370,18 @@ const Soundscapes = () => {
                 name="cover_image"
                 rules={[
                   { required: true, message: "Please upload a cover image" },
+                  {
+                    validator: (_, value) => {
+                      if (!value || !value.fileList || value.fileList.length === 0) {
+                        return Promise.reject("Please upload a cover image");
+                      }
+                      const file = value.fileList[0].originFileObj;
+                      if (file.size > 5 * 1024 * 1024) {
+                        return Promise.reject("Image must be smaller than 5MB");
+                      }
+                      return Promise.resolve();
+                    },
+                  }
                 ]}
                 noStyle
               >
@@ -384,6 +402,18 @@ const Soundscapes = () => {
                 name="music_file"
                 rules={[
                   { required: true, message: "Please upload an audio file" },
+                  {
+                    validator: (_, value) => {
+                      if (!value || !value.fileList || value.fileList.length === 0) {
+                        return Promise.reject("Please upload an audio file");
+                      }
+                      const file = value.fileList[0].originFileObj;
+                      if (file.size > 20 * 1024 * 1024) {
+                        return Promise.reject("Audio file must be smaller than 20MB");
+                      }
+                      return Promise.resolve();
+                    },
+                  }
                 ]}
                 noStyle
               >
@@ -398,11 +428,13 @@ const Soundscapes = () => {
             </Space>
           </Form.Item>
 
-          {/* Rest of the form remains the same */}
           <Form.Item
             name="music_title"
             label="Music Title"
-            rules={[{ required: true, message: "Please enter music title" }]}
+            rules={[
+              { required: true, message: "Please enter music title" },
+              { max: 100, message: "Title cannot exceed 100 characters" }
+            ]}
           >
             <Input />
           </Form.Item>
@@ -410,7 +442,10 @@ const Soundscapes = () => {
           <Form.Item
             name="artist_name"
             label="Artist name"
-            rules={[{ required: true, message: "Please enter artist name" }]}
+            rules={[
+              { required: true, message: "Please enter artist name" },
+              { max: 100, message: "Artist name cannot exceed 100 characters" }
+            ]}
           >
             <Input />
           </Form.Item>
@@ -437,7 +472,13 @@ const Soundscapes = () => {
           </Form.Item>
 
           <Form.Item className={styles.submitButton}>
-            <Button type="primary" htmlType="submit" block>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              block
+              loading={createButtonLoading}
+              disabled={createButtonLoading}
+            >
               Confirm
             </Button>
           </Form.Item>

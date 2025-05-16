@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, DatePicker, Drawer, Form, Input, message, Select, Tag, Modal, Switch } from 'antd';
-import { FilterOutlined, PlusOutlined, ArrowLeftOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
+import { FilterOutlined, PlusOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import styles from './Assessments.module.css';
 import { createAssessment, getAllAssessments, deleteAssessment } from '../../services/api';
 
@@ -18,6 +18,8 @@ const Assessments = () => {
   const [loading, setLoading] = useState(false);
   const [selectedAssessment, setSelectedAssessment] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [publishButtonLoading, setPublishButtonLoading] = useState(false);
+  const [deleteButtonLoading, setDeleteButtonLoading] = useState(false);
 
   // Remove the createPsiQuestions function and any other PSI-related code
 
@@ -76,12 +78,15 @@ const Assessments = () => {
       cancelText: 'Cancel',
       onOk: async () => {
         try {
+          setDeleteButtonLoading(true); // Set button loading state to true
           await deleteAssessment(id);
           message.success('Assessment deleted successfully');
           fetchAssessments(); // Refresh the list
         } catch (error) {
           console.error('Error deleting assessment:', error);
           message.error('Failed to delete assessment');
+        } finally {
+          setDeleteButtonLoading(false); // Reset button loading state
         }
       },
     });
@@ -203,6 +208,8 @@ const Assessments = () => {
     form.validateFields()
       .then(async (values) => {
         try {
+          setPublishButtonLoading(true); // Set button loading state to true
+          
           const formattedData = {
             title: values.title,
             description: values.description || '',
@@ -219,7 +226,7 @@ const Assessments = () => {
           if (isEditMode && selectedAssessment) {
             formattedData.id = selectedAssessment.id;
           }
-  
+
           console.log('Sending data:', formattedData);
           const response = await createAssessment(formattedData);
           message.success(`Assessment ${isEditMode ? 'updated' : 'published'} successfully`);
@@ -229,6 +236,8 @@ const Assessments = () => {
         } catch (error) {
           console.error('API Error:', error);
           message.error(error.message || `Failed to ${isEditMode ? 'update' : 'publish'} assessment`);
+        } finally {
+          setPublishButtonLoading(false); // Reset button loading state
         }
       })
       .catch(error => {
@@ -295,7 +304,6 @@ const Assessments = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={handleCloseDrawer} />
             {isEditMode 
               ? 'Edit assessment' 
               : selectedAssessment 
@@ -317,7 +325,10 @@ const Assessments = () => {
           <Form.Item
             name="title"
             label="Assessment title"
-            rules={[{ required: true, message: 'Please enter assessment title' }]}
+            rules={[
+              { required: true, message: 'Please enter assessment title' },
+              { max: 100, message: 'Title cannot exceed 100 characters' }
+            ]}
           >
             <Input placeholder="Enter assessment title" />
           </Form.Item>
@@ -325,6 +336,9 @@ const Assessments = () => {
           <Form.Item
             name="description"
             label="Description"
+            rules={[
+              { max: 500, message: 'Description cannot exceed 500 characters' }
+            ]}
           >
             <Input.TextArea placeholder="Enter assessment description" rows={4} />
           </Form.Item>
@@ -334,7 +348,10 @@ const Assessments = () => {
               <Form.Item
                 name={['questions', questionIndex, 'prompt']}
                 label={`Question ${questionIndex + 1}`}
-                rules={[{ required: true, message: 'Please enter question' }]}
+                rules={[
+                  { required: true, message: 'Please enter question' },
+                  { max: 300, message: 'Question cannot exceed 300 characters' }
+                ]}
               >
                 <Input placeholder="Question/ prompt" />
               </Form.Item>
@@ -403,6 +420,8 @@ const Assessments = () => {
               block 
               className={styles.publishBtn}
               onClick={handlePublish}
+              loading={publishButtonLoading}
+              disabled={publishButtonLoading}
             >
               {isEditMode ? 'Update' : 'Publish'}
             </Button>

@@ -14,6 +14,7 @@ import {
   message,
   Modal, // Add Modal import
 } from "antd";
+import moment from "moment";
 import { PlusOutlined, UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
   getAllCompanies,
@@ -39,6 +40,7 @@ const Employees = () => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [departments, setDepartments] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]); // Add new state for selected row keys
+  const [createButtonLoading, setCreateButtonLoading] = useState(false); // Add new state for create button loading
 
   const [form] = Form.useForm();
   const [pagination, setPagination] = useState({
@@ -116,6 +118,7 @@ const Employees = () => {
 
   const handleCreateEmployee = async (values) => {
     try {
+      setCreateButtonLoading(true); // Set button loading state to true
       setLoading(true);
       
       if (uploadedFile) {
@@ -146,6 +149,7 @@ const Employees = () => {
       message.error(uploadedFile ? 'Failed to upload employees' : 'Failed to create employee');
     } finally {
       setLoading(false);
+      setCreateButtonLoading(false); // Reset button loading state
     }
   };
 
@@ -406,7 +410,14 @@ const Employees = () => {
           <Form.Item
             name="first_name"
             label="First Name"
-            rules={[{ required: !uploadedFile }]}
+            rules={[
+              { required: !uploadedFile, message: "Please enter first name" },
+              { max: 50, message: "First name cannot exceed 50 characters" },
+              { 
+                pattern: /^[a-zA-Z\s-]+$/, 
+                message: "First name can only contain letters, spaces and hyphens" 
+              }
+            ]}
           >
             <Input disabled={isFormDisabled} />
           </Form.Item>
@@ -414,7 +425,14 @@ const Employees = () => {
           <Form.Item
             name="last_name"
             label="Last Name"
-            rules={[{ required: !uploadedFile }]}
+            rules={[
+              { required: !uploadedFile, message: "Please enter last name" },
+              { max: 50, message: "Last name cannot exceed 50 characters" },
+              { 
+                pattern: /^[a-zA-Z\s-]+$/, 
+                message: "Last name can only contain letters, spaces and hyphens" 
+              }
+            ]}
           >
             <Input disabled={isFormDisabled} />
           </Form.Item>
@@ -423,8 +441,9 @@ const Employees = () => {
             name="email"
             label="Email"
             rules={[
-              { required: !uploadedFile },
+              { required: !uploadedFile, message: "Please enter email" },
               { type: "email", message: "Please enter valid email" },
+              { max: 100, message: "Email cannot exceed 100 characters" }
             ]}
           >
             <Input disabled={isFormDisabled} />
@@ -433,15 +452,21 @@ const Employees = () => {
           <Form.Item
             name="phone"
             label="Phone"
-            rules={[{ required: !uploadedFile }]}
+            rules={[
+              { required: !uploadedFile, message: "Please enter phone number" },
+              { 
+                pattern: /^\d{10}$/, 
+                message: "Phone number must be exactly 10 digits" 
+              }
+            ]}
           >
-            <Input disabled={isFormDisabled} />
+            <Input disabled={isFormDisabled} type="tel" maxLength={10} />
           </Form.Item>
 
           <Form.Item
             name="gender"
             label="Gender"
-            rules={[{ required: !uploadedFile }]}
+            rules={[{ required: !uploadedFile, message: "Please select gender" }]}
           >
             <Select disabled={isFormDisabled}>
               <Option value="male">Male</Option>
@@ -453,19 +478,33 @@ const Employees = () => {
           <Form.Item
             name="date_of_birth"
             label="Date of Birth"
-            rules={[{ required: !uploadedFile }]}
+            rules={[
+              { required: !uploadedFile, message: "Please select date of birth" },
+              {
+                validator: (_, value) => {
+                  if (value && value.isAfter(moment().subtract(18, 'years'))) {
+                    return Promise.reject("Employee must be at least 18 years old");
+                  }
+                  return Promise.resolve();
+                }
+              }
+            ]}
           >
             <DatePicker
               disabled={isFormDisabled}
               style={{ width: "100%" }}
               format="YYYY-MM-DD"
+              disabledDate={(current) => current && current > moment().subtract(18, 'years')}
             />
           </Form.Item>
 
           <Form.Item
             name="job_title"
             label="Job Title"
-            rules={[{ required: !uploadedFile }]}
+            rules={[
+              { required: !uploadedFile, message: "Please enter job title" },
+              { max: 100, message: "Job title cannot exceed 100 characters" }
+            ]}
           >
             <Input disabled={isFormDisabled} />
           </Form.Item>
@@ -473,7 +512,7 @@ const Employees = () => {
           <Form.Item
             name="department_id"
             label="Department"
-            rules={[{ required: !uploadedFile }]}
+            rules={[{ required: !uploadedFile, message: "Please select department" }]}
           >
             <Select disabled={isFormDisabled} placeholder="Select department">
               {departments.map((dept) => (
@@ -488,7 +527,12 @@ const Employees = () => {
             <Button onClick={() => setCreateDrawerVisible(false)}>
               Cancel
             </Button>
-            <Button type="primary" htmlType="submit">
+            <Button 
+              type="primary" 
+              htmlType="submit"
+              loading={createButtonLoading}
+              disabled={createButtonLoading || (isFormDisabled && !uploadedFile)}
+            >
               {uploadedFile ? "Upload Excel" : "Create Employee"}
             </Button>
           </Space>

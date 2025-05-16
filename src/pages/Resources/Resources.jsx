@@ -17,7 +17,6 @@ import {
   FilterOutlined,
   PlusOutlined,
   UploadOutlined,
-  ArrowLeftOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import debounce from "lodash/debounce";
@@ -79,6 +78,11 @@ const Resources = () => {
   const [imagesSearchTerm, setImagesSearchTerm] = useState("");
   const [videosSearchTerm, setVideosSearchTerm] = useState("");
   const [documentsSearchTerm, setDocumentsSearchTerm] = useState("");
+
+  // Add new state variables for button loading
+  const [createButtonLoading, setCreateButtonLoading] = useState(false);
+  const [updateButtonLoading, setUpdateButtonLoading] = useState(false);
+  const [deleteButtonLoading, setDeleteButtonLoading] = useState(false);
 
   // Create debounced search functions
   const debouncedArticlesSearch = useCallback(
@@ -215,6 +219,7 @@ const Resources = () => {
 
   const handleUpdateArticle = async (values) => {
     try {
+      setUpdateButtonLoading(true);
       // Call your API to update the article
       // const response = await updateArticle({ id: selectedArticle.id, ...values });
 
@@ -224,30 +229,33 @@ const Resources = () => {
     } catch (error) {
       console.error("Error updating article:", error);
       message.error("Failed to update article");
+    } finally {
+      setUpdateButtonLoading(false);
     }
   };
 
   const handleDeleteArticle = (articleId) => {
     Modal.confirm({
-      title: "Are you sure you want to delete this article?",
-      content: "This action cannot be undone.",
-      okText: "Yes, Delete",
+      title: "Delete Article",
+      content: "Are you sure you want to delete this article?",
+      okText: "Yes",
       okType: "danger",
-      cancelText: "Cancel",
+      cancelText: "No",
       onOk: async () => {
         try {
-          setLoading(true);
+          setDeleteButtonLoading(true);
           const response = await deleteArticle(articleId);
           if (response.status) {
             message.success("Article deleted successfully");
-            setViewDrawerVisible(false);
             fetchArticles(pagination.current, pagination.pageSize);
+          } else {
+            throw new Error("Failed to delete article");
           }
         } catch (error) {
           console.error("Error deleting article:", error);
           message.error("Failed to delete article");
         } finally {
-          setLoading(false);
+          setDeleteButtonLoading(false);
         }
       },
     });
@@ -620,11 +628,12 @@ const Resources = () => {
 
   const handleCreateResource = async (values) => {
     try {
+      setCreateButtonLoading(true);
       const resourceType = values.resource_type;
       let response;
-
-      // Format tags as an array
-      const tags = values.tags ? values.tags.map((tag) => tag.trim()) : [];
+      
+      // Extract tags from the form values
+      const tags = values.tags ? values.tags : [];
 
       if (resourceType === "video") {
         // For videos, create a FormData object
@@ -645,6 +654,7 @@ const Resources = () => {
 
         if (!file) {
           message.error(`Please upload a ${resourceType}`);
+          setCreateButtonLoading(false);
           return;
         }
 
@@ -674,6 +684,7 @@ const Resources = () => {
 
         if (!file) {
           message.error("Please upload a cover image");
+          setCreateButtonLoading(false);
           return;
         }
 
@@ -714,9 +725,9 @@ const Resources = () => {
       }
     } catch (error) {
       console.error("Error creating resource:", error);
-      message.error(
-        "Failed to create resource: " + (error.message || "Unknown error")
-      );
+      message.error("Failed to create resource: " + (error.message || "Unknown error"));
+    } finally {
+      setCreateButtonLoading(false);
     }
   };
 
@@ -732,6 +743,7 @@ const Resources = () => {
               label="Article title"
               rules={[
                 { required: true, message: "Please enter article title" },
+                { max: 100, message: "Title cannot exceed 100 characters" }
               ]}
             >
               <Input placeholder="Enter article title" />
@@ -740,7 +752,10 @@ const Resources = () => {
             <Form.Item
               name="read_time"
               label="Reading time"
-              rules={[{ required: true, message: "Please enter reading time" }]}
+              rules={[
+                { required: true, message: "Please enter reading time" },
+                { pattern: /^[0-9]+$/, message: "Reading time must be a number" }
+              ]}
             >
               <Input placeholder="e.g., 5 mins" />
             </Form.Item>
@@ -783,18 +798,37 @@ const Resources = () => {
             <Form.Item
               name="cover_image"
               label="Cover image"
-              rules={[{ required: true, message: "Please upload cover image" }]}
+              rules={[
+                { required: true, message: "Please upload a cover image" },
+                {
+                  validator: (_, value) => {
+                    if (!value || !value.fileList || value.fileList.length === 0) {
+                      return Promise.reject("Please upload a cover image");
+                    }
+                    const file = value.fileList[0].originFileObj;
+                    if (file.size > 10 * 1024 * 1024) {
+                      return Promise.reject("Image must be smaller than 10MB");
+                    }
+                    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
+                    if (!isJpgOrPng) {
+                      return Promise.reject('You can only upload JPG/PNG file!');
+                    }
+                    return Promise.resolve();
+                  },
+                }
+              ]}
             >
-              <Upload.Dragger
-                maxCount={1}
+              <Upload
+                listType="picture-card"
                 beforeUpload={() => false}
-                accept="image/*"
+                maxCount={1}
+                accept=".jpg,.jpeg,.png"
               >
-                <p className="ant-upload-drag-icon">
-                  <UploadOutlined />
-                </p>
-                <p className="ant-upload-text">Click or drag image to upload</p>
-              </Upload.Dragger>
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              </Upload>
             </Form.Item>
           </>
         );
@@ -860,12 +894,19 @@ const Resources = () => {
             <Form.Item
               name="title"
               label="Image title"
-              rules={[{ required: true, message: "Please enter image title" }]}
+              rules={[
+                { required: true, message: "Please enter image title" },
+                { max: 100, message: "Title cannot exceed 100 characters" }
+              ]}
             >
               <Input placeholder="Enter image title" />
             </Form.Item>
 
-            <Form.Item name="description" label="Description">
+            <Form.Item
+              name="description"
+              label="Description"
+              rules={[{ max: 500, message: "Description cannot exceed 500 characters" }]}
+            >
               <Input.TextArea rows={4} placeholder="Enter image description" />
             </Form.Item>
 
@@ -880,18 +921,32 @@ const Resources = () => {
             <Form.Item
               name="image"
               label="Upload Image"
-              rules={[{ required: true, message: "Please upload an image" }]}
+              rules={[
+                { required: true, message: "Please upload an image" },
+                {
+                  validator: (_, value) => {
+                    if (!value || !value.fileList || value.fileList.length === 0) {
+                      return Promise.reject("Please upload an image");
+                    }
+                    const file = value.fileList[0].originFileObj;
+                    if (file.size > 5 * 1024 * 1024) {
+                      return Promise.reject("Image must be smaller than 5MB");
+                    }
+                    return Promise.resolve();
+                  },
+                }
+              ]}
             >
-              <Upload.Dragger
-                maxCount={1}
+              <Upload
+                listType="picture-card"
                 beforeUpload={() => false}
-                accept="image/*"
+                maxCount={1}
               >
-                <p className="ant-upload-drag-icon">
-                  <UploadOutlined />
-                </p>
-                <p className="ant-upload-text">Click or drag image to upload</p>
-              </Upload.Dragger>
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              </Upload>
             </Form.Item>
           </>
         );
@@ -967,16 +1022,17 @@ const Resources = () => {
     form.setFieldsValue({ resource_type: value });
   };
 
-  const handleDeleteResource = (record, type) => {
+  const handleDeleteResource = (resource, type) => {
     Modal.confirm({
-      title: "Are you sure you want to delete this resource?",
-      content: "This action cannot be undone.",
-      okText: "Yes, Delete",
+      title: `Delete ${type}`,
+      content: `Are you sure you want to delete this ${type}?`,
+      okText: "Yes",
       okType: "danger",
-      cancelText: "Cancel",
+      cancelText: "No",
       onOk: async () => {
         try {
-          // Set the appropriate loading state based on resource type
+          setDeleteButtonLoading(true);
+          // Set loading state based on resource type
           if (type === "image") {
             setImagesLoading(true);
           } else if (type === "video") {
@@ -985,29 +1041,16 @@ const Resources = () => {
             setDocumentsLoading(true);
           }
 
-          const response = await deleteGalleryItem(record.id);
-
+          const response = await deleteGalleryItem(resource.id);
           if (response.status) {
             message.success(`${type} deleted successfully`);
-            // Refresh the list after deletion
+            // Refresh the list based on resource type
             if (type === "image") {
-              fetchGalleryItems(
-                "image",
-                imagesPagination.current,
-                imagesPagination.pageSize
-              );
+              fetchGalleryItems("image", imagesPagination.current, imagesPagination.pageSize);
             } else if (type === "video") {
-              fetchGalleryItems(
-                "video",
-                videosPagination.current,
-                videosPagination.pageSize
-              );
+              fetchGalleryItems("video", videosPagination.current, videosPagination.pageSize);
             } else if (type === "document") {
-              fetchGalleryItems(
-                "document",
-                documentsPagination.current,
-                documentsPagination.pageSize
-              );
+              fetchGalleryItems("document", documentsPagination.current, documentsPagination.pageSize);
             }
           } else {
             throw new Error(`Failed to delete ${type}`);
@@ -1016,6 +1059,7 @@ const Resources = () => {
           console.error(`Error deleting ${type}:`, error);
           message.error(`Failed to delete ${type}`);
         } finally {
+          setDeleteButtonLoading(false);
           // Reset loading state
           if (type === "image") {
             setImagesLoading(false);
@@ -1196,7 +1240,6 @@ const Resources = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setCreateDrawerVisible(false)} />
             Add new resource
           </Space>
         }
@@ -1218,7 +1261,7 @@ const Resources = () => {
               placeholder="Select resource type"
               onChange={handleResourceTypeSelect}
             >
-              <Select.Option value="article">Article/blog</Select.Option>
+              <Select.Option value="article">Article</Select.Option>
               <Select.Option value="video">Video</Select.Option>
               <Select.Option value="image">Image</Select.Option>
               <Select.Option value="document">Document</Select.Option>
@@ -1229,7 +1272,13 @@ const Resources = () => {
 
           {selectedResourceType && (
             <Form.Item>
-              <Button type="primary" htmlType="submit" block>
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                block
+                loading={createButtonLoading}
+                disabled={createButtonLoading}
+              >
                 Confirm
               </Button>
             </Form.Item>
@@ -1240,7 +1289,6 @@ const Resources = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setViewDrawerVisible(false)} />
             View Article
           </Space>
         }
@@ -1376,7 +1424,6 @@ const Resources = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setEditDrawerVisible(false)} />
             Edit Article
           </Space>
         }
@@ -1452,7 +1499,12 @@ const Resources = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" block>
+            <Button 
+              type="primary" 
+              htmlType="submit"
+              loading={updateButtonLoading}
+              disabled={updateButtonLoading}
+            >
               Update Article
             </Button>
           </Form.Item>

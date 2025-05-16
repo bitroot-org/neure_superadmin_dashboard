@@ -19,7 +19,6 @@ import {
 } from 'antd';
 import { 
   FileTextOutlined, 
-  ArrowLeftOutlined,
   UserOutlined,
   TeamOutlined,
   CalendarOutlined
@@ -410,7 +409,6 @@ const AssessmentReports = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setDrawerVisible(false)} />
             Assessment Report Details
           </Space>
         }

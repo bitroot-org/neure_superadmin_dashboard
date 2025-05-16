@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import moment from "moment";
 import {
   Tabs,
   Button,
@@ -21,7 +22,6 @@ import {
   FilterOutlined,
   PlusOutlined,
   UploadOutlined,
-  ArrowLeftOutlined,
   SearchOutlined,
   EditOutlined,
   DeleteOutlined,
@@ -78,6 +78,9 @@ const Workshops = () => {
   const [worksheetFile, setWorksheetFile] = useState(null);
   const [detailsDrawerVisible, setDetailsDrawerVisible] = useState(false);
   const [workshopSearchTerm, setWorkshopSearchTerm] = useState("");
+  const [createWorkshopLoading, setCreateWorkshopLoading] = useState(false);
+  const [scheduleWorkshopLoading, setScheduleWorkshopLoading] = useState(false);
+  const [updateWorkshopLoading, setUpdateWorkshopLoading] = useState(false);
 
   // Create a debounced version of fetchWorkshopSchedules
   const debouncedSearch = useCallback(
@@ -171,6 +174,8 @@ const Workshops = () => {
 
   const handleUpdateWorkshop = async (values) => {
     try {
+      setUpdateWorkshopLoading(true); // Set button loading state to true
+      
       // First update the basic workshop information
       const response = await updateWorkshop({
         id: editingWorkshop.id,
@@ -199,6 +204,8 @@ const Workshops = () => {
       form.resetFields();
     } catch (error) {
       message.error("Failed to update workshop");
+    } finally {
+      setUpdateWorkshopLoading(false); // Reset button loading state
     }
   };
 
@@ -254,6 +261,8 @@ const Workshops = () => {
 
   const handleCreateWorkshop = async (values) => {
     try {
+      setCreateWorkshopLoading(true); // Set button loading state to true
+      
       // First create the workshop
       const payload = {
         title: values.title,
@@ -283,6 +292,8 @@ const Workshops = () => {
     } catch (error) {
       console.error("Error creating workshop:", error);
       message.error("Failed to create workshop");
+    } finally {
+      setCreateWorkshopLoading(false); // Reset button loading state
     }
   };
 
@@ -371,6 +382,8 @@ const Workshops = () => {
 
   const handleScheduleSubmit = async (values) => {
     try {
+      setScheduleWorkshopLoading(true); // Set button loading state to true
+      
       const payload = {
         workshop_id: values.workshop_template,
         company_id: values.company,
@@ -391,6 +404,8 @@ const Workshops = () => {
     } catch (error) {
       console.error("Error scheduling workshop:", error);
       message.error("Failed to schedule workshop");
+    } finally {
+      setScheduleWorkshopLoading(false); // Reset button loading state
     }
   };
 
@@ -742,7 +757,6 @@ const Workshops = () => {
       <Drawer
         title={
           <Space>
-            {/* <ArrowLeftOutlined onClick={() => setCreateDrawerVisible(false)} /> */}
             Create workshop
           </Space>
         }
@@ -762,6 +776,18 @@ const Workshops = () => {
               name="coverImage"
               multiple={false}
               beforeUpload={(file) => {
+                // Validate file type
+                const isImage = file.type.startsWith('image/');
+                if (!isImage) {
+                  message.error('You can only upload image files!');
+                  return Upload.LIST_IGNORE;
+                }
+                // Validate file size (5MB max)
+                const isLt5M = file.size / 1024 / 1024 < 5;
+                if (!isLt5M) {
+                  message.error('Image must be smaller than 5MB!');
+                  return Upload.LIST_IGNORE;
+                }
                 setCoverImage(file);
                 return false; // Prevent auto upload
               }}
@@ -784,7 +810,10 @@ const Workshops = () => {
           <Form.Item
             name="title"
             label="Title"
-            rules={[{ required: true, message: "Please enter title" }]}
+            rules={[
+              { required: true, message: "Please enter title" },
+              { max: 100, message: "Title cannot exceed 100 characters" }
+            ]}
           >
             <Input />
           </Form.Item>
@@ -792,18 +821,39 @@ const Workshops = () => {
           <Form.Item
             name="description"
             label="Description"
-            rules={[{ required: true, message: "Please enter description" }]}
+            rules={[
+              { required: true, message: "Please enter description" },
+              { max: 500, message: "Description cannot exceed 500 characters" }
+            ]}
           >
             <TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item name="agenda" label="Agenda">
+          <Form.Item
+            name="agenda"
+            label="Agenda"
+            rules={[
+              { max: 1000, message: "Agenda cannot exceed 1000 characters" }
+            ]}
+          >
             <TextArea rows={4} />
           </Form.Item>
 
           <Form.Item name="worksheet" label="Worksheet">
             <Upload
               beforeUpload={(file) => {
+                // Validate file type
+                const isPDF = file.type === 'application/pdf';
+                if (!isPDF) {
+                  message.error('You can only upload PDF files!');
+                  return Upload.LIST_IGNORE;
+                }
+                // Validate file size (10MB max)
+                const isLt10M = file.size / 1024 / 1024 < 10;
+                if (!isLt10M) {
+                  message.error('File must be smaller than 10MB!');
+                  return Upload.LIST_IGNORE;
+                }
                 setWorksheetFile(file);
                 return false; // Prevent auto upload
               }}
@@ -818,6 +868,8 @@ const Workshops = () => {
             <Button
               type="primary"
               htmlType="submit"
+              loading={createWorkshopLoading}
+              disabled={createWorkshopLoading}
               className={styles.submitButton}
             >
               Review and save
@@ -830,7 +882,6 @@ const Workshops = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setEditDrawerVisible(false)} />
             Edit Workshop
           </Space>
         }
@@ -849,7 +900,10 @@ const Workshops = () => {
           <Form.Item
             name="title"
             label="Title"
-            rules={[{ required: true, message: "Please enter workshop title" }]}
+            rules={[
+              { required: true, message: "Please enter workshop title" },
+              { max: 100, message: "Title cannot exceed 100 characters" }
+            ]}
           >
             <Input />
           </Form.Item>
@@ -859,12 +913,19 @@ const Workshops = () => {
             label="Description"
             rules={[
               { required: true, message: "Please enter workshop description" },
+              { max: 500, message: "Description cannot exceed 500 characters" }
             ]}
           >
             <TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item name="agenda" label="Agenda">
+          <Form.Item
+            name="agenda"
+            label="Agenda"
+            rules={[
+              { max: 1000, message: "Agenda cannot exceed 1000 characters" }
+            ]}
+          >
             <TextArea rows={4} />
           </Form.Item>
 
@@ -960,7 +1021,13 @@ const Workshops = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" block>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              block
+              loading={updateWorkshopLoading}
+              disabled={updateWorkshopLoading}
+            >
               Update Workshop
             </Button>
           </Form.Item>
@@ -971,9 +1038,6 @@ const Workshops = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined
-              onClick={() => setScheduleDrawerVisible(false)}
-            />
             Create schedule
           </Space>
         }
@@ -1026,7 +1090,14 @@ const Workshops = () => {
           <Form.Item
             name="host_name"
             label="Host name"
-            rules={[{ required: true, message: "Please enter host name" }]}
+            rules={[
+              { required: true, message: "Please enter host name" },
+              { max: 100, message: "Host name cannot exceed 100 characters" },
+              { 
+                pattern: /^[a-zA-Z\s.-]+$/, 
+                message: "Host name can only contain letters, spaces, dots and hyphens" 
+              }
+            ]}
           >
             <Input placeholder="Enter host name" />
           </Form.Item>
@@ -1035,10 +1106,23 @@ const Workshops = () => {
             <Form.Item
               name="date"
               label="Date"
-              rules={[{ required: true, message: "Please select date" }]}
+              rules={[
+                { required: true, message: "Please select date" },
+                {
+                  validator: (_, value) => {
+                    if (value && value.isBefore(moment().startOf('day'))) {
+                      return Promise.reject("Cannot schedule workshop for past dates");
+                    }
+                    return Promise.resolve();
+                  }
+                }
+              ]}
               style={{ flex: 1 }}
             >
-              <DatePicker style={{ width: "100%" }} />
+              <DatePicker 
+                style={{ width: "100%" }} 
+                disabledDate={(current) => current && current < moment().startOf('day')}
+              />
             </Form.Item>
 
             <Form.Item
@@ -1054,11 +1138,26 @@ const Workshops = () => {
           <Form.Item
             name="duration"
             label="Duration"
-            rules={[{ required: true, message: "Please enter duration" }]}
+            rules={[
+              { required: true, message: "Please enter duration" },
+              { 
+                pattern: /^[0-9]+$/, 
+                message: "Duration must be a number" 
+              },
+              {
+                validator: (_, value) => {
+                  if (value && (parseInt(value) < 15 || parseInt(value) > 480)) {
+                    return Promise.reject("Duration must be between 15 and 480 minutes");
+                  }
+                  return Promise.resolve();
+                }
+              }
+            ]}
           >
             <Input
               type="number"
-              min={1}
+              min={15}
+              max={480}
               addonAfter="minutes"
               placeholder="Enter duration in minutes"
             />
@@ -1069,6 +1168,8 @@ const Workshops = () => {
               type="primary"
               htmlType="submit"
               className={styles.submitButton}
+              loading={scheduleWorkshopLoading}
+              disabled={scheduleWorkshopLoading}
             >
               Confirm
             </Button>
@@ -1081,9 +1182,6 @@ const Workshops = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined
-              onClick={() => setViewDetailsDrawerVisible(false)}
-            />
             Workshop Schedule Details
           </Space>
         }
@@ -1133,25 +1231,6 @@ const Workshops = () => {
                 <p>No worksheet available</p>
               )}
             </div>
-
-            {/* <div className={styles.actionButtons}>
-              <Button
-                type="primary"
-                onClick={() => handleRescheduleWorkshop(selectedSchedule)}
-              >
-                Reschedule Workshop
-              </Button>
-              <Button
-                type="primary"
-                danger
-                onClick={() => {
-                  handleCancelWorkshop(selectedSchedule.id);
-                  setViewDetailsDrawerVisible(false);
-                }}
-              >
-                Cancel Workshop
-              </Button>
-            </div> */}
           </div>
         )}
       </Drawer>
@@ -1209,7 +1288,6 @@ const Workshops = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setDetailsDrawerVisible(false)} />
             Workshop Details
           </Space>
         }

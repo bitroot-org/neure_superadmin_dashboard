@@ -34,6 +34,8 @@ const Therapists = () => {
   const [selectedTherapist, setSelectedTherapist] = useState(null);
   const [form] = Form.useForm();
   const [editForm] = Form.useForm();
+  const [createButtonLoading, setCreateButtonLoading] = useState(false);
+  const [updateButtonLoading, setUpdateButtonLoading] = useState(false);
 
   useEffect(() => {
     fetchTherapists();
@@ -70,6 +72,7 @@ const Therapists = () => {
 
   const handleUpdateTherapist = async (values) => {
     try {
+      setUpdateButtonLoading(true); // Set button loading state to true
       setLoading(true);
       // Check if therapist ID exists in the selectedTherapist object
       const therapistId =
@@ -90,6 +93,7 @@ const Therapists = () => {
       message.error("Failed to update therapist");
     } finally {
       setLoading(false);
+      setUpdateButtonLoading(false); // Reset button loading state
     }
   };
 
@@ -200,6 +204,7 @@ const Therapists = () => {
 
   const handleCreateTherapist = async (values) => {
     try {
+      setCreateButtonLoading(true); // Set button loading state to true
       setLoading(true);
       const response = await createTherapist(values);
       if (response.status) {
@@ -212,6 +217,7 @@ const Therapists = () => {
       message.error("Failed to create therapist");
     } finally {
       setLoading(false);
+      setCreateButtonLoading(false); // Reset button loading state
     }
   };
 
@@ -264,7 +270,14 @@ const Therapists = () => {
             <Form.Item
               name="first_name"
               label="First Name"
-              rules={[{ required: true }]}
+              rules={[
+                { required: true, message: "Please enter first name" },
+                { max: 50, message: "First name cannot exceed 50 characters" },
+                { 
+                  pattern: /^[a-zA-Z\s-]+$/, 
+                  message: "First name can only contain letters, spaces and hyphens" 
+                }
+              ]}
             >
               <Input />
             </Form.Item>
@@ -272,7 +285,14 @@ const Therapists = () => {
             <Form.Item
               name="last_name"
               label="Last Name"
-              rules={[{ required: true }]}
+              rules={[
+                { required: true, message: "Please enter last name" },
+                { max: 50, message: "Last name cannot exceed 50 characters" },
+                { 
+                  pattern: /^[a-zA-Z\s-]+$/, 
+                  message: "Last name can only contain letters, spaces and hyphens" 
+                }
+              ]}
             >
               <Input />
             </Form.Item>
@@ -280,13 +300,27 @@ const Therapists = () => {
             <Form.Item
               name="email"
               label="Email"
-              rules={[{ required: true, type: "email" }]}
+              rules={[
+                { required: true, message: "Please enter email" },
+                { type: "email", message: "Please enter valid email" },
+                { max: 100, message: "Email cannot exceed 100 characters" }
+              ]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
-              <Input />
+            <Form.Item
+              name="phone"
+              label="Phone"
+              rules={[
+                { required: true, message: "Please enter phone number" },
+                { 
+                  pattern: /^\d{10}$/, 
+                  message: "Phone number must be exactly 10 digits" 
+                }
+              ]}
+            >
+              <Input type="tel" maxLength={10} />
             </Form.Item>
 
             <Form.Item
@@ -342,7 +376,12 @@ const Therapists = () => {
             <Button onClick={() => setCreateDrawerVisible(false)}>
               Cancel
             </Button>
-            <Button type="primary" htmlType="submit" loading={loading}>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              loading={createButtonLoading}
+              disabled={createButtonLoading}
+            >
               Create
             </Button>
           </div>
@@ -371,7 +410,14 @@ const Therapists = () => {
             <Form.Item
               name="first_name"
               label="First Name"
-              rules={[{ required: true }]}
+              rules={[
+                { required: true, message: "Please enter first name" },
+                { max: 50, message: "First name cannot exceed 50 characters" },
+                { 
+                  pattern: /^[a-zA-Z\s-]+$/, 
+                  message: "First name can only contain letters, spaces and hyphens" 
+                }
+              ]}
             >
               <Input />
             </Form.Item>
@@ -379,7 +425,14 @@ const Therapists = () => {
             <Form.Item
               name="last_name"
               label="Last Name"
-              rules={[{ required: true }]}
+              rules={[
+                { required: true, message: "Please enter last name" },
+                { max: 50, message: "Last name cannot exceed 50 characters" },
+                { 
+                  pattern: /^[a-zA-Z\s-]+$/, 
+                  message: "Last name can only contain letters, spaces and hyphens" 
+                }
+              ]}
             >
               <Input />
             </Form.Item>
@@ -387,13 +440,27 @@ const Therapists = () => {
             <Form.Item
               name="email"
               label="Email"
-              rules={[{ required: true, type: "email" }]}
+              rules={[
+                { required: true, message: "Please enter email" },
+                { type: "email", message: "Please enter valid email" },
+                { max: 100, message: "Email cannot exceed 100 characters" }
+              ]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
-              <Input />
+            <Form.Item
+              name="phone"
+              label="Phone"
+              rules={[
+                { required: true, message: "Please enter phone number" },
+                { 
+                  pattern: /^\d{10}$/, 
+                  message: "Phone number must be exactly 10 digits" 
+                }
+              ]}
+            >
+              <Input type="tel" maxLength={10} />
             </Form.Item>
 
             <Form.Item
@@ -447,7 +514,12 @@ const Therapists = () => {
 
           <div className={styles.buttonGroup}>
             <Button onClick={() => setEditDrawerVisible(false)}>Cancel</Button>
-            <Button type="primary" htmlType="submit" loading={loading}>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              loading={updateButtonLoading}
+              disabled={updateButtonLoading}
+            >
               Update
             </Button>
           </div>

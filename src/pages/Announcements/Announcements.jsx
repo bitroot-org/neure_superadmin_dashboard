@@ -45,6 +45,8 @@ const Announcements = () => {
   const [companyLoading, setCompanyLoading] = useState(false);
   const [selectedAudienceType, setSelectedAudienceType] = useState("all");
   const [form] = Form.useForm();
+  const [submitButtonLoading, setSubmitButtonLoading] = useState(false);
+  const [deleteButtonLoading, setDeleteButtonLoading] = useState(false);
 
   const fetchAnnouncements = async (page = 1) => {
     setLoading(true);
@@ -86,6 +88,8 @@ const Announcements = () => {
 
   const handleCreate = async (values) => {
     try {
+      setSubmitButtonLoading(true); // Set button loading state to true
+      
       const payload = {
         title: values.title,
         content: values.content,
@@ -112,7 +116,13 @@ const Announcements = () => {
       form.resetFields();
       fetchAnnouncements();
     } catch (error) {
-      message.error(editingAnnouncement ? "Failed to update announcement" : "Failed to create announcement");
+      message.error(editingAnnouncement 
+        ? "Failed to update announcement: " + (error.message || "Unknown error")
+        : "Failed to create announcement: " + (error.message || "Unknown error")
+      );
+      console.error("Error with announcement:", error);
+    } finally {
+      setSubmitButtonLoading(false); // Reset button loading state
     }
   };
 
@@ -147,13 +157,22 @@ const Announcements = () => {
         okType: 'danger',
         cancelText: 'Cancel',
         onOk: async () => {
-          await deleteAnnouncement(id);
-          message.success("Announcement deleted successfully");
-          fetchAnnouncements();
+          try {
+            setDeleteButtonLoading(true); // Set button loading state
+            await deleteAnnouncement(id);
+            message.success("Announcement deleted successfully");
+            fetchAnnouncements();
+          } catch (error) {
+            message.error("Failed to delete announcement: " + (error.message || "Unknown error"));
+            console.error("Error deleting announcement:", error);
+          } finally {
+            setDeleteButtonLoading(false); // Reset button loading state
+          }
         }
       });
     } catch (error) {
       message.error("Failed to delete announcement");
+      console.error("Error with delete confirmation:", error);
     }
   };
 
@@ -311,6 +330,7 @@ const Announcements = () => {
                 setEditingAnnouncement(null);
                 form.resetFields();
               }}
+              disabled={submitButtonLoading}
             >
               Cancel
             </Button>
@@ -319,6 +339,8 @@ const Announcements = () => {
               onClick={() => {
                 form.submit();
               }}
+              loading={submitButtonLoading}
+              disabled={submitButtonLoading}
             >
               {editingAnnouncement ? "Update" : "Submit"}
             </Button>
@@ -338,7 +360,10 @@ const Announcements = () => {
           <Form.Item
             name="title"
             label="Title"
-            rules={[{ required: true, message: "Please enter title" }]}
+            rules={[
+              { required: true, message: "Please enter title" },
+              { max: 100, message: "Title cannot exceed 100 characters" }
+            ]}
           >
             <Input placeholder="Enter announcement title" />
           </Form.Item>
@@ -365,7 +390,7 @@ const Announcements = () => {
             <Form.Item
               name="company_id"
               label="Select Company"
-              rules={[{ required: true, message: "Please select a company" }]}
+              rules={[{ required: true, message: "Please select at least one company" }]}
             >
               <Select
                 mode="multiple"
@@ -390,12 +415,25 @@ const Announcements = () => {
           <Form.Item
             name="content"
             label="Content"
-            rules={[{ required: true, message: "Please enter content" }]}
+            rules={[
+              { required: true, message: "Please enter content" },
+              { max: 1000, message: "Content cannot exceed 1000 characters" }
+            ]}
           >
             <TextArea rows={4} placeholder="Enter announcement content" />
           </Form.Item>
 
-          <Form.Item name="link" label="Link (Optional)">
+          <Form.Item 
+            name="link" 
+            label="Link (Optional)"
+            rules={[
+              { 
+                type: 'url', 
+                message: 'Please enter a valid URL starting with http:// or https://' 
+              },
+              { max: 255, message: "Link cannot exceed 255 characters" }
+            ]}
+          >
             <Input placeholder="Enter link" />
           </Form.Item>
         </Form>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, Form, Input, Drawer, message, Upload, Modal, Switch, Select, Spin } from 'antd';
-import { PlusOutlined, DeleteOutlined, EditOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { getRewards, createReward, updateReward, deleteReward, getAllCompanies } from '../../services/api';
 import styles from './Rewards.module.css';
 
@@ -20,6 +20,11 @@ const Rewards = () => {
   const [companies, setCompanies] = useState([]);
   const [companiesLoading, setCompaniesLoading] = useState(false);
 
+  // Add new state variables for button loading
+  const [submitButtonLoading, setSubmitButtonLoading] = useState(false);
+  const [deleteButtonLoading, setDeleteButtonLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
   // Fetch companies function
   const fetchCompanies = async () => {
     setCompaniesLoading(true);
@@ -36,13 +41,15 @@ const Rewards = () => {
         } else {
           console.error('Unexpected companies data format:', response.data);
           setCompanies([]);
+          throw new Error('Unexpected companies data format');
         }
       } else {
         setCompanies([]);
+        throw new Error('Invalid response format');
       }
     } catch (error) {
       console.error('Error fetching companies:', error);
-      message.error('Failed to fetch companies');
+      message.error('Failed to fetch companies: ' + (error.message || 'Unknown error'));
       setCompanies([]);
     } finally {
       setCompaniesLoading(false);
@@ -74,10 +81,13 @@ const Rewards = () => {
             company_ids: Array.isArray(companyIds) ? companyIds : []
           };
         }));
+      } else {
+        throw new Error('Invalid response format');
       }
     } catch (error) {
       console.error('Error fetching rewards:', error);
-      message.error('Failed to fetch rewards');
+      message.error('Failed to fetch rewards: ' + (error.message || 'Unknown error'));
+      setRewards([]);
     } finally {
       setLoading(false);
     }
@@ -89,6 +99,8 @@ const Rewards = () => {
 
   const handleCreate = async (values) => {
     try {
+      setSubmitButtonLoading(true); // Set button loading state to true
+      
       const formData = new FormData();
       formData.append('title', values.title);
       formData.append('terms_and_conditions', values.terms_and_conditions);
@@ -121,11 +133,19 @@ const Rewards = () => {
       setIsGlobalReward(true);
       fetchRewards();
     } catch (error) {
-      message.error('Failed to save reward');
+      message.error(editingReward 
+        ? 'Failed to update reward: ' + (error.message || 'Unknown error')
+        : 'Failed to create reward: ' + (error.message || 'Unknown error')
+      );
+      console.error('Error with reward:', error);
+    } finally {
+      setSubmitButtonLoading(false); // Reset button loading state
     }
   };
 
   const handleDelete = async (id) => {
+    setDeletingId(id); // Set the ID of the reward being deleted
+    
     Modal.confirm({
       title: 'Are you sure you want to delete this reward?',
       content: 'This action cannot be undone.',
@@ -134,13 +154,21 @@ const Rewards = () => {
       cancelText: 'No',
       onOk: async () => {
         try {
+          setDeleteButtonLoading(true); // Set button loading state
           await deleteReward(id);
           message.success('Reward deleted successfully');
           fetchRewards();
         } catch (error) {
-          message.error('Failed to delete reward');
+          message.error('Failed to delete reward: ' + (error.message || 'Unknown error'));
+          console.error('Error deleting reward:', error);
+        } finally {
+          setDeleteButtonLoading(false); // Reset button loading state
+          setDeletingId(null); // Reset the deleting ID
         }
       },
+      onCancel: () => {
+        setDeletingId(null); // Reset the deleting ID if canceled
+      }
     });
   };
 
@@ -268,6 +296,7 @@ const Rewards = () => {
             type="text"
             danger
             icon={<DeleteOutlined />}
+            loading={deleteButtonLoading && deletingId === record.id}
             onClick={(e) => {
               e.stopPropagation(); // Prevent row click
               handleDelete(record.id);
@@ -318,7 +347,6 @@ const Rewards = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setDrawerVisible(false)} />
             {editingReward ? 'Edit Reward' : 'Create Reward'}
           </Space>
         }
@@ -340,7 +368,10 @@ const Rewards = () => {
           <Form.Item
             name="title"
             label="Reward Name"
-            rules={[{ required: true, message: 'Please enter reward name' }]}
+            rules={[
+              { required: true, message: 'Please enter reward name' },
+              { max: 100, message: 'Reward name cannot exceed 100 characters' }
+            ]}
           >
             <Input placeholder="Enter reward name" />
           </Form.Item>
@@ -348,7 +379,10 @@ const Rewards = () => {
           <Form.Item
             name="terms_and_conditions"
             label="Terms and Conditions"
-            rules={[{ required: true, message: 'Please enter terms and conditions' }]}
+            rules={[
+              { required: true, message: 'Please enter terms and conditions' },
+              { max: 1000, message: 'Terms and conditions cannot exceed 1000 characters' }
+            ]}
           >
             <Input.TextArea rows={4} placeholder="Enter terms and conditions" />
           </Form.Item>
@@ -374,7 +408,10 @@ const Rewards = () => {
             <Form.Item
               name="company_ids"
               label="Select Companies"
-              rules={[{ required: true, message: 'Please select at least one company' }]}
+              rules={[
+                { required: true, message: 'Please select at least one company' },
+                { type: 'array', min: 1, message: 'Please select at least one company' }
+              ]}
             >
               <Select
                 mode="multiple"
@@ -404,6 +441,29 @@ const Rewards = () => {
                 required: true,
                 message: 'Please upload an icon',
               },
+              {
+                validator: (_, value) => {
+                  if (!value || !value.fileList || value.fileList.length === 0) {
+                    return Promise.reject('Please upload an icon');
+                  }
+                  
+                  const file = value.fileList[0];
+                  
+                  // Check file type
+                  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+                  if (!isJpgOrPng && file.originFileObj) {
+                    return Promise.reject('You can only upload JPG/PNG file!');
+                  }
+                  
+                  // Check file size (less than 2MB)
+                  const isLt2M = file.size / 1024 / 1024 < 2;
+                  if (!isLt2M && file.originFileObj) {
+                    return Promise.reject('Image must be smaller than 2MB!');
+                  }
+                  
+                  return Promise.resolve();
+                }
+              }
             ]}
           >
             <Upload
@@ -420,7 +480,13 @@ const Rewards = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" block>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              block
+              loading={submitButtonLoading}
+              disabled={submitButtonLoading}
+            >
               {editingReward ? 'Update' : 'Create'}
             </Button>
           </Form.Item>
@@ -431,7 +497,6 @@ const Rewards = () => {
       <Drawer
         title={
           <Space>
-            <ArrowLeftOutlined onClick={() => setViewDrawerVisible(false)} />
             Reward Details
           </Space>
         }
