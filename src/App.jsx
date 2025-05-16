@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ConfigProvider } from "antd";
 import enUS from "antd/es/locale/en_US";
 import {
@@ -41,18 +41,29 @@ const isAuthenticated = () => {
 const AuthChecker = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
   useEffect(() => {
-    console.log("Auth check - path:", location.pathname);
-    console.log("Auth state:", isAuthenticated());
+    // Small delay to ensure localStorage is properly read
+    const timer = setTimeout(() => {
+      console.log("Auth check - path:", location.pathname);
+      console.log("Auth state:", isAuthenticated());
+      console.log("Token exists:", !!localStorage.getItem("accessToken"));
+      console.log("Refresh token exists:", !!localStorage.getItem("refreshToken"));
+      
+      if (location.pathname !== '/login' && !isAuthenticated()) {
+        navigate('/login', { replace: true });
+      } else if (location.pathname === '/login' && isAuthenticated()) {
+        navigate('/home', { replace: true });
+      }
+      
+      setIsCheckingAuth(false);
+    }, 100);
     
-    if (location.pathname !== '/login' && !isAuthenticated()) {
-      navigate('/login', { replace: true });
-    } else if (location.pathname === '/login' && isAuthenticated()) {
-      navigate('/home', { replace: true });
-    }
+    return () => clearTimeout(timer);
   }, [location.pathname, navigate]);
   
+  // Don't render children until auth check is complete
   return null;
 };
 
@@ -161,6 +172,7 @@ const App = () => {
               path="*"
               element={
                 isAuthenticated() ? (
+                  // Only redirect to home if not on a valid route
                   <Navigate to="/home" replace />
                 ) : (
                   <Navigate to="/login" replace />
