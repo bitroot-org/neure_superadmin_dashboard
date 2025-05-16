@@ -6,6 +6,8 @@ import {
   Route,
   Routes,
   Navigate,
+  useNavigate,
+  useLocation,
 } from "react-router-dom";
 import Sidebar from "./components/Sidebar/Sidebar";
 import LoginPage from "./pages/Login";
@@ -32,28 +34,29 @@ import AssessmentReports from "./pages/Assessments/AssessmentReports";
 const isAuthenticated = () => {
   const token = localStorage.getItem("accessToken");
   const refreshToken = localStorage.getItem("refreshToken");
-  console.log("Auth check - token:", !!token, "refresh:", !!refreshToken);
   return !!(token && refreshToken);
 };
 
-const App = () => {
+// Create a separate component for auth checking
+const AuthChecker = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   useEffect(() => {
-    console.log("App mounted, auth state:", isAuthenticated());
-    console.log("Token exists:", !!localStorage.getItem("accessToken"));
-    console.log(
-      "Refresh token exists:",
-      !!localStorage.getItem("refreshToken")
-    );
+    console.log("Auth check - path:", location.pathname);
+    console.log("Auth state:", isAuthenticated());
     
-    // Force a check and redirect if needed
-    const path = window.location.pathname;
-    if (path !== '/login' && !isAuthenticated()) {
-      window.location.href = '/login';
-    } else if (path === '/login' && isAuthenticated()) {
-      window.location.href = '/home';
+    if (location.pathname !== '/login' && !isAuthenticated()) {
+      navigate('/login', { replace: true });
+    } else if (location.pathname === '/login' && isAuthenticated()) {
+      navigate('/home', { replace: true });
     }
-  }, []);
+  }, [location.pathname, navigate]);
+  
+  return null;
+};
 
+const App = () => {
   return (
     <ConfigProvider
       locale={enUS}
@@ -110,6 +113,7 @@ const App = () => {
       }}
     >
       <Router>
+        <AuthChecker />
         <Routes>
           <Route
             path="/login"
