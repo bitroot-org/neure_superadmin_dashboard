@@ -646,7 +646,7 @@ const Resources = () => {
 
         response = await uploadGalleryItem(formData);
       } else if (resourceType === "image" || resourceType === "document") {
-        // For images and documents, we need to handle file upload
+        // For images and documents, directly upload the file with gallery item
         const file =
           resourceType === "image"
             ? values.image?.fileList[0]?.originFileObj
@@ -658,26 +658,15 @@ const Resources = () => {
           return;
         }
 
-        // First upload the file to get the URL
+        // Create gallery item with the file directly
         const formData = new FormData();
         formData.append("file", file);
         formData.append("type", resourceType);
+        formData.append("title", values.title);
+        formData.append("description", values.description || "");
+        formData.append("tags", JSON.stringify(tags));
 
-        const uploadResponse = await uploadMediaFile(formData);
-
-        if (uploadResponse.status && uploadResponse.data) {
-          // Now create the gallery item with the file URL using FormData
-          const galleryFormData = new FormData();
-          galleryFormData.append("type", resourceType);
-          galleryFormData.append("title", values.title);
-          galleryFormData.append("description", values.description || "");
-          galleryFormData.append("tags", JSON.stringify(tags));
-          galleryFormData.append("url", uploadResponse.data.file_url);
-
-          response = await uploadGalleryItem(galleryFormData);
-        } else {
-          throw new Error("File upload failed");
-        }
+        response = await uploadGalleryItem(formData);
       } else if (resourceType === "article") {
         // Article creation already uses FormData, no changes needed
         const file = values.cover_image?.fileList[0]?.originFileObj;
@@ -929,8 +918,8 @@ const Resources = () => {
                       return Promise.reject("Please upload an image");
                     }
                     const file = value.fileList[0].originFileObj;
-                    if (file.size > 5 * 1024 * 1024) {
-                      return Promise.reject("Image must be smaller than 5MB");
+                    if (file.size > 10 * 1024 * 1024) {
+                      return Promise.reject("Image must be smaller than 10MB");
                     }
                     return Promise.resolve();
                   },

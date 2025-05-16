@@ -405,6 +405,7 @@ export const getGalleryItems = async (params = {}) => {
 
 export const uploadGalleryItem = async (formData) => {
   try {
+    // Send the formData directly with the file included
     const response = await api.post('/uploadGalleryItem', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

@@ -81,6 +81,8 @@ const Workshops = () => {
   const [createWorkshopLoading, setCreateWorkshopLoading] = useState(false);
   const [scheduleWorkshopLoading, setScheduleWorkshopLoading] = useState(false);
   const [updateWorkshopLoading, setUpdateWorkshopLoading] = useState(false);
+  const [rescheduleButtonLoading, setRescheduleButtonLoading] = useState(false);
+  const [reschedulingId, setReschedulingId] = useState(null);
 
   // Create a debounced version of fetchWorkshopSchedules
   const debouncedSearch = useCallback(
@@ -309,6 +311,7 @@ const Workshops = () => {
 
   const handleRescheduleWorkshop = (schedule) => {
     setSelectedSchedule(schedule);
+    setReschedulingId(schedule.id);
     rescheduleForm.setFieldsValue({
       date: null,
       time: null,
@@ -318,6 +321,7 @@ const Workshops = () => {
 
   const handleRescheduleSubmit = async (values) => {
     try {
+      setRescheduleButtonLoading(true); // Set loading state to true
       const scheduleId = selectedSchedule.id;
       const newStartTime = `${values.date.format(
         "YYYY-MM-DD"
@@ -340,6 +344,9 @@ const Workshops = () => {
     } catch (error) {
       console.error("Error rescheduling workshop:", error);
       message.error("Failed to reschedule workshop");
+    } finally {
+      setRescheduleButtonLoading(false); // Reset loading state
+      setReschedulingId(null);
     }
   };
 
@@ -544,6 +551,7 @@ const Workshops = () => {
               e.stopPropagation(); // Prevent row click event
               handleRescheduleWorkshop(record);
             }}
+            loading={rescheduleButtonLoading && reschedulingId === record.id}
             // disabled={record.status === 'completed' || record.status === 'cancelled'}
           >
             Reschedule
@@ -777,15 +785,15 @@ const Workshops = () => {
               multiple={false}
               beforeUpload={(file) => {
                 // Validate file type
-                const isImage = file.type.startsWith('image/');
-                if (!isImage) {
-                  message.error('You can only upload image files!');
+                const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
+                if (!isJpgOrPng) {
+                  message.error('You can only upload JPG/PNG files!');
                   return Upload.LIST_IGNORE;
                 }
                 // Validate file size (5MB max)
-                const isLt5M = file.size / 1024 / 1024 < 5;
+                const isLt5M = file.size / 1024 / 1024 < 10;
                 if (!isLt5M) {
-                  message.error('Image must be smaller than 5MB!');
+                  message.error('Image must be smaller than 10MB!');
                   return Upload.LIST_IGNORE;
                 }
                 setCoverImage(file);
@@ -793,6 +801,7 @@ const Workshops = () => {
               }}
               onRemove={() => setCoverImage(null)}
               fileList={coverImage ? [coverImage] : []}
+              accept=".jpg,.jpeg,.png"
             >
               <p className="ant-upload-drag-icon">
                 <img
@@ -849,9 +858,9 @@ const Workshops = () => {
                   return Upload.LIST_IGNORE;
                 }
                 // Validate file size (10MB max)
-                const isLt10M = file.size / 1024 / 1024 < 10;
+                const isLt10M = file.size / 1024 / 1024 < 20;
                 if (!isLt10M) {
-                  message.error('File must be smaller than 10MB!');
+                  message.error('File must be smaller than 20MB!');
                   return Upload.LIST_IGNORE;
                 }
                 setWorksheetFile(file);
@@ -859,6 +868,7 @@ const Workshops = () => {
               }}
               onRemove={() => setWorksheetFile(null)}
               fileList={worksheetFile ? [worksheetFile] : []}
+              accept=".pdf"
             >
               <Button icon={<UploadOutlined />}>Upload PDF worksheet</Button>
             </Upload>
@@ -872,7 +882,7 @@ const Workshops = () => {
               disabled={createWorkshopLoading}
               className={styles.submitButton}
             >
-              Review and save
+              Create
             </Button>
           </Form.Item>
         </Form>
@@ -938,16 +948,15 @@ const Workshops = () => {
               listType="picture-card"
               maxCount={1}
               beforeUpload={(file) => {
-                const isImage = file.type.startsWith('image/');
-                const isLt5M = file.size / 1024 / 1024 < 5;
-
-                if (!isImage) {
-                  message.error('You can only upload image files!');
+                const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
+                if (!isJpgOrPng) {
+                  message.error('You can only upload JPG/PNG files!');
                   return false;
                 }
 
+                const isLt5M = file.size / 1024 / 1024 < 10;
                 if (!isLt5M) {
-                  message.error('Image must be smaller than 5MB!');
+                  message.error('Image must be smaller than 10MB!');
                   return false;
                 }
 
@@ -956,6 +965,7 @@ const Workshops = () => {
               }}
               onRemove={() => setCoverImageFile(null)}
               fileList={coverImageFile ? [coverImageFile] : []}
+              accept=".jpg,.jpeg,.png"
             >
               <div>
                 <PlusOutlined />
@@ -982,16 +992,15 @@ const Workshops = () => {
             <Upload
               maxCount={1}
               beforeUpload={(file) => {
-                const isPdf = file.type === "application/pdf";
-                const isLt10M = file.size / 1024 / 1024 < 10;
-
+                const isPdf = file.type === 'application/pdf';
                 if (!isPdf) {
                   message.error("You can only upload PDF files!");
                   return false;
                 }
 
+                const isLt10M = file.size / 1024 / 1024 < 20;
                 if (!isLt10M) {
-                  message.error("PDF must be smaller than 10MB!");
+                  message.error("PDF must be smaller than 20MB!");
                   return false;
                 }
 
@@ -1000,6 +1009,7 @@ const Workshops = () => {
               }}
               onRemove={() => setWorksheetFile(null)}
               fileList={worksheetFile ? [worksheetFile] : []}
+              accept=".pdf"
             >
               <Button icon={<UploadOutlined />}>
                 {editingWorkshop?.pdf_url
@@ -1276,7 +1286,12 @@ const Workshops = () => {
               <Button onClick={() => setRescheduleModalVisible(false)}>
                 Cancel
               </Button>
-              <Button type="primary" htmlType="submit">
+              <Button 
+                type="primary" 
+                htmlType="submit"
+                loading={rescheduleButtonLoading}
+                disabled={rescheduleButtonLoading}
+              >
                 Reschedule
               </Button>
             </div>
