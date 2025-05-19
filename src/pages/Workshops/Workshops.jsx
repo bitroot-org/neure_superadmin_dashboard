@@ -717,7 +717,7 @@ const Workshops = () => {
           />
         )}
         <Space>
-          <Button icon={<FilterOutlined />}>Filter</Button>
+          {/* <Button icon={<FilterOutlined />}>Filter</Button> */}
           <Button
             type="primary"
             icon={<PlusOutlined />}

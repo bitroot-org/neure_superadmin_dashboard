@@ -282,7 +282,7 @@ const Soundscapes = () => {
       </div>
 
       <div className={styles.actionBar}>
-        <Button icon={<FilterOutlined />}>Filter</Button>
+        {/* <Button icon={<FilterOutlined />}>Filter</Button> */}
         <Button
           type="primary"
           icon={<PlusOutlined />}

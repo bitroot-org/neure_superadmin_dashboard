@@ -271,7 +271,7 @@ const Assessments = () => {
       <div className={styles.actionBar}>
         <DatePicker.RangePicker className={styles.datePicker} />
         <Space>
-          <Button icon={<FilterOutlined />}>Filter</Button>
+          {/* <Button icon={<FilterOutlined />}>Filter</Button> */}
           <Button 
             type="primary" 
             icon={<PlusOutlined />}
