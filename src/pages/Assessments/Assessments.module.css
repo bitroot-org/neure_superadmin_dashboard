@@ -87,6 +87,82 @@
   background: #4f46e5;
 }
 
+.interpretationRangeSection {
+  margin-top: 32px;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: var(--primary-dark);
+}
+
+.rangeRow {
+  position: relative;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+}
+
+.rangeInputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rangeLabel {
+  min-width: 70px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.rangeInput {
+  width: 80px;
+}
+
+.rangeDivider {
+  margin: 0 8px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.rangeDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.descriptionLabel {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.removeRangeBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.addRangeBtn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.psiSwitch {
+  margin-bottom: 24px;
+}
+
+.psiSwitchContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.psiSwitchLabel {
+  color: rgba(0, 0, 0, 0.65);
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
   .container {

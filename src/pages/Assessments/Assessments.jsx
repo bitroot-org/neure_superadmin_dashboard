@@ -20,6 +20,11 @@ const Assessments = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [publishButtonLoading, setPublishButtonLoading] = useState(false);
   const [deleteButtonLoading, setDeleteButtonLoading] = useState(false);
+  const [interpretationRanges, setInterpretationRanges] = useState([
+    { id: null, min_score: 0, max_score: 10, description: '' },
+    { id: null, min_score: 11, max_score: 20, description: '' }
+  ]);
+  const [isPsiAssessment, setIsPsiAssessment] = useState(false);
 
   // Remove the createPsiQuestions function and any other PSI-related code
 
@@ -144,16 +149,30 @@ const Assessments = () => {
     setSelectedAssessment(assessment);
     setIsEditMode(editMode);
     
+    // Set PSI assessment state
+    setIsPsiAssessment(assessment.is_psi_assessment === 1);
+    
     // Transform the assessment data to match our form structure
     const transformedQuestions = assessment.questions.map((q, index) => ({
       id: index + 1,
       options: q.options.map(opt => ({
         text: opt.option_text,
-        points: opt.points || 0
+        points: parseFloat(opt.points) || 0
       }))
     }));
     
     setQuestions(transformedQuestions);
+    
+    // Set interpretation ranges if they exist
+    if (assessment.interpretation_ranges && assessment.interpretation_ranges.length > 0) {
+      setInterpretationRanges(assessment.interpretation_ranges);
+    } else {
+      // Default ranges if none exist
+      setInterpretationRanges([
+        { id: null, min_score: 0, max_score: 10, description: '' },
+        { id: null, min_score: 11, max_score: 20, description: '' }
+      ]);
+    }
     
     // Set form values
     form.setFieldsValue({
@@ -208,17 +227,24 @@ const Assessments = () => {
     form.validateFields()
       .then(async (values) => {
         try {
-          setPublishButtonLoading(true); // Set button loading state to true
+          setPublishButtonLoading(true);
           
           const formattedData = {
             title: values.title,
             description: values.description || '',
+            is_psi_assessment: isPsiAssessment ? 1 : 0,
             questions: questions.map((q, index) => ({
               question_text: values.questions[index]?.prompt || '',
               options: q.options.map(opt => ({
                 option_text: opt.text,
                 points: opt.points || 0
               }))
+            })),
+            interpretation_ranges: interpretationRanges.map(range => ({
+              id: range.id, // Include id if it exists (for updates)
+              min_score: range.min_score,
+              max_score: range.max_score,
+              description: range.description
             }))
           };
           
@@ -237,13 +263,29 @@ const Assessments = () => {
           console.error('API Error:', error);
           message.error(error.message || `Failed to ${isEditMode ? 'update' : 'publish'} assessment`);
         } finally {
-          setPublishButtonLoading(false); // Reset button loading state
+          setPublishButtonLoading(false);
         }
       })
       .catch(error => {
         console.error('Form validation failed:', error);
         message.error('Please fill in all required fields');
       });
+  };
+
+  const handleAddRange = () => {
+    const lastRange = interpretationRanges[interpretationRanges.length - 1];
+    const newMinScore = lastRange.max_score + 1;
+    const newMaxScore = newMinScore + 9;
+    setInterpretationRanges([
+      ...interpretationRanges,
+      { id: null, min_score: newMinScore, max_score: newMaxScore, description: '' }
+    ]);
+  };
+
+  const handleRangeChange = (index, field, value) => {
+    const updatedRanges = [...interpretationRanges];
+    updatedRanges[index][field] = value;
+    setInterpretationRanges(updatedRanges);
   };
 
   const resetForm = () => {
@@ -255,8 +297,13 @@ const Assessments = () => {
         { text: 'Option 2', points: 0 }
       ]
     }]);
+    setInterpretationRanges([
+      { id: null, min_score: 0, max_score: 10, description: '' },
+      { id: null, min_score: 11, max_score: 20, description: '' }
+    ]);
     setSelectedAssessment(null);
     setIsEditMode(false);
+    setIsPsiAssessment(false);
   };
 
   const handleCloseDrawer = () => {
@@ -343,6 +390,23 @@ const Assessments = () => {
             <Input.TextArea placeholder="Enter assessment description" rows={4} />
           </Form.Item>
 
+          {/* Add PSI Assessment Switch */}
+          <Form.Item
+            label="PSI Assessment"
+            className={styles.psiSwitch}
+          >
+            <div className={styles.psiSwitchContainer}>
+              <Switch
+                checked={isPsiAssessment}
+                onChange={(checked) => setIsPsiAssessment(checked)}
+                disabled={selectedAssessment && !isEditMode}
+              />
+              <span className={styles.psiSwitchLabel}>
+                {isPsiAssessment ? 'This is a PSI assessment' : 'This is a regular assessment'}
+              </span>
+            </div>
+          </Form.Item>
+
           {questions.map((question, questionIndex) => (
             <div key={question.id} className={styles.questionBox}>
               <Form.Item
@@ -413,6 +477,66 @@ const Assessments = () => {
               + Add question
             </Button>
           )}
+
+          {/* Interpretation Range Section */}
+          <div className={styles.interpretationRangeSection}>
+            <h3 className={styles.sectionTitle}>Interpretation Range</h3>
+            
+            {interpretationRanges.map((range, index) => (
+              <div key={index} className={styles.rangeRow}>
+                <div className={styles.rangeInputs}>
+                  <span className={styles.rangeLabel}>Low range</span>
+                  <Input 
+                    value={range.min_score} 
+                    onChange={(e) => handleRangeChange(index, 'min_score', parseInt(e.target.value) || 0)}
+                    className={styles.rangeInput}
+                    disabled={selectedAssessment && !isEditMode}
+                  />
+                  <span className={styles.rangeDivider}>—</span>
+                  <span className={styles.rangeLabel}>High range</span>
+                  <Input 
+                    value={range.max_score} 
+                    onChange={(e) => handleRangeChange(index, 'max_score', parseInt(e.target.value) || 0)}
+                    className={styles.rangeInput}
+                    disabled={selectedAssessment && !isEditMode}
+                  />
+                </div>
+                <div className={styles.rangeDescription}>
+                  <span className={styles.descriptionLabel}>Description</span>
+                  <Input.TextArea 
+                    value={range.description}
+                    onChange={(e) => handleRangeChange(index, 'description', e.target.value)}
+                    placeholder="Enter description for this score range"
+                    rows={2}
+                    disabled={selectedAssessment && !isEditMode}
+                  />
+                </div>
+                {(isEditMode || !selectedAssessment) && index > 0 && (
+                  <Button 
+                    type="text" 
+                    danger
+                    icon={<DeleteOutlined />}
+                    className={styles.removeRangeBtn}
+                    onClick={() => {
+                      const updatedRanges = [...interpretationRanges];
+                      updatedRanges.splice(index, 1);
+                      setInterpretationRanges(updatedRanges);
+                    }}
+                  />
+                )}
+              </div>
+            ))}
+            
+            {(isEditMode || !selectedAssessment) && (
+              <Button 
+                type="dashed" 
+                onClick={handleAddRange} 
+                className={styles.addRangeBtn}
+              >
+                + Add Range
+              </Button>
+            )}
+          </div>
 
           {(isEditMode || !selectedAssessment) && (
             <Button 
