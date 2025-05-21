@@ -311,6 +311,43 @@ const Assessments = () => {
     resetForm();
   };
 
+  // Update the handlePointChange function to automatically add options
+  const handlePointChange = (questionIndex, optionIndex, value) => {
+    const numValue = parseInt(value) || 0;
+    const newQuestions = [...questions];
+    
+    // Set the current option's points
+    newQuestions[questionIndex].options[optionIndex].points = numValue;
+    
+    // If this is the first option (index 0) and has a value > 1
+    if (optionIndex === 0 && numValue > 1) {
+      const currentOptions = newQuestions[questionIndex].options;
+      const currentLength = currentOptions.length;
+      
+      // First, update existing options with descending values
+      for (let i = 1; i < currentLength; i++) {
+        const autoValue = Math.max(numValue - i, 0);
+        currentOptions[i].points = autoValue;
+      }
+      
+      // If the first value is greater than the number of options,
+      // add new options with descending values until we reach 1
+      if (numValue > currentLength) {
+        for (let i = currentLength; i < numValue; i++) {
+          const pointValue = numValue - i;
+          if (pointValue >= 1) {
+            currentOptions.push({
+              text: `Option ${i + 1}`,
+              points: pointValue
+            });
+          }
+        }
+      }
+    }
+    
+    setQuestions(newQuestions);
+  };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Assessments</h1>
@@ -440,9 +477,7 @@ const Assessments = () => {
                       value={option.points}
                       onChange={(e) => {
                         if (selectedAssessment && !isEditMode) return;
-                        const newQuestions = [...questions];
-                        newQuestions[questionIndex].options[optionIndex].points = parseInt(e.target.value) || 0;
-                        setQuestions(newQuestions);
+                        handlePointChange(questionIndex, optionIndex, e.target.value);
                       }}
                       style={{ width: 120, marginLeft: 8 }}
                     />
