@@ -118,15 +118,43 @@ const Employees = () => {
 
   const handleCreateEmployee = async (values) => {
     try {
-      setCreateButtonLoading(true); // Set button loading state to true
+      setCreateButtonLoading(true);
       setLoading(true);
       
       if (uploadedFile) {
         const response = await bulkCreateEmployees(uploadedFile, selectedCompany);
+        
         if (response.status) {
           message.success('Employees uploaded successfully');
           setUploadedFile(null);
           setIsFormDisabled(false);
+          setCreateDrawerVisible(false);
+          form.resetFields();
+          handleCompanyChange(selectedCompany);
+        } else {
+          // Handle bulk creation failure with simplified error message
+          if (response.data && response.data.failed && response.data.failed.length > 0) {
+            // Extract emails and the common error pattern
+            const failedEmails = response.data.failed.map(item => item.email).join(', ');
+            
+            // Most errors will have the same pattern, so take the error from the first item
+            // and remove the email-specific part
+            let errorMessage = response.data.failed[0].error;
+            errorMessage = errorMessage.replace(response.data.failed[0].email, '');
+            
+            // Create the final message
+            const finalMessage = `Failed to upload employees: ${failedEmails} ${errorMessage}`;
+            
+            message.error(finalMessage);
+            
+            // Keep the drawer open so they can fix and retry
+            setUploadedFile(null);
+            setIsFormDisabled(false);
+          } else {
+            message.error(response.message || 'Failed to upload employees');
+            setCreateDrawerVisible(false);
+            form.resetFields();
+          }
         }
       } else {
         const formData = {
@@ -137,19 +165,42 @@ const Employees = () => {
         const response = await createEmployee(formData);
         if (response.status) {
           message.success('Employee created successfully');
+          setCreateDrawerVisible(false);
+          form.resetFields();
+          handleCompanyChange(selectedCompany);
+        } else {
+          message.error(response.message || 'Failed to create employee');
         }
       }
-      
-      setCreateDrawerVisible(false);
-      form.resetFields();
-      handleCompanyChange(selectedCompany);
-      
     } catch (error) {
       console.error('Error:', error);
-      message.error(uploadedFile ? 'Failed to upload employees' : 'Failed to create employee');
+      
+      // Check if the error has the detailed format
+      if (error.data && error.data.failed && error.data.failed.length > 0) {
+        // Extract emails and the common error pattern
+        const failedEmails = error.data.failed.map(item => item.email).join(', ');
+        
+        // Most errors will have the same pattern, so take the error from the first item
+        // and remove the email-specific part
+        let errorMessage = error.data.failed[0].error;
+        errorMessage = errorMessage.replace(error.data.failed[0].email, '');
+        
+        // Create the final message
+        const finalMessage = `Failed to upload employees: ${failedEmails} ${errorMessage}`;
+        
+        message.error(finalMessage);
+        
+        // Keep the drawer open
+        setUploadedFile(null);
+        setIsFormDisabled(false);
+      } else {
+        message.error(uploadedFile ? 'Failed to upload employees' : 'Failed to create employee');
+        setCreateDrawerVisible(false);
+        form.resetFields();
+      }
     } finally {
       setLoading(false);
-      setCreateButtonLoading(false); // Reset button loading state
+      setCreateButtonLoading(false);
     }
   };
 
