@@ -53,6 +53,7 @@ const CompanyAnalytics = () => {
     dayjs().subtract(30, "days"),
     dayjs(),
   ]);
+  const [reportButtonLoading, setReportButtonLoading] = useState(false);
 
   const [companiesLoading, setCompaniesLoading] = useState(true);
 
@@ -91,15 +92,19 @@ const CompanyAnalytics = () => {
   };
 
   const handleSendReport = async () => {
+    setReportButtonLoading(true); // Set loading state to true when starting
     try {
-      await generateReport(companyId, {
+      const response = await generateReport(companyId, {
         startDate: dateRange[0].format("YYYY-MM-DD"),
         endDate: dateRange[1].format("YYYY-MM-DD")
       });
       message.success('Report sent successfully');
     } catch (error) {
       console.error('Error sending report:', error);
-      message.error('Failed to send report');
+      // Show more specific error message if available
+      message.error(error.message || 'Failed to send report');
+    } finally {
+      setReportButtonLoading(false); // Reset loading state when done
     }
   };
 
@@ -202,8 +207,9 @@ const CompanyAnalytics = () => {
             type="primary"
             icon={<SendOutlined />} 
             onClick={handleSendReport}
+            disabled={reportButtonLoading}
           >
-            Send Report
+            {reportButtonLoading ? <Spin size="small" /> : "Send Report"}
           </Button>
           <Button icon={<ArrowLeftOutlined />} onClick={handleBackClick}>
             Back
