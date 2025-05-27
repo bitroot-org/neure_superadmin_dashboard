@@ -1,0 +1,17 @@
+{
+  "name": "Neure Dashboard",
+  "short_name": "Neure",
+  "icons": [
+    {
+      "src": "/neurelogo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#48A6A7",
+  "background_color": "#F2EFE7",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait"
+}
