@@ -18,6 +18,7 @@ import {
   GiftOutlined,
   QuestionCircleOutlined,
   FormOutlined,
+  UserSwitchOutlined,
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
@@ -89,6 +90,11 @@ const Sidebar = () => {
       path: "/therapists",
       name: "Therapists",
       icon: <SolutionOutlined />,
+    },
+    {
+      path: "/superadmins",
+      name: "Superadmins",
+      icon: <UserSwitchOutlined />,
     },
     {
       path: "/soundscapes",

@@ -35,6 +35,7 @@ const LoginPage: React.FC = () => {
           role_id: 1,
         }
       );
+      console.log('Login response:', response);
       
       const data = response.data;
       
@@ -46,6 +47,15 @@ const LoginPage: React.FC = () => {
         localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('expiresAt', expiresAt);
         localStorage.setItem('userData', JSON.stringify(user));
+        
+        // Check if this is the first login (last_login is null)
+        if (user && user.last_login === null) {
+          localStorage.setItem('isFirstLogin', 'true');
+          console.log('First login detected, setting isFirstLogin to true');
+        } else {
+          localStorage.setItem('isFirstLogin', 'false');
+          console.log('Not first login, setting isFirstLogin to false');
+        }
         
         message.success('Login successful!');
         

@@ -197,6 +197,13 @@ const Rewards = () => {
       ),
     },
     {
+      title: 'Reward Type',
+      dataIndex: 'reward_type',
+      key: 'reward_type',
+      width: 100,
+      render: (type) => type === 'global' ? 'Global' : 'Custom',
+    },
+    {
       title: 'Icon',
       key: 'icon',
       width: 80,

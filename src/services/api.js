@@ -863,3 +863,18 @@ export const deleteCompany = async (companyId) => {
     throw error.response?.data || error;
   }
 }
+
+export const createSuperAdmin = async (data) => {
+  try {
+    const response = await api.post("/user/createSuperadmin", data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export const changePassword = async (data) => {
+  console.log("Data for change password: ", data);
+  const response = await api.post(`/user/changePassword`, data);
+  return response.data;
+};

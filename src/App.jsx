@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, message } from "antd";
 import enUS from "antd/es/locale/en_US";
 import {
   BrowserRouter as Router,
@@ -29,6 +29,9 @@ import Rewards from "./pages/Rewards/Rewards";
 import FAQ from "./pages/FAQ/FAQ";
 import ActivityHistory from "./pages/ActivityHistory/ActivityHistory";
 import AssessmentReports from "./pages/Assessments/AssessmentReports";
+import Superadmins from "./pages/Superadmins/Superadmins";
+import PasswordChange from './components/PasswordChange/PasswordChange';
+import { changePassword } from './services/api';
 
 // Authentication check function
 const isAuthenticated = () => {
@@ -68,6 +71,92 @@ const AuthChecker = () => {
 };
 
 const App = () => {
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [isFirstTimeLogin, setIsFirstTimeLogin] = useState(false);
+
+  useEffect(() => {
+    // Check if user is logged in and if it's their first login
+    const isFirstLogin = localStorage.getItem("isFirstLogin") === "true";
+    console.log("isFirstLogin from localStorage:", isFirstLogin);
+    
+    // Get user data to verify if it's actually the first login
+    const userData = localStorage.getItem("userData");
+    let user = null;
+    
+    if (userData) {
+      try {
+        user = JSON.parse(userData);
+        console.log("User data from localStorage:", user);
+        console.log("last_login value:", user.last_login);
+      } catch (e) {
+        console.error("Error parsing user data:", e);
+      }
+    }
+    
+    // Show password change modal if it's the first login (last_login is null)
+    if (isAuthenticated() && isFirstLogin && user && user.last_login === null) {
+      console.log("Showing password change modal");
+      setIsFirstTimeLogin(true);
+      setShowPasswordChange(true);
+    } else {
+      console.log("Not showing password change modal. Conditions:", {
+        isAuthenticated: isAuthenticated(),
+        isFirstLogin,
+        hasUser: !!user,
+        lastLoginIsNull: user ? user.last_login === null : false
+      });
+    }
+  }, []);
+
+  const handlePasswordChange = async ({ currentPassword, newPassword }) => {
+    try {
+
+      const UserData = localStorage.getItem("userData");
+      const parsedUserData = JSON.parse(UserData);
+      console.log("Parsed user data:", parsedUserData);
+      const email = parsedUserData.email;
+
+      const data = {
+        email,
+        old_password: currentPassword,
+        new_password: newPassword
+      };
+
+      // Call the API with the correct parameters
+      const response = await changePassword(data);
+      
+      if (response && response.status) {
+        // If successful, update localStorage
+        localStorage.setItem("isFirstLogin", "false");
+        
+        // Update user data in localStorage to reflect that they've logged in
+        const userData = localStorage.getItem("userData");
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+            user.last_login = new Date().toISOString();
+            localStorage.setItem("userData", JSON.stringify(user));
+          } catch (e) {
+            console.error("Error updating user data:", e);
+          }
+        }
+        
+        setShowPasswordChange(false);
+        setIsFirstTimeLogin(false);
+        
+        // Show success message
+        message.success("Password changed successfully");
+      } else {
+        message.error(response?.message || "Failed to change password");
+        throw new Error(response?.message || "Failed to change password");
+      }
+    } catch (error) {
+      console.error("Password change error:", error);
+      message.error(error.message || "Failed to change password");
+      throw error;
+    }
+  };
+
   return (
     <ConfigProvider
       locale={enUS}
@@ -167,6 +256,7 @@ const App = () => {
             <Route path="/rewards" element={<Rewards />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/activitylog" element={<ActivityHistory />} />
+            <Route path="/superadmins" element={<Superadmins />} />
 
             <Route
               path="*"
@@ -181,6 +271,21 @@ const App = () => {
             />
           </Route>
         </Routes>
+        <PasswordChange
+          visible={showPasswordChange}
+          onClose={() => {
+            if (!isFirstTimeLogin) {
+              setShowPasswordChange(false);
+            }
+          }}
+          onSubmit={handlePasswordChange}
+          isFirstLogin={isFirstTimeLogin}
+          onSkip={() => {
+            localStorage.setItem("isFirstLogin", "false");
+            setShowPasswordChange(false);
+            setIsFirstTimeLogin(false);
+          }}
+        />
       </Router>
     </ConfigProvider>
   );
