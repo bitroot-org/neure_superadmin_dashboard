@@ -57,6 +57,17 @@
   border-color: var(--primary-dark);
 }
 
+/* Add styles for the download button */
+.downloadButton {
+  background-color: #52c41a !important;
+  border-color: #52c41a !important;
+}
+
+.downloadButton:hover {
+  background-color: #389e0d !important;
+  border-color: #389e0d !important;
+}
+
 .datePicker {
   min-width: 250px;
 }
@@ -143,8 +154,7 @@
 
 /* Update existing statsCard class */
 .statsCard {
-  height: 400px;
-  overflow-y: auto;
+  margin-top: 32px;
   border-radius: 12px;
   border: 1px solid rgba(154, 203, 208, 0.2);
   box-shadow: 0 2px 8px rgba(0, 106, 113, 0.05);
@@ -497,4 +507,44 @@
   .companySelect {
     width: 100%;
   }
+}
+
+/* Make the actions row responsive */
+@media (max-width: 768px) {
+  .actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .datePicker, .downloadButton {
+    width: 100%;
+  }
+}
+
+/* Add styles for no data overlay */
+.noDataOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  z-index: 1;
+}
+
+.noDataOverlay p {
+  color: #8c8c8c;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Make sure chart cards have relative positioning for the overlay */
+.chartCard {
+  position: relative;
+  min-height: 400px;
 }

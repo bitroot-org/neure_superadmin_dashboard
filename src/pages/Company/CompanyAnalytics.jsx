@@ -11,9 +11,8 @@ import {
   Col,
   Statistic,
   Progress,
-  Timeline,
-  Select,
   message,
+  Select,
 } from "antd";
 import {
   BarChartOutlined,
@@ -22,11 +21,11 @@ import {
   DashboardOutlined,
   ArrowLeftOutlined,
   SendOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
-// Removed unused import
 import dayjs from "dayjs";
 import styles from "./CompanyAnalytics.module.css";
-import { getCompanyAnalytics, getCompanyList, generateReport } from "../../services/api";
+import { getCompanyAnalytics, getCompanyList, generateReport, getCompanyReport } from "../../services/api";
 import {
   LineChart,
   Line,
@@ -41,6 +40,32 @@ import {
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
+// Add a new function to handle report download
+const handleDownloadReport = async (companyId, dateRange, setDownloadButtonLoading) => {
+  setDownloadButtonLoading(true);
+  try {
+    const response = await getCompanyReport(companyId, {
+      startDate: dateRange[0].format("YYYY-MM-DD"),
+      endDate: dateRange[1].format("YYYY-MM-DD")
+    });
+    
+    // Check if response contains a PDF URL
+    if (response.status && response.data && response.data.pdfUrl) {
+      // Open the PDF in a new tab
+      window.open(response.data.pdfUrl, '_blank');
+      
+      message.success('Report downloaded successfully');
+    } else {
+      throw new Error('No PDF URL found in the response');
+    }
+  } catch (error) {
+    console.error('Error downloading report:', error);
+    message.error(error.message || 'Failed to download report');
+  } finally {
+    setDownloadButtonLoading(false);
+  }
+};
+
 const CompanyAnalytics = () => {
   const { companyId } = useParams();
   const navigate = useNavigate();
@@ -54,8 +79,10 @@ const CompanyAnalytics = () => {
     dayjs(),
   ]);
   const [reportButtonLoading, setReportButtonLoading] = useState(false);
-
   const [companiesLoading, setCompaniesLoading] = useState(true);
+  
+  // Add new state for download button loading
+  const [downloadButtonLoading, setDownloadButtonLoading] = useState(false);
 
   const fetchCompanies = async (search = "") => {
     setCompaniesLoading(true);
@@ -154,13 +181,17 @@ const CompanyAnalytics = () => {
     );
   }
 
-  // Update the trend data preparation
-  const trendData =
-    analytics?.trends.map((item) => ({
-      date: dayjs(item.date).format("MMM DD"),
-      "Engagement Score": parseFloat(item.avg_engagement_score),
-      "Stress Level": parseFloat(item.avg_stress_level),
-    })) || [];
+  // Prepare stress trend data
+  const stressTrendData = analytics?.stressTrends?.map((item) => ({
+    date: dayjs(item.date).format("MMM DD"),
+    "Stress Level": item.stress_level !== null ? parseFloat(item.stress_level) : 0,
+  })) || [];
+
+  // Prepare engagement trend data
+  const engagementTrendData = analytics?.engagementTrends?.map((item) => ({
+    date: dayjs(item.date).format("MMM DD"),
+    "Engagement Score": item.engagement_score !== null ? parseFloat(item.engagement_score) : 0,
+  })) || [];
 
   return (
     <div className={styles.container}>
@@ -203,6 +234,16 @@ const CompanyAnalytics = () => {
             onChange={handleDateRangeChange}
             className={styles.datePicker}
           />
+          {/* Add Download Report button */}
+          <Button 
+            type="primary"
+            icon={<DownloadOutlined />} 
+            onClick={() => handleDownloadReport(companyId, dateRange, setDownloadButtonLoading)}
+            disabled={downloadButtonLoading}
+            className={styles.downloadButton}
+          >
+            {downloadButtonLoading ? <Spin size="small" /> : "Download Report"}
+          </Button>
           <Button 
             type="primary"
             icon={<SendOutlined />} 
@@ -336,22 +377,72 @@ const CompanyAnalytics = () => {
           </Col>
         </Row>
 
-        {/* Employee Stats Section */}
+        {/* Updated Charts Section with separate graphs */}
         <Row gutter={[16, 16]} className={styles.statsSection}>
-          <Col xs={24} lg={16}>
+          <Col xs={24} lg={12}>
             <Card
-              title="Engagement & Stress Level Trends"
+              title="Stress Level Trends"
               className={styles.chartCard}
             >
               <ResponsiveContainer width="100%" height={350} minHeight={200}>
                 <LineChart
-                  data={trendData}
+                  data={stressTrendData}
                   margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} />
-                  <Tooltip />
+                  <YAxis 
+                    domain={[0, 100]} 
+                    tick={{ fontSize: 10 }} 
+                    label={{ 
+                      value: '%', 
+                      angle: -90, 
+                      position: 'insideLeft',
+                      style: { textAnchor: 'middle' }
+                    }}
+                  />
+                  <Tooltip formatter={(value) => [`${value}%`, 'Stress Level']} />
+                  <Legend wrapperStyle={{ fontSize: "10px" }} />
+                  <Line
+                    type="monotone"
+                    dataKey="Stress Level"
+                    stroke="#ff4d4f"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 5 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+              {stressTrendData.length === 0 && (
+                <div className={styles.noDataOverlay}>
+                  <p>No stress data available for the selected period</p>
+                </div>
+              )}
+            </Card>
+          </Col>
+          <Col xs={24} lg={12}>
+            <Card
+              title="Engagement Score Trends"
+              className={styles.chartCard}
+            >
+              <ResponsiveContainer width="100%" height={350} minHeight={200}>
+                <LineChart
+                  data={engagementTrendData}
+                  margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                  <YAxis 
+                    domain={[0, 100]} 
+                    tick={{ fontSize: 10 }} 
+                    label={{ 
+                      value: '%', 
+                      angle: -90, 
+                      position: 'insideLeft',
+                      style: { textAnchor: 'middle' }
+                    }}
+                  />
+                  <Tooltip formatter={(value) => [`${value}%`, 'Engagement Score']} />
                   <Legend wrapperStyle={{ fontSize: "10px" }} />
                   <Line
                     type="monotone"
@@ -361,19 +452,18 @@ const CompanyAnalytics = () => {
                     dot={{ r: 3 }}
                     activeDot={{ r: 5 }}
                   />
-                  <Line
-                    type="monotone"
-                    dataKey="Stress Level"
-                    stroke="var(--primary)"
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                    activeDot={{ r: 5 }}
-                  />
                 </LineChart>
               </ResponsiveContainer>
+              {engagementTrendData.length === 0 && (
+                <div className={styles.noDataOverlay}>
+                  <p>No engagement data available for the selected period</p>
+                </div>
+              )}
             </Card>
           </Col>
-          <Col xs={24} lg={8}>
+          
+          {/* Employee Statistics Card remains the same */}
+          <Col xs={24} lg={24}>
             <Card title="Employee Statistics" className={styles.statsCard}>
               <div className={styles.statsGrid}>
                 <div className={styles.statItem}>
@@ -399,7 +489,7 @@ const CompanyAnalytics = () => {
                 <div className={styles.statItem}>
                   <div className={styles.statLabel}>Last Employee Joined</div>
                   <div className={styles.statValue}>
-                    {dayjs(analytics?.last_employee_joined).format("MMM D, YYYY")}
+                    {analytics?.last_employee_joined ? dayjs(analytics.last_employee_joined).format("MMM D, YYYY") : "N/A"}
                   </div>
                 </div>
               </div>
