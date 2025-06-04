@@ -10,9 +10,13 @@ frontend:
   artifacts:
     baseDirectory: dist
     files:
-      - '**/*'
+      - "**/*"
   customHeaders:
-    - pattern: '**/*'
+    - pattern: "**/*"
       headers:
-        - key: 'Cache-Control'
-          value: 'max-age=0, no-cache, no-store, must-revalidate'
+        - key: "Cache-Control"
+          value: "max-age=0, no-cache, no-store, must-revalidate"
+  redirects:
+    - source: '</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|woff2|ttf|map|json)$)([^.]+$)/>'
+      target: "/index.html"
+      status: "200"

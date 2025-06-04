@@ -187,11 +187,47 @@ const CompanyAnalytics = () => {
     "Stress Level": item.stress_level !== null ? parseFloat(item.stress_level) : 0,
   })) || [];
 
-  // Prepare engagement trend data
-  const engagementTrendData = analytics?.engagementTrends?.map((item) => ({
-    date: dayjs(item.date).format("MMM DD"),
-    "Engagement Score": item.engagement_score !== null ? parseFloat(item.engagement_score) : 0,
-  })) || [];
+  // Prepare combined engagement and wellbeing trend data
+  const prepareEngagementWellbeingData = () => {
+    // Create a map to store data by date
+    const dataByDate = new Map();
+    
+    // Add wellbeing data to the map
+    analytics?.wellbeingTrends?.forEach(item => {
+      const dateKey = item.date;
+      if (!dataByDate.has(dateKey)) {
+        dataByDate.set(dateKey, {
+          date: dateKey,
+          formattedDate: dayjs(dateKey).format("MMM DD"),
+          "Wellbeing Score": null,
+          "Engagement Score": null
+        });
+      }
+      dataByDate.get(dateKey)["Wellbeing Score"] = 
+        item.wellbeing_score !== null ? parseFloat(item.wellbeing_score) : 0;
+    });
+    
+    // Add engagement data to the map
+    analytics?.engagementTrends?.forEach(item => {
+      const dateKey = item.date;
+      if (!dataByDate.has(dateKey)) {
+        dataByDate.set(dateKey, {
+          date: dateKey,
+          formattedDate: dayjs(dateKey).format("MMM DD"),
+          "Wellbeing Score": null,
+          "Engagement Score": null
+        });
+      }
+      dataByDate.get(dateKey)["Engagement Score"] = 
+        item.engagement_score !== null ? parseFloat(item.engagement_score) : 0;
+    });
+    
+    // Convert map to array and sort by date
+    return Array.from(dataByDate.values())
+      .sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
+  };
+  
+  const combinedTrendData = prepareEngagementWellbeingData();
 
   return (
     <div className={styles.container}>
@@ -422,16 +458,20 @@ const CompanyAnalytics = () => {
           </Col>
           <Col xs={24} lg={12}>
             <Card
-              title="Engagement Score Trends"
+              title="Engagement & Wellbeing Trends"
               className={styles.chartCard}
             >
               <ResponsiveContainer width="100%" height={350} minHeight={200}>
                 <LineChart
-                  data={engagementTrendData}
+                  data={combinedTrendData}
                   margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                  <XAxis 
+                    dataKey="formattedDate" 
+                    tick={{ fontSize: 10 }}
+                    type="category"
+                  />
                   <YAxis 
                     domain={[0, 100]} 
                     tick={{ fontSize: 10 }} 
@@ -442,8 +482,17 @@ const CompanyAnalytics = () => {
                       style: { textAnchor: 'middle' }
                     }}
                   />
-                  <Tooltip formatter={(value) => [`${value}%`, 'Engagement Score']} />
+                  <Tooltip formatter={(value) => [`${value}%`, value === 'Wellbeing Score' ? 'Wellbeing' : 'Engagement']} />
                   <Legend wrapperStyle={{ fontSize: "10px" }} />
+                  <Line
+                    type="monotone"
+                    dataKey="Wellbeing Score"
+                    stroke="#52c41a"
+                    strokeWidth={2}
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 5 }}
+                    connectNulls={true}
+                  />
                   <Line
                     type="monotone"
                     dataKey="Engagement Score"
@@ -451,12 +500,13 @@ const CompanyAnalytics = () => {
                     strokeWidth={2}
                     dot={{ r: 3 }}
                     activeDot={{ r: 5 }}
+                    connectNulls={true}
                   />
                 </LineChart>
               </ResponsiveContainer>
-              {engagementTrendData.length === 0 && (
+              {combinedTrendData.length === 0 && (
                 <div className={styles.noDataOverlay}>
-                  <p>No engagement data available for the selected period</p>
+                  <p>No engagement or wellbeing data available for the selected period</p>
                 </div>
               )}
             </Card>

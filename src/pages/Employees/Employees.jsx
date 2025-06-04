@@ -15,7 +15,11 @@ import {
   Modal, // Add Modal import
 } from "antd";
 import moment from "moment";
-import { PlusOutlined, UploadOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  UploadOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import {
   getAllCompanies,
   getCompanyEmployees,
@@ -108,24 +112,30 @@ const Employees = () => {
   const onRowClick = (record) => ({
     onClick: (e) => {
       // Only trigger drawer if the click is not on the checkbox
-      if (e.target.type !== 'checkbox' && !e.target.closest('.ant-checkbox-wrapper')) {
+      if (
+        e.target.type !== "checkbox" &&
+        !e.target.closest(".ant-checkbox-wrapper")
+      ) {
         setSelectedEmployee(record);
         setDrawerVisible(true);
       }
     },
-    style: { cursor: 'pointer' }
+    style: { cursor: "pointer" },
   });
 
   const handleCreateEmployee = async (values) => {
     try {
       setCreateButtonLoading(true);
       setLoading(true);
-      
+
       if (uploadedFile) {
-        const response = await bulkCreateEmployees(uploadedFile, selectedCompany);
-        
+        const response = await bulkCreateEmployees(
+          uploadedFile,
+          selectedCompany
+        );
+
         if (response.status) {
-          message.success('Employees uploaded successfully');
+          message.success("Employees uploaded successfully");
           setUploadedFile(null);
           setIsFormDisabled(false);
           setCreateDrawerVisible(false);
@@ -133,25 +143,34 @@ const Employees = () => {
           handleCompanyChange(selectedCompany);
         } else {
           // Handle bulk creation failure with simplified error message
-          if (response.data && response.data.failed && response.data.failed.length > 0) {
+          if (
+            response.data &&
+            response.data.failed &&
+            response.data.failed.length > 0
+          ) {
             // Extract emails and the common error pattern
-            const failedEmails = response.data.failed.map(item => item.email).join(', ');
-            
+            const failedEmails = response.data.failed
+              .map((item) => item.email)
+              .join(", ");
+
             // Most errors will have the same pattern, so take the error from the first item
             // and remove the email-specific part
             let errorMessage = response.data.failed[0].error;
-            errorMessage = errorMessage.replace(response.data.failed[0].email, '');
-            
+            errorMessage = errorMessage.replace(
+              response.data.failed[0].email,
+              ""
+            );
+
             // Create the final message
             const finalMessage = `Failed to upload employees: ${failedEmails} ${errorMessage}`;
-            
+
             message.error(finalMessage);
-            
+
             // Keep the drawer open so they can fix and retry
             setUploadedFile(null);
             setIsFormDisabled(false);
           } else {
-            message.error(response.message || 'Failed to upload employees');
+            message.error(response.message || "Failed to upload employees");
             setCreateDrawerVisible(false);
             form.resetFields();
           }
@@ -160,41 +179,47 @@ const Employees = () => {
         const formData = {
           ...values,
           company_id: selectedCompany,
-          date_of_birth: values.date_of_birth.format('YYYY-MM-DD')
+          date_of_birth: values.date_of_birth.format("YYYY-MM-DD"),
         };
         const response = await createEmployee(formData);
         if (response.status) {
-          message.success('Employee created successfully');
+          message.success("Employee created successfully");
           setCreateDrawerVisible(false);
           form.resetFields();
           handleCompanyChange(selectedCompany);
         } else {
-          message.error(response.message || 'Failed to create employee');
+          message.error(response.message || "Failed to create employee");
         }
       }
     } catch (error) {
-      console.error('Error:', error);
-      
+      console.error("Error:", error);
+
       // Check if the error has the detailed format
       if (error.data && error.data.failed && error.data.failed.length > 0) {
         // Extract emails and the common error pattern
-        const failedEmails = error.data.failed.map(item => item.email).join(', ');
-        
+        const failedEmails = error.data.failed
+          .map((item) => item.email)
+          .join(", ");
+
         // Most errors will have the same pattern, so take the error from the first item
         // and remove the email-specific part
         let errorMessage = error.data.failed[0].error;
-        errorMessage = errorMessage.replace(error.data.failed[0].email, '');
-        
+        errorMessage = errorMessage.replace(error.data.failed[0].email, "");
+
         // Create the final message
         const finalMessage = `Failed to upload employees: ${failedEmails} ${errorMessage}`;
-        
+
         message.error(finalMessage);
-        
+
         // Keep the drawer open
         setUploadedFile(null);
         setIsFormDisabled(false);
       } else {
-        message.error(uploadedFile ? 'Failed to upload employees' : 'Failed to create employee');
+        message.error(
+          uploadedFile
+            ? "Failed to upload employees"
+            : "Failed to create employee"
+        );
         setCreateDrawerVisible(false);
         form.resetFields();
       }
@@ -267,31 +292,31 @@ const Employees = () => {
 
   const handleRemoveEmployees = () => {
     if (!selectedRowKeys.length) {
-      message.warning('Please select employees to remove');
+      message.warning("Please select employees to remove");
       return;
     }
 
     Modal.confirm({
-      title: 'Are you sure you want to remove these employees?',
+      title: "Are you sure you want to remove these employees?",
       content: `This will remove ${selectedRowKeys.length} employee(s).`,
-      okText: 'Yes',
-      okType: 'danger',
-      cancelText: 'No',
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
       onOk: async () => {
         try {
           const payload = {
             company_id: selectedCompany,
-            user_ids: selectedRowKeys.filter(id => id !== null) // Filter out any null values
+            user_ids: selectedRowKeys.filter((id) => id !== null), // Filter out any null values
           };
-          
+
           await removeEmployee(payload);
-          message.success('Employees removed successfully');
+          message.success("Employees removed successfully");
           setSelectedRowKeys([]); // Clear selection
           handleCompanyChange(selectedCompany); // Refresh the list
         } catch (error) {
-          message.error('Failed to remove employees');
+          message.error("Failed to remove employees");
         }
-      }
+      },
     });
   };
 
@@ -307,8 +332,8 @@ const Employees = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
-      <h2 style={{ color: 'var(--primary-dark)' }}>Employee Management</h2>
+    <div style={{ padding: "24px" }}>
+      <h2 style={{ color: "var(--primary-dark)" }}>Employee Management</h2>
       {error && <Alert message={error} type="error" closable />}
 
       <Space
@@ -341,7 +366,7 @@ const Employees = () => {
             onClick={handleRemoveEmployees}
             disabled={!selectedRowKeys.length}
           >
-            Remove Employee{selectedRowKeys.length > 1 ? 's' : ''}
+            Remove Employee{selectedRowKeys.length > 1 ? "s" : ""}
             {selectedRowKeys.length > 0 && ` (${selectedRowKeys.length})`}
           </Button>
           <Button
@@ -437,7 +462,7 @@ const Employees = () => {
             </>
           ) : (
             <Upload
-              accept=".csv"
+              accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
               maxCount={1}
               showUploadList={false}
               beforeUpload={handleFileUpload}
@@ -464,10 +489,11 @@ const Employees = () => {
             rules={[
               { required: !uploadedFile, message: "Please enter first name" },
               { max: 50, message: "First name cannot exceed 50 characters" },
-              { 
-                pattern: /^[a-zA-Z\s-]+$/, 
-                message: "First name can only contain letters, spaces and hyphens" 
-              }
+              {
+                pattern: /^[a-zA-Z\s-]+$/,
+                message:
+                  "First name can only contain letters, spaces and hyphens",
+              },
             ]}
           >
             <Input disabled={isFormDisabled} />
@@ -479,10 +505,11 @@ const Employees = () => {
             rules={[
               { required: !uploadedFile, message: "Please enter last name" },
               { max: 50, message: "Last name cannot exceed 50 characters" },
-              { 
-                pattern: /^[a-zA-Z\s-]+$/, 
-                message: "Last name can only contain letters, spaces and hyphens" 
-              }
+              {
+                pattern: /^[a-zA-Z\s-]+$/,
+                message:
+                  "Last name can only contain letters, spaces and hyphens",
+              },
             ]}
           >
             <Input disabled={isFormDisabled} />
@@ -494,7 +521,7 @@ const Employees = () => {
             rules={[
               { required: !uploadedFile, message: "Please enter email" },
               { type: "email", message: "Please enter valid email" },
-              { max: 100, message: "Email cannot exceed 100 characters" }
+              { max: 100, message: "Email cannot exceed 100 characters" },
             ]}
           >
             <Input disabled={isFormDisabled} />
@@ -505,10 +532,10 @@ const Employees = () => {
             label="Phone"
             rules={[
               { required: !uploadedFile, message: "Please enter phone number" },
-              { 
-                pattern: /^\d{10}$/, 
-                message: "Phone number must be exactly 10 digits" 
-              }
+              {
+                pattern: /^\d{10}$/,
+                message: "Phone number must be exactly 10 digits",
+              },
             ]}
           >
             <Input disabled={isFormDisabled} type="tel" maxLength={10} />
@@ -517,7 +544,9 @@ const Employees = () => {
           <Form.Item
             name="gender"
             label="Gender"
-            rules={[{ required: !uploadedFile, message: "Please select gender" }]}
+            rules={[
+              { required: !uploadedFile, message: "Please select gender" },
+            ]}
           >
             <Select disabled={isFormDisabled}>
               <Option value="male">Male</Option>
@@ -530,22 +559,29 @@ const Employees = () => {
             name="date_of_birth"
             label="Date of Birth"
             rules={[
-              { required: !uploadedFile, message: "Please select date of birth" },
+              {
+                required: !uploadedFile,
+                message: "Please select date of birth",
+              },
               {
                 validator: (_, value) => {
-                  if (value && value.isAfter(moment().subtract(18, 'years'))) {
-                    return Promise.reject("Employee must be at least 18 years old");
+                  if (value && value.isAfter(moment().subtract(18, "years"))) {
+                    return Promise.reject(
+                      "Employee must be at least 18 years old"
+                    );
                   }
                   return Promise.resolve();
-                }
-              }
+                },
+              },
             ]}
           >
             <DatePicker
               disabled={isFormDisabled}
               style={{ width: "100%" }}
               format="YYYY-MM-DD"
-              disabledDate={(current) => current && current > moment().subtract(18, 'years')}
+              disabledDate={(current) =>
+                current && current > moment().subtract(18, "years")
+              }
             />
           </Form.Item>
 
@@ -554,7 +590,7 @@ const Employees = () => {
             label="Job Title"
             rules={[
               { required: !uploadedFile, message: "Please enter job title" },
-              { max: 100, message: "Job title cannot exceed 100 characters" }
+              { max: 100, message: "Job title cannot exceed 100 characters" },
             ]}
           >
             <Input disabled={isFormDisabled} />
@@ -563,7 +599,9 @@ const Employees = () => {
           <Form.Item
             name="department_id"
             label="Department"
-            rules={[{ required: !uploadedFile, message: "Please select department" }]}
+            rules={[
+              { required: !uploadedFile, message: "Please select department" },
+            ]}
           >
             <Select disabled={isFormDisabled} placeholder="Select department">
               {departments.map((dept) => (
@@ -578,11 +616,13 @@ const Employees = () => {
             <Button onClick={() => setCreateDrawerVisible(false)}>
               Cancel
             </Button>
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               htmlType="submit"
               loading={createButtonLoading}
-              disabled={createButtonLoading || (isFormDisabled && !uploadedFile)}
+              disabled={
+                createButtonLoading || (isFormDisabled && !uploadedFile)
+              }
             >
               {uploadedFile ? "Upload Excel" : "Create Employee"}
             </Button>
