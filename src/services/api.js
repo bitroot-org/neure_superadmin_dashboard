@@ -862,12 +862,15 @@ export const getCompanyReport = async (companyId, dateParams = {}) => {
     if (dateParams.startDate) params.start_date = dateParams.startDate;
     if (dateParams.endDate) params.end_date = dateParams.endDate;
     
+    // Request regular JSON response (not blob)
     const response = await api.get(`company/reports/wellbeing/${companyId}`, { params });
+    
+    // Return the entire response
     return response.data;
   } catch (error) {
-    throw error.response?.data || error;
+    throw error;
   } 
-}
+};
 
 
 export const deleteCompany = async (companyId) => {

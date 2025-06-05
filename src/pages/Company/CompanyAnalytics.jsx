@@ -43,24 +43,55 @@ const { Option } = Select;
 // Add a new function to handle report download
 const handleDownloadReport = async (companyId, dateRange, setDownloadButtonLoading) => {
   setDownloadButtonLoading(true);
+  message.loading({ content: 'Generating report...', key: 'reportDownload' });
+  
   try {
+    // Get the report data from the API
     const response = await getCompanyReport(companyId, {
       startDate: dateRange[0].format("YYYY-MM-DD"),
       endDate: dateRange[1].format("YYYY-MM-DD")
     });
     
-    // Check if response contains a PDF URL
-    if (response.status && response.data && response.data.pdfUrl) {
-      // Open the PDF in a new tab
-      window.open(response.data.pdfUrl, '_blank');
+    // Check if we have base64 data in the response
+    if (response.status && response.data && response.data.base64Data) {
+      // Convert base64 to binary
+      const binaryString = window.atob(response.data.base64Data);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
       
-      message.success('Report downloaded successfully');
+      // Convert binary to Uint8Array
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      
+      // Create blob from binary data
+      const blob = new Blob([bytes], { type: response.data.contentType || 'application/pdf' });
+      
+      // Create a blob URL
+      const url = window.URL.createObjectURL(blob);
+      
+      // Get filename from response or generate one
+      const fileName = response.data.filename || `wellbeing_report_${Date.now()}.pdf`;
+      
+      // Create a download link and trigger the download
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      message.success({ content: 'Report downloaded successfully', key: 'reportDownload' });
     } else {
-      throw new Error('No PDF URL found in the response');
+      throw new Error('Invalid response format or missing base64 data');
     }
   } catch (error) {
     console.error('Error downloading report:', error);
-    message.error(error.message || 'Failed to download report');
+    message.error({ content: 'Failed to download report', key: 'reportDownload' });
   } finally {
     setDownloadButtonLoading(false);
   }
