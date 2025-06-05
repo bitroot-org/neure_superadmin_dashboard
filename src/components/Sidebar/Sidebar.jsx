@@ -174,7 +174,7 @@ const Sidebar = () => {
 
   return (
     <ProLayout
-      title="Neure Dashboard"
+      title="Neure"
       menuDataRender={() => menuData}
       logo={neurelogo}
       menuItemRender={(item, dom) => {
