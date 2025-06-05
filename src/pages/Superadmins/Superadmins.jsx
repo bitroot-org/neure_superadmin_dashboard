@@ -9,9 +9,11 @@ import {
   Input,
   Select,
   Avatar,
+  Modal,
+  Tooltip,
 } from "antd";
-import { PlusOutlined, UserOutlined } from "@ant-design/icons";
-import { getSuperAdminList, createSuperAdmin } from "../../services/api";
+import { PlusOutlined, UserOutlined, DeleteOutlined } from "@ant-design/icons";
+import { getSuperAdminList, createSuperAdmin, deleteSuperadmin } from "../../services/api";
 import styles from "./Superadmins.module.css";
 
 const Superadmins = () => {
@@ -19,10 +21,24 @@ const Superadmins = () => {
   const [loading, setLoading] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [submitButtonLoading, setSubmitButtonLoading] = useState(false);
+  const [deleteButtonLoading, setDeleteButtonLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
     fetchSuperadmins();
+    
+    // Get current user ID from localStorage
+    try {
+      const userData = localStorage.getItem("userData");
+      if (userData) {
+        const user = JSON.parse(userData);
+        setCurrentUserId(user.user_id);
+      }
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+    }
   }, []);
 
   const fetchSuperadmins = async () => {
@@ -62,6 +78,39 @@ const Superadmins = () => {
     }
   };
 
+  const handleDeleteSuperadmin = async (id) => {
+    setDeletingId(id);
+    
+    Modal.confirm({
+      title: 'Are you sure you want to delete this superadmin?',
+      content: 'This action cannot be undone.',
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          setDeleteButtonLoading(true);
+          const response = await deleteSuperadmin(id);
+          if (response.status) {
+            message.success('Superadmin deleted successfully');
+            fetchSuperadmins();
+          } else {
+            message.error(response.message || 'Failed to delete superadmin');
+          }
+        } catch (error) {
+          console.error('Error deleting superadmin:', error);
+          message.error('Failed to delete superadmin');
+        } finally {
+          setDeleteButtonLoading(false);
+          setDeletingId(null);
+        }
+      },
+      onCancel: () => {
+        setDeletingId(null);
+      }
+    });
+  };
+
   const columns = [
     {
       title: "Name",
@@ -90,6 +139,31 @@ const Superadmins = () => {
       title: "Username",
       dataIndex: "username",
       key: "username",
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => {
+        const isSelf = record.user_id === currentUserId;
+        
+        return (
+          <Tooltip title={isSelf ? "You cannot delete your own account" : ""}>
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              loading={deleteButtonLoading && deletingId === record.user_id}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteSuperadmin(record.user_id);
+              }}
+              disabled={isSelf}
+            >
+              Delete
+            </Button>
+          </Tooltip>
+        );
+      },
     }
   ];
 

@@ -894,4 +894,12 @@ export const changePassword = async (data) => {
   return response.data;
 };
 
+export const deleteSuperadmin = async (superadminId) => {
+  try {
+    const response = await api.delete(`/user/deleteSuperadmin/${superadminId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
 

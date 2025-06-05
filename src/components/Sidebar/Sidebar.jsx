@@ -66,11 +66,14 @@ const Sidebar = () => {
   const openKeys = currentPath.includes('/employees/assessment') ? ['assessments'] : [];
 
   const menuData = [
+    // Dashboard & Analytics
     {
       path: "/home",
-      name: "Home",
+      name: "Dashboard",
       icon: <HomeOutlined />,
     },
+    
+    // Core Business Entities
     {
       path: "/companies",
       name: "Companies",
@@ -82,6 +85,25 @@ const Sidebar = () => {
       icon: <UserOutlined />,
     },
     {
+      key: 'assessments',
+      name: 'Assessments',
+      icon: <FormOutlined />,
+      children: [
+        {
+          key: '/employees/assessments',
+          name: 'Manage Assessments',
+          path: '/employees/assessments',
+        },
+        {
+          key: '/employees/assessment-reports',
+          name: 'Assessment Reports',
+          path: '/employees/assessment-reports',
+        }
+      ]
+    },
+    
+    // Services & Content
+    {
       path: "/workshops",
       name: "Workshops",
       icon: <FileTextOutlined />,
@@ -90,11 +112,6 @@ const Sidebar = () => {
       path: "/therapists",
       name: "Therapists",
       icon: <SolutionOutlined />,
-    },
-    {
-      path: "/superadmins",
-      name: "Superadmins",
-      icon: <UserSwitchOutlined />,
     },
     {
       path: "/soundscapes",
@@ -107,22 +124,12 @@ const Sidebar = () => {
       icon: <FolderOpenOutlined />,
     },
     {
-      key: 'assessments',
-      name: 'Assessments',
-      icon: <FormOutlined />,
-      children: [
-        {
-          key: '/employees/assessments',  // Use path as key
-          name: 'Manage Assessments',
-          path: '/employees/assessments',
-        },
-        {
-          key: '/employees/assessment-reports',  // Use path as key
-          name: 'Assessment Reports',
-          path: '/employees/assessment-reports',
-        }
-      ]
+      path: "/rewards",
+      name: "Rewards",
+      icon: <GiftOutlined />,
     },
+    
+    // Communication
     {
       path: '/announcements',
       name: 'Announcements',
@@ -134,25 +141,29 @@ const Sidebar = () => {
       icon: <CommentOutlined />,
     },
     {
-      path: '/AccountsDeactivation',
-      name: 'Accounts Deactivation',
-      icon: <NotificationOutlined />,
-    },
-    {
-      path: "/rewards",
-      name: "Rewards",
-      icon: <GiftOutlined />,
-    },
-    {
       path: "/faq",
       name: "FAQ",
       icon: <QuestionCircleOutlined />,
     },
+    
+    // Administration
+    {
+      path: "/superadmins",
+      name: "Superadmins",
+      icon: <UserSwitchOutlined />,
+    },
+    {
+      path: '/AccountsDeactivation',
+      name: 'Account Management',
+      icon: <SettingOutlined />,
+    },
     {
       path: "/activitylog",
-      name: "Activity History",
+      name: "Activity Logs",
       icon: <HistoryOutlined />,
     },
+    
+    // User Actions
     {
       key: "logout",
       path: "#",
