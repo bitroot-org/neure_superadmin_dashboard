@@ -338,16 +338,17 @@ const Employees = () => {
 
       <Space
         direction="horizontal"
+        wrap
         style={{
           width: "100%",
-          marginBottom: 16,
           justifyContent: "space-between",
+          marginBottom: 16
         }}
       >
         <Select
           placeholder="Select a company"
           onChange={handleCompanyChange}
-          style={{ width: 300 }}
+          style={{ width: 300, marginBottom: 8 }}
           loading={loading}
           value={selectedCompany}
         >
@@ -358,7 +359,7 @@ const Employees = () => {
           ))}
         </Select>
 
-        <Space>
+        <Space wrap>
           <Button
             type="primary"
             danger
@@ -440,7 +441,12 @@ const Employees = () => {
           description="Upload an CSV file or fill the form below"
           type="info"
           showIcon
-          style={{ marginBottom: 16 }}
+          style={{ 
+            marginBottom: 16,
+            backgroundColor: 'var(--background-secondary)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border-primary)'
+          }}
         />
 
         <Space
