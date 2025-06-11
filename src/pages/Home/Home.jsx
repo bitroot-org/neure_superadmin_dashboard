@@ -236,6 +236,51 @@ const Home = () => {
               </div>
             </div>
           </div>
+          <div className={styles.statsBox}>
+            <div className={styles.statTitle}>Therapists</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: '#722ed1' }}>
+                <FaUser />
+              </div>
+              <div className={styles.statValue}>
+                <CountUp
+                  end={metrics?.totalStats.total_therapists || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
+            </div>
+          </div>
+          <div className={styles.statsBox}>
+            <div className={styles.statTitle}>Assessments</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: '#13c2c2' }}>
+                <FaFileAlt />
+              </div>
+              <div className={styles.statValue}>
+                <CountUp
+                  end={metrics?.totalStats.total_assessments || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
+            </div>
+          </div>
+          <div className={styles.statsBox}>
+            <div className={styles.statTitle}>Rewards</div>
+            <div className={styles.statContent}>
+              <div className={styles.statIcon} style={{ color: '#faad14' }}>
+                <FaTrophy />
+              </div>
+              <div className={styles.statValue}>
+                <CountUp
+                  end={metrics?.totalStats.total_rewards || 0}
+                  duration={2.5}
+                  separator=","
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
