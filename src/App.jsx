@@ -32,6 +32,8 @@ import AssessmentReports from "./pages/Assessments/AssessmentReports";
 import Superadmins from "./pages/Superadmins/Superadmins";
 import PasswordChange from './components/PasswordChange/PasswordChange';
 import { changePassword } from './services/api';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+import { getThemeConfig } from './utils/themeConfig';
 
 // Authentication check function
 const isAuthenticated = () => {
@@ -70,7 +72,9 @@ const AuthChecker = () => {
   return null;
 };
 
-const App = () => {
+// Create a themed App component that uses the theme context
+const ThemedApp = () => {
+  const { theme } = useTheme();
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [isFirstTimeLogin, setIsFirstTimeLogin] = useState(false);
 
@@ -160,57 +164,7 @@ const App = () => {
   return (
     <ConfigProvider
       locale={enUS}
-      theme={{
-        token: {
-          fontFamily: "Archivo, sans-serif",
-          // Primary colors
-          colorPrimary: "#48A6A7",
-          colorPrimaryHover: "#006A71",
-          colorPrimaryActive: "#006A71",
-          colorPrimaryBg: "#9ACBD0",
-          colorPrimaryBgHover: "#48A6A7",
-
-          // Background colors
-          colorBgBase: "#F2EFE7",
-          colorBgContainer: "#ffffff",
-          colorBgElevated: "#ffffff",
-          colorBgLayout: "#F2EFE7",
-
-          // Border radius
-          borderRadius: 8,
-          borderRadiusLG: 12,
-
-          // Other customizations
-          boxShadow: "0 2px 8px rgba(0, 106, 113, 0.1)",
-          boxShadowSecondary: "0 4px 12px rgba(0, 106, 113, 0.12)",
-        },
-        components: {
-          Typography: {
-            titleFontFamily: "Clash Display, sans-serif",
-            fontWeightStrong: 600,
-            colorTextHeading: "#006A71",
-          },
-          Table: {
-            headerFontSize: 14,
-            headerFontWeight: 600,
-            headerBg: "#9ACBD0",
-            headerColor: "#006A71",
-            fontWeightStrong: 600,
-            colorBgContainer: "#ffffff",
-          },
-          Button: {
-            colorPrimary: "#48A6A7",
-            colorPrimaryHover: "#006A71",
-            colorPrimaryActive: "#006A71",
-            borderRadius: 6,
-          },
-          Card: {
-            colorBgContainer: "#ffffff",
-            borderRadiusLG: 12,
-            boxShadow: "0 2px 8px rgba(0, 106, 113, 0.08)",
-          },
-        },
-      }}
+      theme={getThemeConfig(theme)}
     >
       <Router>
         <AuthChecker />
@@ -288,6 +242,15 @@ const App = () => {
         />
       </Router>
     </ConfigProvider>
+  );
+};
+
+// Main App component wrapped with ThemeProvider
+const App = () => {
+  return (
+    <ThemeProvider>
+      <ThemedApp />
+    </ThemeProvider>
   );
 };
 

@@ -1,23 +1,120 @@
-/* Color Palette */
+/* Light Theme Variables */
 :root {
+  /* Primary Brand Colors */
   --primary-dark: #006A71;  /* Deep teal */
   --primary: #48A6A7;       /* Medium teal/turquoise */
   --primary-light: #9ACBD0; /* Light teal/aqua */
-  --background: #F2EFE7;    /* Off-white/cream */
+  --primary-bg: #F2EFE7;    /* Off-white/cream */
 
-  --text-dark: #333333;
-  --text-light: #ffffff;
-  --text-muted: #666666;
+  /* Background Colors */
+  --background-primary: #F2EFE7;    /* Main background */
+  --background-secondary: #ffffff;   /* Card/container background */
+  --background-tertiary: #f9f9f9;   /* Subtle background */
+  --background-elevated: #ffffff;    /* Elevated surfaces */
+  --background-overlay: rgba(255, 255, 255, 0.9); /* Modal overlays */
+
+  /* Text Colors */
+  --text-primary: #333333;          /* Primary text */
+  --text-secondary: #666666;        /* Secondary text */
+  --text-tertiary: #999999;         /* Muted text */
+  --text-inverse: #ffffff;          /* Text on dark backgrounds */
+  --text-heading: #006A71;          /* Headings */
+
+  /* Border Colors */
+  --border-primary: rgba(154, 203, 208, 0.2);  /* Primary borders */
+  --border-secondary: #e8e8e8;                 /* Secondary borders */
+  --border-light: #f0f0f0;                     /* Light borders */
+
+  /* Shadow Colors */
+  --shadow-primary: rgba(0, 106, 113, 0.1);
+  --shadow-secondary: rgba(0, 106, 113, 0.08);
+  --shadow-light: rgba(0, 106, 113, 0.04);
+
+  /* Status Colors */
   --success: #52c41a;
   --warning: #faad14;
   --error: #ff4d4f;
+  --info: #1677ff;
+
+  /* Interactive States */
+  --hover-bg: rgba(72, 166, 167, 0.1);
+  --active-bg: rgba(72, 166, 167, 0.2);
+  --focus-outline: rgba(72, 166, 167, 0.4);
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  /* Primary Brand Colors - Adjusted for dark mode */
+  --primary-dark: #4ABBC2;          /* Lighter teal for better contrast */
+  --primary: #6BC9CE;               /* Adjusted primary */
+  --primary-light: #8DD5D9;         /* Lighter variant */
+  --primary-bg: #1a1a1a;            /* Dark background */
+
+  /* Background Colors */
+  --background-primary: #0f0f0f;    /* Main dark background */
+  --background-secondary: #1a1a1a;  /* Card/container background */
+  --background-tertiary: #262626;   /* Subtle background */
+  --background-elevated: #2a2a2a;   /* Elevated surfaces */
+  --background-overlay: rgba(0, 0, 0, 0.8); /* Modal overlays */
+
+  /* Text Colors */
+  --text-primary: #ffffff;          /* Primary text */
+  --text-secondary: #d9d9d9;        /* Secondary text */
+  --text-tertiary: #8c8c8c;         /* Muted text */
+  --text-inverse: #000000;          /* Text on light backgrounds */
+  --text-heading: #4ABBC2;          /* Headings */
+
+  /* Border Colors */
+  --border-primary: rgba(75, 187, 194, 0.3);  /* Primary borders */
+  --border-secondary: #404040;                 /* Secondary borders */
+  --border-light: #303030;                     /* Light borders */
+
+  /* Shadow Colors */
+  --shadow-primary: rgba(0, 0, 0, 0.3);
+  --shadow-secondary: rgba(0, 0, 0, 0.2);
+  --shadow-light: rgba(0, 0, 0, 0.1);
+
+  /* Status Colors - Adjusted for dark mode */
+  --success: #73d13d;
+  --warning: #ffc53d;
+  --error: #ff7875;
+  --info: #40a9ff;
+
+  /* Interactive States */
+  --hover-bg: rgba(75, 187, 194, 0.15);
+  --active-bg: rgba(75, 187, 194, 0.25);
+  --focus-outline: rgba(75, 187, 194, 0.5);
+}
+
+/* Legacy variables for backward compatibility */
+:root {
+  --background: var(--background-primary);
+  --text-dark: var(--text-primary);
+  --text-light: var(--text-inverse);
+  --text-muted: var(--text-secondary);
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--background);
+  background-color: var(--background-primary);
+  color: var(--text-primary);
   user-select: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Ensure proper text colors in dark mode */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
 }
 
 /* Global Font Styles */
@@ -78,21 +175,103 @@ h1, h2, h3, h4, h5,
   flex: 1;
 }
 
-/* Add these global styles to ensure menu items are properly styled */
+/* Global Ant Design component overrides for theme support */
+
+/* Menu items - Light theme */
 .ant-menu-item-selected,
 .ant-pro-menu-item-selected {
-  background-color: #006A71 !important;
-  color: white !important;
+  background-color: var(--primary) !important;
+  color: var(--text-inverse) !important;
 }
 
 .ant-menu-item:hover,
 .ant-pro-menu-item:hover {
-  background-color: #48A6A7 !important;
-  color: white !important;
+  background-color: var(--primary) !important;
+  color: var(--text-inverse) !important;
+}
+
+/* Dark theme menu adjustments */
+[data-theme="dark"] .ant-menu-item-selected,
+[data-theme="dark"] .ant-pro-menu-item-selected {
+  background-color: var(--primary-dark) !important;
+  color: var(--text-inverse) !important;
+}
+
+[data-theme="dark"] .ant-menu-item:hover,
+[data-theme="dark"] .ant-pro-menu-item:hover {
+  background-color: var(--primary-dark) !important;
+  color: var(--text-inverse) !important;
 }
 
 /* Ensure these styles are applied globally */
 body .ant-menu-item-selected,
 body .ant-pro-menu-item-selected {
-  background-color: #006A71 !important;
+  background-color: var(--primary) !important;
+}
+
+[data-theme="dark"] body .ant-menu-item-selected,
+[data-theme="dark"] body .ant-pro-menu-item-selected {
+  background-color: var(--primary-dark) !important;
+}
+
+/* Progress bars and other components */
+.ant-progress-text {
+  color: var(--text-primary) !important;
+}
+
+.ant-table-thead > tr > th {
+  background-color: var(--background-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-secondary) !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: var(--hover-bg) !important;
+}
+
+/* Modal and Drawer backgrounds */
+.ant-modal-content {
+  background-color: var(--background-secondary) !important;
+}
+
+.ant-drawer-content {
+  background-color: var(--background-secondary) !important;
+}
+
+.ant-drawer-header {
+  background-color: var(--background-secondary) !important;
+  border-bottom: 1px solid var(--border-secondary) !important;
+}
+
+.ant-modal-header {
+  background-color: var(--background-secondary) !important;
+  border-bottom: 1px solid var(--border-secondary) !important;
+}
+
+/* Form components */
+.ant-input,
+.ant-select-selector,
+.ant-picker {
+  background-color: var(--background-secondary) !important;
+  border-color: var(--border-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-input:focus,
+.ant-select-selector:focus,
+.ant-picker:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--focus-outline) !important;
+}
+
+/* Tags */
+.ant-tag {
+  background-color: var(--background-tertiary) !important;
+  border-color: var(--border-secondary) !important;
+  color: var(--text-primary) !important;
 }

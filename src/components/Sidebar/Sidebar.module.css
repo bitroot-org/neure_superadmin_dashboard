@@ -11,13 +11,14 @@
 }
 
 .userDropdown:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: var(--hover-bg);
 }
 
 .sidebarFooter {
   padding: 16px;
-  border-top: 1px solid #f0f0f0;
-  background-color: #fff;
+  border-top: 1px solid var(--border-light);
+  background-color: var(--background-secondary);
+  transition: all 0.3s ease;
 }
 
 .profileSection {
@@ -30,7 +31,7 @@
 }
 
 .profileSection:hover {
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: var(--hover-bg);
 }
 
 .userInfo {
@@ -47,7 +48,8 @@
 
 .userRole {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--text-tertiary);
+  transition: color 0.3s ease;
 }
 
 
@@ -101,4 +103,78 @@
 :global([data-menu-id="/employees/assessment-reports"]) {
   background-color: var(--primary) !important;
   color: white !important;
+}
+
+/* Theme toggle menu item styling */
+.themeMenuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 40px;
+}
+
+.themeMenuLabel {
+  display: flex;
+  align-items: center;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+  flex: 1;
+  padding-left: 0;
+}
+
+.themeMenuLabel :global(.anticon) {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+.themeToggleWrapper {
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+}
+
+/* Override ProLayout menu item styling for theme toggle */
+:global(.ant-pro-menu-item) .themeMenuItem {
+  margin: 0 !important;
+  padding: 0 24px !important;
+  background: transparent !important;
+  height: 40px !important;
+  line-height: 40px !important;
+}
+
+:global(.ant-pro-menu-item:hover) .themeMenuItem {
+  background-color: transparent !important;
+}
+
+/* Ensure consistent spacing with other menu items */
+:global(.ant-pro-menu-item) .themeMenuItem .themeMenuLabel {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  line-height: 40px !important;
+}
+
+/* Make sure the theme toggle menu item has the same structure as others */
+:global(.ant-pro-menu-item) .themeMenuItem .themeMenuLabel span {
+  margin-left: 8px;
+  font-size: 14px;
+  line-height: 40px;
+}
+
+:global(.ant-pro-menu-item) .themeMenuItem .themeMenuLabel :global(.anticon) {
+  font-size: 14px;
+  line-height: 40px;
+  vertical-align: middle;
+}
+
+/* Align the toggle switch properly */
+.themeToggleWrapper {
+  display: flex;
+  align-items: center;
+  height: 40px;
 }

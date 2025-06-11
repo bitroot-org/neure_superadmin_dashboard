@@ -22,6 +22,7 @@ import {
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import styles from './Sidebar.module.css';
 
 const Sidebar = () => {
@@ -165,6 +166,12 @@ const Sidebar = () => {
     
     // User Actions
     {
+      key: "theme-toggle",
+      path: "#",
+      name: "Theme",
+      icon: <SettingOutlined />,
+    },
+    {
       key: "logout",
       path: "#",
       name: "Logout",
@@ -178,6 +185,26 @@ const Sidebar = () => {
       menuDataRender={() => menuData}
       logo={neurelogo}
       menuItemRender={(item, dom) => {
+        // For theme toggle item, render the ThemeToggle component
+        if (item.key === "theme-toggle") {
+          return (
+            <div className={styles.themeMenuItem}>
+              <div className={styles.themeMenuLabel}>
+                <SettingOutlined />
+                <span>Theme</span>
+              </div>
+              <div className={styles.themeToggleWrapper}>
+                <ThemeToggle 
+                  variant="switch" 
+                  showTooltip={true} 
+                  size="small" 
+                  className={styles.sidebarThemeToggle}
+                />
+              </div>
+            </div>
+          );
+        }
+
         // For logout item, use a button with onClick
         if (item.key === "logout") {
           return (

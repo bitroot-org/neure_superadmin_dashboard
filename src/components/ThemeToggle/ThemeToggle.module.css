@@ -1,0 +1,131 @@
+/* Button variant styles */
+.themeToggle {
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.themeToggle:hover {
+  background-color: var(--hover-bg) !important;
+  color: var(--primary) !important;
+}
+
+.themeToggle:focus {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* Icon styling */
+.themeToggle :global(.anticon) {
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+/* Dark theme specific styling */
+[data-theme="dark"] .themeToggle {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .themeToggle:hover {
+  background-color: var(--hover-bg) !important;
+  color: var(--primary-dark) !important;
+}
+
+/* Animation for theme transition */
+.themeToggle :global(.anticon) {
+  transform-origin: center;
+}
+
+.themeToggle:active :global(.anticon) {
+  transform: scale(0.9);
+}
+
+/* Switch variant styles */
+.switchContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.switchLabels {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.switchIcon {
+  font-size: 14px;
+  color: var(--text-tertiary);
+  transition: all 0.3s ease;
+}
+
+.switchIcon.active {
+  color: var(--primary);
+  transform: scale(1.1);
+}
+
+.themeSwitch {
+  transition: all 0.3s ease;
+}
+
+/* Enhanced switch styling */
+.themeSwitch {
+  transition: all 0.3s ease;
+}
+
+/* Custom switch styling with improved visuals */
+.themeSwitch:global(.ant-switch) {
+  background-color: rgba(0, 0, 0, 0.25);
+  min-width: 44px;
+  height: 22px;
+}
+
+.themeSwitch:global(.ant-switch-small) {
+  min-width: 28px;
+  height: 16px;
+}
+
+.themeSwitch:global(.ant-switch-checked) {
+  background-color: #48A6A7;
+}
+
+/* Icon styling inside switch */
+.themeSwitch:global(.ant-switch-checked .ant-switch-inner .anticon) {
+  color: white;
+  font-size: 12px;
+}
+
+.themeSwitch:global(.ant-switch .ant-switch-inner .anticon) {
+  color: white;
+  font-size: 12px;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .themeSwitch:global(.ant-switch) {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="dark"] .themeSwitch:global(.ant-switch-checked) {
+  background-color: #48A6A7;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .themeToggle {
+    padding: 8px;
+  }
+
+  .themeToggle :global(.anticon) {
+    font-size: 14px;
+  }
+
+  .switchIcon {
+    font-size: 12px;
+  }
+
+  .switchLabels {
+    gap: 6px;
+  }
+}
