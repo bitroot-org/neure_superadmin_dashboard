@@ -186,6 +186,7 @@ const AccountsDeactivation = () => {
               className={styles.table}
               pagination={{ pageSize: 10 }}
               loading={loading}
+              scroll={{ x: "max-content" }}
             />
           </div>
         </TabPane>
@@ -197,6 +198,7 @@ const AccountsDeactivation = () => {
               className={styles.table}
               pagination={{ pageSize: 10 }}
               loading={loading}
+              scroll={{ x: "max-content" }}
             />
           </div>
         </TabPane>
