@@ -11,7 +11,7 @@
 
 .sectionTitle {
   margin-bottom: 16px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   color: var(--text-heading);
   transition: color 0.3s ease;
 }

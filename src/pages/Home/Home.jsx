@@ -147,19 +147,19 @@ const Home = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <Title level={2} className={styles.title}>
+        <h1 className={styles.title}>
           Dashboard Overview
-        </Title>
-        <Text type="secondary" className={styles.subtitle}>
+        </h1>
+        <h2 className={styles.subtitle}>
           Real-time metrics and insights
-        </Text>
+        </h2>
       </div>
 
       {/* Total Stats Section */}
       <div className={styles.section}>
-        <Title level={4} className={styles.sectionTitle}>
+        <h2 className={styles.sectionTitle}>
           Platform Statistics
-        </Title>
+        </h2>
         <div className={styles.statsGrid}>
           <div className={styles.statsBox}>
             <div className={styles.statTitle}>Companies</div>
@@ -286,9 +286,9 @@ const Home = () => {
 
       {/* Company Metrics Section */}
       <div className={styles.section}>
-        <Title level={4} className={styles.sectionTitle}>
+        <h2 className={styles.sectionTitle}>
           Company Performance
-        </Title>
+        </h2>
         <div className={styles.metricsGrid}>
           <div className={styles.metricsBox}>
             <div className={styles.statTitle}>Avg. Stress Level</div>
@@ -416,9 +416,9 @@ const Home = () => {
 
       {/* Top Companies Table */}
       <div className={styles.section}>
-        <Title level={4} className={styles.sectionTitle}>
+        <h2 className={styles.sectionTitle}>
           Top Companies
-        </Title>
+        </h2>
         <Card className={styles.tableCard}>
           <Table
             dataSource={metrics?.topCompanies || []}
