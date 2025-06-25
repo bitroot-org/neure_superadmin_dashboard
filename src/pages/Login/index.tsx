@@ -3,6 +3,7 @@ import { Form, Input, Button, Card, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import styles from './Login.module.css';
+import { Link } from 'react-router-dom';
 
 interface LoginFormData {
   username: string;
@@ -120,6 +121,11 @@ const LoginPage: React.FC = () => {
               Log in
             </Button>
           </Form.Item>
+
+          <div style={{ textAlign: 'right', marginBottom: 16 }}>
+            <Link to="/forgot-password">Forgot password?</Link>
+          </div>
+
         </form>
       </Card>
     </div>

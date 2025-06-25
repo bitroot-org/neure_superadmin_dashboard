@@ -34,6 +34,8 @@ import PasswordChange from './components/PasswordChange/PasswordChange';
 import { changePassword } from './services/api';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { getThemeConfig } from './utils/themeConfig';
+import ForgotPasswordPage from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPassword";
 
 // Authentication check function
 const isAuthenticated = () => {
@@ -42,34 +44,27 @@ const isAuthenticated = () => {
   return !!(token && refreshToken);
 };
 
-// Create a separate component for auth checking
+// Auth checker component
 const AuthChecker = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
   useEffect(() => {
-    // Small delay to ensure localStorage is properly read
-    const timer = setTimeout(() => {
-      console.log("Auth check - path:", location.pathname);
-      console.log("Auth state:", isAuthenticated());
-      console.log("Token exists:", !!localStorage.getItem("accessToken"));
-      console.log("Refresh token exists:", !!localStorage.getItem("refreshToken"));
+    const checkAndRedirect = () => {
+      const publicPaths = ['/login', '/forgot-password', '/reset-password'];
+      const isPublicPath = publicPaths.includes(location.pathname);
+      const isAuthed = isAuthenticated();
+      const isRootPath = location.pathname === '/';
       
-      if (location.pathname !== '/login' && !isAuthenticated()) {
+      if (isRootPath) {
+        navigate(isAuthed ? '/home' : '/login', { replace: true });
+      } else if (!isPublicPath && !isAuthed) {
         navigate('/login', { replace: true });
-      } else if (location.pathname === '/login' && isAuthenticated()) {
-        navigate('/home', { replace: true });
       }
-      
-      setIsCheckingAuth(false);
-    }, 100);
+    };
     
-    return () => clearTimeout(timer);
+    checkAndRedirect();
   }, [location.pathname, navigate]);
-  
-  // Don't render children until auth check is complete
-  return null;
 };
 
 // Create a themed App component that uses the theme context
@@ -169,12 +164,9 @@ const ThemedApp = () => {
       <Router>
         <AuthChecker />
         <Routes>
-          <Route
-            path="/login"
-            element={
-              isAuthenticated() ? <Navigate to="/home" replace /> : <LoginPage />
-            }
-          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Protected Routes */}
           <Route 
