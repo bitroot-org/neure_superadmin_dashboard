@@ -30,6 +30,7 @@ import FAQ from "./pages/FAQ/FAQ";
 import ActivityHistory from "./pages/ActivityHistory/ActivityHistory";
 import AssessmentReports from "./pages/Assessments/AssessmentReports";
 import Superadmins from "./pages/Superadmins/Superadmins";
+import ProDeskTherapists from "./pages/ProDeskTherapists/ProDeskTherapists";
 import PasswordChange from './components/PasswordChange/PasswordChange';
 import { changePassword } from './services/api';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
@@ -188,6 +189,7 @@ const ThemedApp = () => {
               element={<AssessmentReports />}
             />
             <Route path="/therapists" element={<Therapists />} />
+            <Route path="/prodesk-therapists" element={<ProDeskTherapists />} />
             <Route path="/workshops" element={<Workshops />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/soundscapes" element={<Soundscapes />} />

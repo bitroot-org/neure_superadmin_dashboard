@@ -131,6 +131,24 @@ export const createTherapist = async (data) => {
   }
 };
 
+export const getProdeskTherapists = async (params = {}) => {
+  try {
+    const response = await api.get("/user/getProdeskTherapists", { params });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const createProdeskTherapist = async (data) => {
+  try {
+    const response = await api.post("/user/createTherapist", { ...data, role_id: 4 });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const getAllCompanies = async (params = {}) => {
   try {
     const response = await api.get("/company/getAllCompanies", { params });

@@ -17,6 +17,9 @@ import {
   FilterOutlined,
   PlusOutlined,
   UploadOutlined,
+  CopyOutlined,
+  CheckOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
 import {
   getTherapists,
@@ -36,6 +39,9 @@ const Therapists = () => {
   const [editForm] = Form.useForm();
   const [createButtonLoading, setCreateButtonLoading] = useState(false);
   const [updateButtonLoading, setUpdateButtonLoading] = useState(false);
+  const [credsModal, setCredsModal] = useState(false);
+  const [newCreds, setNewCreds] = useState(null);
+  const [copiedField, setCopiedField] = useState(null);
 
   useEffect(() => {
     fetchTherapists();
@@ -204,14 +210,20 @@ const Therapists = () => {
 
   const handleCreateTherapist = async (values) => {
     try {
-      setCreateButtonLoading(true); // Set button loading state to true
+      setCreateButtonLoading(true);
       setLoading(true);
-      const response = await createTherapist(values);
+      const response = await createTherapist({ ...values, username: values.email });
       if (response.status) {
         message.success("Therapist created successfully");
         setCreateDrawerVisible(false);
         form.resetFields();
         fetchTherapists();
+        setNewCreds({
+          name: `${values.first_name} ${values.last_name}`,
+          email: values.email,
+          password: response.data?.temp_password,
+        });
+        setCredsModal(true);
       }
     } catch (error) {
       message.error("Failed to create therapist");
@@ -219,6 +231,28 @@ const Therapists = () => {
       setLoading(false);
       setCreateButtonLoading(false); // Reset button loading state
     }
+  };
+
+  const copyToClipboard = (text, field) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 1800);
+    });
+  };
+
+  const downloadCSV = (creds) => {
+    const rows = [
+      ["Name", "Email", "Password", "Login URL"],
+      [creds.name, creds.email, creds.password, window.location.origin + "/login"],
+    ];
+    const csv = rows.map((r) => r.map((v) => `"${v}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `credentials-${creds.email}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -273,9 +307,9 @@ const Therapists = () => {
               rules={[
                 { required: true, message: "Please enter first name" },
                 { max: 50, message: "First name cannot exceed 50 characters" },
-                { 
-                  pattern: /^[a-zA-Z\s-]+$/, 
-                  message: "First name can only contain letters, spaces and hyphens" 
+                {
+                  pattern: /^[a-zA-Z\s.\-']+$/,
+                  message: "First name can only contain letters, spaces, dots and hyphens"
                 }
               ]}
             >
@@ -288,9 +322,9 @@ const Therapists = () => {
               rules={[
                 { required: true, message: "Please enter last name" },
                 { max: 50, message: "Last name cannot exceed 50 characters" },
-                { 
-                  pattern: /^[a-zA-Z\s-]+$/, 
-                  message: "Last name can only contain letters, spaces and hyphens" 
+                {
+                  pattern: /^[a-zA-Z\s.\-']+$/,
+                  message: "Last name can only contain letters, spaces, dots and hyphens"
                 }
               ]}
             >
@@ -314,9 +348,13 @@ const Therapists = () => {
               label="Phone"
               rules={[
                 { required: true, message: "Please enter phone number" },
-                { 
-                  pattern: /^\d{10}$/, 
-                  message: "Phone number must be exactly 10 digits" 
+                {
+                  validator: (_, value) => {
+                    if (!value) return Promise.resolve();
+                    const digits = value.replace(/\D/g, "");
+                    if (digits.length >= 10 && digits.length <= 13) return Promise.resolve();
+                    return Promise.reject("Enter a valid phone number");
+                  }
                 }
               ]}
             >
@@ -388,6 +426,49 @@ const Therapists = () => {
         </Form>
       </Drawer>
 
+      {/* Credentials Modal */}
+      <Modal
+        title="✅ Therapist Created — Login Credentials"
+        open={credsModal}
+        onCancel={() => setCredsModal(false)}
+        footer={[
+          <Button key="csv" type="primary" icon={<DownloadOutlined />}
+            onClick={() => newCreds && downloadCSV(newCreds)}>
+            Download CSV
+          </Button>,
+          <Button key="close" onClick={() => setCredsModal(false)}>Close</Button>,
+        ]}
+        width={480}
+      >
+        {newCreds && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 8 }}>
+            <p style={{ margin: 0, color: "#888", fontSize: 13 }}>
+              Share these credentials with <strong>{newCreds.name}</strong>.
+              Save them now — the password cannot be retrieved later.
+            </p>
+            {[
+              { label: "Name", value: newCreds.name, field: "name" },
+              { label: "Email", value: newCreds.email, field: "email" },
+              { label: "Password", value: newCreds.password, field: "password" },
+            ].map(({ label, value, field }) => (
+              <div key={field} style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                background: "rgba(0,0,0,0.04)", borderRadius: 8, padding: "10px 14px",
+              }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "#888", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
+                  <div style={{ fontWeight: 600, marginTop: 2, fontFamily: field === "password" ? "monospace" : "inherit" }}>{value}</div>
+                </div>
+                <Button type="text"
+                  icon={copiedField === field ? <CheckOutlined style={{ color: "#52c41a" }} /> : <CopyOutlined />}
+                  onClick={() => copyToClipboard(value, field)}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </Modal>
+
       {/* Edit Therapist Drawer */}
       <Drawer
         title="Edit Therapist"
@@ -413,9 +494,9 @@ const Therapists = () => {
               rules={[
                 { required: true, message: "Please enter first name" },
                 { max: 50, message: "First name cannot exceed 50 characters" },
-                { 
-                  pattern: /^[a-zA-Z\s-]+$/, 
-                  message: "First name can only contain letters, spaces and hyphens" 
+                {
+                  pattern: /^[a-zA-Z\s.\-']+$/,
+                  message: "First name can only contain letters, spaces, dots and hyphens"
                 }
               ]}
             >
@@ -428,9 +509,9 @@ const Therapists = () => {
               rules={[
                 { required: true, message: "Please enter last name" },
                 { max: 50, message: "Last name cannot exceed 50 characters" },
-                { 
-                  pattern: /^[a-zA-Z\s-]+$/, 
-                  message: "Last name can only contain letters, spaces and hyphens" 
+                {
+                  pattern: /^[a-zA-Z\s.\-']+$/,
+                  message: "Last name can only contain letters, spaces, dots and hyphens"
                 }
               ]}
             >
@@ -454,9 +535,13 @@ const Therapists = () => {
               label="Phone"
               rules={[
                 { required: true, message: "Please enter phone number" },
-                { 
-                  pattern: /^\d{10}$/, 
-                  message: "Phone number must be exactly 10 digits" 
+                {
+                  validator: (_, value) => {
+                    if (!value) return Promise.resolve();
+                    const digits = value.replace(/\D/g, "");
+                    if (digits.length >= 10 && digits.length <= 13) return Promise.resolve();
+                    return Promise.reject("Enter a valid phone number");
+                  }
                 }
               ]}
             >
