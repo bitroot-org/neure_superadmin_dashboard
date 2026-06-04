@@ -110,7 +110,7 @@ const Sidebar = () => {
       icon: <FileTextOutlined />,
     },
     {
-      path: "/therapists",
+      path: "/prodesk-therapists",
       name: "Therapists",
       icon: <SolutionOutlined />,
     },
