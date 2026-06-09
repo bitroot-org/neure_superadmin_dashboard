@@ -947,4 +947,35 @@ export const resetPasswordWithToken = async (token, newPassword) => {
   }
 };
 
+// ── Therapist Catalogue Resources ────────────────────────────────────────────
+
+export const getCatalogueResources = async (params = {}) => {
+  try {
+    const response = await api.get('/getCatalogueResources', { params });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const uploadCatalogueResource = async (formData) => {
+  try {
+    const response = await api.post('/uploadCatalogueResource', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const deleteCatalogueResource = async (resource_id) => {
+  try {
+    const response = await api.post('/deleteCatalogueResource', { resource_id });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 

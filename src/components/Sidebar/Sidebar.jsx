@@ -3,22 +3,14 @@ import { ProLayout } from "@ant-design/pro-layout";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   HomeOutlined,
-  UserOutlined,
-  TeamOutlined,
   SolutionOutlined,
-  NotificationOutlined,
-  BarChartOutlined,
-  FileTextOutlined,
-  FolderOpenOutlined,
   HistoryOutlined,
-  ProfileOutlined,
   SettingOutlined,
   LogoutOutlined,
   CommentOutlined,
-  GiftOutlined,
   QuestionCircleOutlined,
-  FormOutlined,
   UserSwitchOutlined,
+  MedicineBoxOutlined,
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
@@ -63,51 +55,11 @@ const Sidebar = () => {
   // Define selected keys based on current path
   const selectedKeys = [currentPath];
   
-  // Define open keys for submenus
-  const openKeys = currentPath.includes('/employees/assessment') ? ['assessments'] : [];
-
   const menuData = [
-    // Dashboard & Analytics
     {
       path: "/home",
       name: "Dashboard",
       icon: <HomeOutlined />,
-    },
-    
-    // Core Business Entities
-    {
-      path: "/companies",
-      name: "Companies",
-      icon: <TeamOutlined />,
-    },
-    {
-      path: "/employees",
-      name: "Employees",
-      icon: <UserOutlined />,
-    },
-    {
-      key: 'assessments',
-      name: 'Assessments',
-      icon: <FormOutlined />,
-      children: [
-        {
-          key: '/employees/assessments',
-          name: 'Manage Assessments',
-          path: '/employees/assessments',
-        },
-        {
-          key: '/employees/assessment-reports',
-          name: 'Assessment Reports',
-          path: '/employees/assessment-reports',
-        }
-      ]
-    },
-    
-    // Services & Content
-    {
-      path: "/workshops",
-      name: "Workshops",
-      icon: <FileTextOutlined />,
     },
     {
       path: "/prodesk-therapists",
@@ -115,26 +67,9 @@ const Sidebar = () => {
       icon: <SolutionOutlined />,
     },
     {
-      path: "/soundscapes",
-      name: "Soundscapes",
-      icon: <NotificationOutlined />,
-    },
-    {
-      path: "/resources",
-      name: "Resources",
-      icon: <FolderOpenOutlined />,
-    },
-    {
-      path: "/rewards",
-      name: "Rewards",
-      icon: <GiftOutlined />,
-    },
-    
-    // Communication
-    {
-      path: '/announcements',
-      name: 'Announcements',
-      icon: <NotificationOutlined />,
+      path: "/therapist-resources",
+      name: "Therapist Resources",
+      icon: <MedicineBoxOutlined />,
     },
     {
       path: '/feedback',
@@ -146,8 +81,6 @@ const Sidebar = () => {
       name: "FAQ",
       icon: <QuestionCircleOutlined />,
     },
-    
-    // Administration
     {
       path: "/superadmins",
       name: "Superadmins",
@@ -163,8 +96,6 @@ const Sidebar = () => {
       name: "Activity Logs",
       icon: <HistoryOutlined />,
     },
-    
-    // User Actions
     {
       key: "theme-toggle",
       path: "#",
@@ -212,7 +143,6 @@ const Sidebar = () => {
               onClick={handleLogout}
               style={{
                 cursor: 'pointer',
-                color: location.pathname === item.path ? 'white' : undefined,
                 background: 'transparent',
                 border: 'none',
                 padding: 0,
@@ -229,16 +159,7 @@ const Sidebar = () => {
         
         // For regular menu items with a path, use Link
         if (item.path) {
-          return (
-            <Link
-              to={item.path}
-              style={{
-                color: location.pathname === item.path ? 'white' : undefined,
-              }}
-            >
-              {dom}
-            </Link>
-          );
+          return <Link to={item.path}>{dom}</Link>;
         }
         
         // For items without a path (like parent menu items), just return the DOM
@@ -248,7 +169,6 @@ const Sidebar = () => {
       fixSiderbar
       menuProps={{
         selectedKeys: selectedKeys,
-        defaultOpenKeys: openKeys,
       }}
     >
       <div

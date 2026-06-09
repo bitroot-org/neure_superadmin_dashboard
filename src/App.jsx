@@ -31,6 +31,7 @@ import ActivityHistory from "./pages/ActivityHistory/ActivityHistory";
 import AssessmentReports from "./pages/Assessments/AssessmentReports";
 import Superadmins from "./pages/Superadmins/Superadmins";
 import ProDeskTherapists from "./pages/ProDeskTherapists/ProDeskTherapists";
+import TherapistResources from "./pages/TherapistResources/TherapistResources";
 import PasswordChange from './components/PasswordChange/PasswordChange';
 import { changePassword } from './services/api';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
@@ -205,6 +206,7 @@ const ThemedApp = () => {
             <Route path="/faq" element={<FAQ />} />
             <Route path="/activitylog" element={<ActivityHistory />} />
             <Route path="/superadmins" element={<Superadmins />} />
+            <Route path="/therapist-resources" element={<TherapistResources />} />
 
             <Route
               path="*"
