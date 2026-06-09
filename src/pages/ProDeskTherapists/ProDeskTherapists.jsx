@@ -71,9 +71,13 @@ const ProDeskTherapists = () => {
       email: record.email,
       phone: record.phone,
       gender: record.gender,
+      designation: record.designation,
+      qualification: record.qualification,
       specialization: record.specialization,
       years_of_experience: record.years_of_experience,
+      booking_slug: record.booking_slug,
       bio: record.bio,
+      about_me: record.about_me,
     });
     setEditDrawerOpen(true);
   };
@@ -220,6 +224,14 @@ const ProDeskTherapists = () => {
           <Input />
         </Form.Item>
       </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
+        <Form.Item name="designation" label="Designation">
+          <Input placeholder="e.g. Clinical Psychologist" />
+        </Form.Item>
+        <Form.Item name="qualification" label="Qualification">
+          <Input placeholder="e.g. PhD Psychology" />
+        </Form.Item>
+      </div>
       <Form.Item name="phone" label="Phone">
         <Input maxLength={13} />
       </Form.Item>
@@ -236,8 +248,15 @@ const ProDeskTherapists = () => {
       <Form.Item name="years_of_experience" label="Years of Experience" rules={[{ required: true, message: "Required" }]}>
         <Input type="number" min={0} />
       </Form.Item>
+      <Form.Item name="booking_slug" label="Booking Slug"
+        extra="Unique URL for therapist's public booking page (e.g. dr-priya)">
+        <Input placeholder="e.g. dr-priya-sharma" />
+      </Form.Item>
       <Form.Item name="bio" label="Bio" rules={[{ required: true, message: "Required" }]}>
-        <Input.TextArea rows={3} />
+        <Input.TextArea rows={3} placeholder="Short bio shown in the app" />
+      </Form.Item>
+      <Form.Item name="about_me" label="About Me (Public Booking Page)">
+        <Input.TextArea rows={3} placeholder="Detailed bio shown on public booking page" />
       </Form.Item>
     </>
   );

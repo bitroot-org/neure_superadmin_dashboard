@@ -7,7 +7,7 @@
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
 }
 
 .userDropdown:hover {
@@ -18,7 +18,6 @@
   padding: 16px;
   border-top: 1px solid var(--border-light);
   background-color: var(--background-secondary);
-  transition: all 0.3s ease;
 }
 
 .profileSection {
@@ -27,7 +26,7 @@
   cursor: pointer;
   padding: 8px;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
 }
 
 .profileSection:hover {
@@ -49,63 +48,33 @@
 .userRole {
   font-size: 12px;
   color: var(--text-tertiary);
-  transition: color 0.3s ease;
 }
 
+/* ── Sidebar menu item states ─────────────────────────────────────── */
 
-/* Target all possible ProLayout menu item selectors */
-:global(.ant-pro-menu-item),
-:global(.ant-pro-menu-submenu-title),
+/* Remove ALL default ant transitions that cause the flicker */
 :global(.ant-menu-item),
-:global(.ant-menu-submenu-title) {
-  transition: background-color 0.3s !important;
+:global(.ant-menu-submenu-title),
+:global(.ant-pro-menu-item) {
+  transition: background-color 0.15s ease, color 0.15s ease !important;
 }
 
-/* Selected state for all menu items - increase specificity */
-:global(.ant-layout-sider) :global(.ant-pro-menu-item-selected),
-:global(.ant-layout-sider) :global(.ant-menu-item-selected) {
-  background-color: #48A6A7 !important; /* Use direct hex instead of var */
-  color: white !important;
+/* Active / selected */
+:global(.ant-menu-item-selected),
+:global(.ant-menu-item-selected) :global(a),
+:global(.ant-menu-item-selected) :global(a:hover) {
+  background-color: #48A6A7 !important;
+  color: #fff !important;
 }
 
-/* Hover state for all menu items - increase specificity */
-:global(.ant-layout-sider) :global(.ant-pro-menu-item:hover),
-:global(.ant-layout-sider) :global(.ant-pro-menu-submenu-title:hover),
-:global(.ant-layout-sider) :global(.ant-menu-item:hover),
-:global(.ant-layout-sider) :global(.ant-menu-submenu-title:hover) {
-  background-color: #48A6A7 !important; /* Use direct hex instead of var */
-  color: white !important;
+/* Hover — single rule, no conflicts */
+:global(.ant-menu-item:not(.ant-menu-item-selected):hover),
+:global(.ant-menu-submenu-title:not(.ant-menu-item-selected):hover) {
+  background-color: rgba(72, 166, 167, 0.15) !important;
+  color: #48A6A7 !important;
 }
 
-/* Submenu specific selectors */
-:global(.ant-pro-menu-submenu .ant-pro-menu-item-selected),
-:global(.ant-menu-submenu .ant-menu-item-selected),
-:global(.ant-pro-menu-submenu-popup .ant-pro-menu-item-selected),
-:global(.ant-menu-submenu-popup .ant-menu-item-selected) {
-  background-color: green !important;
-  color: white !important;
-}
-
-/* Force important with higher specificity */
-:global(body) :global(.ant-pro-menu-item-selected),
-:global(body) :global(.ant-menu-item-selected) {
-  background-color: #48A6A7 !important; /* Use direct hex instead of var */
-}
-
-/* Additional selectors for nested items */
-:global(.ant-pro-menu-inline .ant-pro-menu-item-selected),
-:global(.ant-menu-inline .ant-menu-item-selected) {
-  background-color: #48A6A7 !important; /* Use direct hex instead of var */
-}
-
-/* Target the specific submenu items by their paths */
-:global([data-menu-id="/employees/assessments"]),
-:global([data-menu-id="/employees/assessment-reports"]) {
-  background-color: var(--primary) !important;
-  color: white !important;
-}
-
-/* Theme toggle menu item styling */
+/* ── Theme toggle menu item ───────────────────────────────────────── */
 .themeMenuItem {
   display: flex;
   align-items: center;
@@ -114,7 +83,6 @@
   padding: 0;
   margin: 0;
   cursor: pointer;
-  transition: all 0.3s ease;
   min-height: 40px;
 }
 
@@ -122,7 +90,6 @@
   display: flex;
   align-items: center;
   color: var(--text-primary);
-  transition: color 0.3s ease;
   flex: 1;
   padding-left: 0;
 }
@@ -135,45 +102,6 @@
 
 .themeToggleWrapper {
   margin-right: 8px;
-  display: flex;
-  align-items: center;
-}
-
-/* Override ProLayout menu item styling for theme toggle */
-:global(.ant-pro-menu-item) .themeMenuItem {
-  margin: 0 !important;
-  padding: 0 24px !important;
-  background: transparent !important;
-  height: 40px !important;
-  line-height: 40px !important;
-}
-
-:global(.ant-pro-menu-item:hover) .themeMenuItem {
-  background-color: transparent !important;
-}
-
-/* Ensure consistent spacing with other menu items */
-:global(.ant-pro-menu-item) .themeMenuItem .themeMenuLabel {
-  padding-left: 0 !important;
-  margin-left: 0 !important;
-  line-height: 40px !important;
-}
-
-/* Make sure the theme toggle menu item has the same structure as others */
-:global(.ant-pro-menu-item) .themeMenuItem .themeMenuLabel span {
-  margin-left: 8px;
-  font-size: 14px;
-  line-height: 40px;
-}
-
-:global(.ant-pro-menu-item) .themeMenuItem .themeMenuLabel :global(.anticon) {
-  font-size: 14px;
-  line-height: 40px;
-  vertical-align: middle;
-}
-
-/* Align the toggle switch properly */
-.themeToggleWrapper {
   display: flex;
   align-items: center;
   height: 40px;
