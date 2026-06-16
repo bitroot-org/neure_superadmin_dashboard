@@ -947,6 +947,296 @@ export const resetPasswordWithToken = async (token, newPassword) => {
   }
 };
 
+// ── ProDesk Superadmin APIs ───────────────────────────────────────────────────
+
+export const prodeskGetOverview = async () => {
+  try {
+    const response = await api.post('/prodesk-admin/get-overview', {});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetRevenue = async (start_date, end_date) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-revenue', { start_date, end_date });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetActiveUsers = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-active-users', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+      plan_type: params.plan_type || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetDiscontinuedUsers = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-discontinued-users', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetTherapistById = async (therapist_id) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-therapist-by-id', { therapist_id });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetTherapists = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-therapists', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+      plan_type: params.plan_type || '',
+      subscription_status: params.subscription_status || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetFeedback = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-feedback', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+      status: params.status || '',
+      start_date: params.start_date || '',
+      end_date: params.end_date || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskUpdateFeedbackStatus = async (data) => {
+  try {
+    const response = await api.post('/prodesk-admin/update-feedback-status', data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetDeactivatedAccounts = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-deactivated-accounts', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetOfferTags = async () => {
+  try {
+    const response = await api.post('/prodesk-admin/get-offer-tags', {});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskCreateOfferTag = async (data) => {
+  try {
+    const response = await api.post('/prodesk-admin/create-offer-tag', data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetOffers = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-offers', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+      tag_id: params.tag_id || null,
+      is_active: params.is_active ?? null,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskCreateOffer = async (data) => {
+  try {
+    const response = await api.post('/prodesk-admin/create-offer', data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskUpdateOffer = async (data) => {
+  try {
+    const response = await api.post('/prodesk-admin/update-offer', data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetOfferDetail = async (offer_id) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-offer-detail', { offer_id });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskUploadOfferEmails = async (offer_id, file) => {
+  try {
+    const formData = new FormData();
+    formData.append('offer_id', offer_id);
+    formData.append('file', file);
+    const response = await api.post('/prodesk-admin/upload-offer-emails', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetReferrals = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-referrals', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetReferralDetail = async (therapist_id) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-referral-detail', { therapist_id });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetPendingPayouts = async () => {
+  try {
+    const response = await api.post('/prodesk-admin/get-pending-payouts', {});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskProcessPayout = async (data) => {
+  try {
+    const response = await api.post('/prodesk-admin/process-payout', data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetSessions = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-sessions', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      therapist_id: params.therapist_id || null,
+      start_date: params.start_date || '',
+      end_date: params.end_date || '',
+      status: params.status || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetSubscriptions = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-subscriptions', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+      plan_type: params.plan_type || '',
+      status: params.status || '',
+      billing_cycle: params.billing_cycle || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetSubscriptionDetail = async (subscription_id) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-subscription-detail', { subscription_id });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetPayments = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-payments', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+      status: params.status || '',
+      payment_for: params.payment_for || '',
+      start_date: params.start_date || '',
+      end_date: params.end_date || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetPaymentDetail = async (payment_id) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-payment-detail', { payment_id });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 // ── Therapist Catalogue Resources ────────────────────────────────────────────
 
 export const getCatalogueResources = async (params = {}) => {

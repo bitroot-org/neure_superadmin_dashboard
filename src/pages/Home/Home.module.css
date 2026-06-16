@@ -17,11 +17,16 @@
 }
 
 /* Grid layouts */
-.statsGrid,
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
 .metricsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
 }
 
 /* Common box styles */
@@ -33,6 +38,8 @@
   box-shadow: var(--shadow-light), var(--shadow-light), var(--shadow-secondary);
   transition: all 0.3s ease;
   border: 1px solid var(--border-primary);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .statsBox:hover,
@@ -45,11 +52,13 @@
 .statContent {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
 }
 
 .statIcon {
-  font-size: 24px;
+  font-size: 22px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,17 +66,24 @@
 }
 
 .statValue {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: clamp(16px, 2vw, 26px);
+  font-weight: 700;
   color: var(--text-heading);
   transition: color 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .statTitle {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-secondary);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   transition: color 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .percentSymbol {
@@ -133,19 +149,44 @@
   transition: color 0.3s ease;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+  .statsGrid,
+  .metricsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 600px) {
   .container {
-    padding: 16px;
+    padding: 12px;
   }
 
   .statsGrid,
   .metricsGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
   .statsBox,
-  .metricsBox,
+  .metricsBox {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .statIcon {
+    font-size: 18px;
+  }
+
+  .statValue {
+    font-size: clamp(14px, 4vw, 20px);
+  }
+
+  .statTitle {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
   .tableCard {
     border-radius: 12px;
   }

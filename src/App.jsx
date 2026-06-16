@@ -13,25 +13,31 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import LoginPage from "./pages/Login";
 import Header from "./components/Header";
 import Home from "./pages/Home/Home";
-import Company from "./pages/Company/Company";
-import CompanyAnalytics from "./pages/Company/CompanyAnalytics";
-import Employees from "./pages/Employees/Employees";
-import Assessments from "./pages/Assessments/Assessments";
-import Therapists from "./pages/Therapists/Therapists";
-import Soundscapes from "./pages/Soundscapes/Soundscapes";
-import Resources from "./pages/Resources/Resources";
-import Workshops from "./pages/Workshops/Workshops";
-import Announcements from "./pages/Announcements/Announcements";
-import Analytics from "./pages/Analytics/Analytics";
+// DEPRECATED — Company/Employee sections removed (ProDesk-only superadmin)
+// import Company from "./pages/Company/Company";
+// import CompanyAnalytics from "./pages/Company/CompanyAnalytics";
+// import Employees from "./pages/Employees/Employees";
+// import Assessments from "./pages/Assessments/Assessments";
+// import Therapists from "./pages/Therapists/Therapists";
+// import Soundscapes from "./pages/Soundscapes/Soundscapes";
+// import Resources from "./pages/Resources/Resources";
+// import Workshops from "./pages/Workshops/Workshops";
+// import Announcements from "./pages/Announcements/Announcements";
+// import Analytics from "./pages/Analytics/Analytics";
+// import Rewards from "./pages/Rewards/Rewards";
+// import AssessmentReports from "./pages/Assessments/AssessmentReports";
 import AccountsDeactivation from "./pages/AccountsDeactivation/AccountsDeactivation";
 import Feedback from "./pages/Feedback/Feedback";
-import Rewards from "./pages/Rewards/Rewards";
 import FAQ from "./pages/FAQ/FAQ";
 import ActivityHistory from "./pages/ActivityHistory/ActivityHistory";
-import AssessmentReports from "./pages/Assessments/AssessmentReports";
 import Superadmins from "./pages/Superadmins/Superadmins";
 import ProDeskTherapists from "./pages/ProDeskTherapists/ProDeskTherapists";
 import TherapistResources from "./pages/TherapistResources/TherapistResources";
+import CodesPromotions from "./pages/CodesPromotions/CodesPromotions";
+import Referrals from "./pages/Referrals/Referrals";
+import Sessions from "./pages/Sessions/Sessions";
+import Subscriptions from "./pages/Subscriptions/Subscriptions";
+import Payments from "./pages/Payments/Payments";
 import PasswordChange from './components/PasswordChange/PasswordChange';
 import { changePassword } from './services/api';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
@@ -178,35 +184,32 @@ const ThemedApp = () => {
           >
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
-            <Route path="/companies" element={<Company />} />
-            <Route
-              path="/companies/:companyId/analytics"
-              element={<CompanyAnalytics />}
-            />
-            <Route path="/employees" element={<Employees />} />
-            <Route path="/employees/assessments" element={<Assessments />} />
-            <Route
-              path="/employees/assessment-reports"
-              element={<AssessmentReports />}
-            />
-            <Route path="/therapists" element={<Therapists />} />
+            {/* DEPRECATED — Company/Employee routes removed (ProDesk-only superadmin) */}
+            {/* <Route path="/companies" element={<Company />} /> */}
+            {/* <Route path="/companies/:companyId/analytics" element={<CompanyAnalytics />} /> */}
+            {/* <Route path="/employees" element={<Employees />} /> */}
+            {/* <Route path="/employees/assessments" element={<Assessments />} /> */}
+            {/* <Route path="/employees/assessment-reports" element={<AssessmentReports />} /> */}
+            {/* <Route path="/therapists" element={<Therapists />} /> */}
+            {/* <Route path="/workshops" element={<Workshops />} /> */}
+            {/* <Route path="/analytics" element={<Analytics />} /> */}
+            {/* <Route path="/soundscapes" element={<Soundscapes />} /> */}
+            {/* <Route path="/resources" element={<Resources />} /> */}
+            {/* <Route path="/assessments" element={<Assessments />} /> */}
+            {/* <Route path="/announcements" element={<Announcements />} /> */}
+            {/* <Route path="/rewards" element={<Rewards />} /> */}
             <Route path="/prodesk-therapists" element={<ProDeskTherapists />} />
-            <Route path="/workshops" element={<Workshops />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/soundscapes" element={<Soundscapes />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/assessments" element={<Assessments />} />
-            <Route path="/announcements" element={<Announcements />} />
+            <Route path="/therapist-resources" element={<TherapistResources />} />
             <Route path="/feedback" element={<Feedback />} />
-            <Route
-              path="/accountsDeactivation"
-              element={<AccountsDeactivation />}
-            />
-            <Route path="/rewards" element={<Rewards />} />
+            <Route path="/accountsDeactivation" element={<AccountsDeactivation />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/activitylog" element={<ActivityHistory />} />
             <Route path="/superadmins" element={<Superadmins />} />
-            <Route path="/therapist-resources" element={<TherapistResources />} />
+            <Route path="/codes-promotions" element={<CodesPromotions />} />
+            <Route path="/referrals" element={<Referrals />} />
+            <Route path="/sessions" element={<Sessions />} />
+            <Route path="/subscriptions" element={<Subscriptions />} />
+            <Route path="/payments" element={<Payments />} />
 
             <Route
               path="*"

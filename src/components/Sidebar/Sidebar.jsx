@@ -11,6 +11,12 @@ import {
   QuestionCircleOutlined,
   UserSwitchOutlined,
   MedicineBoxOutlined,
+  TagsOutlined,
+  GiftOutlined,
+  CalendarOutlined,
+  StopOutlined,
+  CreditCardOutlined,
+  TransactionOutlined,
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
@@ -72,8 +78,23 @@ const Sidebar = () => {
       icon: <MedicineBoxOutlined />,
     },
     {
-      path: '/feedback',
-      name: 'Feedback',
+      path: "/sessions",
+      name: "Session Details",
+      icon: <CalendarOutlined />,
+    },
+    {
+      path: "/subscriptions",
+      name: "Subscriptions",
+      icon: <CreditCardOutlined />,
+    },
+    {
+      path: "/payments",
+      name: "Payments",
+      icon: <TransactionOutlined />,
+    },
+    {
+      path: "/feedback",
+      name: "Feedback",
       icon: <CommentOutlined />,
     },
     {
@@ -82,14 +103,24 @@ const Sidebar = () => {
       icon: <QuestionCircleOutlined />,
     },
     {
+      path: "/codes-promotions",
+      name: "Codes & Promotions",
+      icon: <TagsOutlined />,
+    },
+    {
+      path: "/referrals",
+      name: "Referral Program",
+      icon: <GiftOutlined />,
+    },
+    {
+      path: "/accountsDeactivation",
+      name: "Accounts Deactivated",
+      icon: <StopOutlined />,
+    },
+    {
       path: "/superadmins",
       name: "Superadmins",
       icon: <UserSwitchOutlined />,
-    },
-    {
-      path: '/AccountsDeactivation',
-      name: 'Account Management',
-      icon: <SettingOutlined />,
     },
     {
       path: "/activitylog",
