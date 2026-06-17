@@ -289,7 +289,7 @@ const Referrals = () => {
         }}>
           <strong>⏳ {pendingPayouts.length} therapists have pending payouts</strong>
           <span style={{ color: "#888", fontSize: 13, marginLeft: 8 }}>
-            Total: ₹{pendingPayouts.reduce((s, p) => s + (p.pending_balance || 0), 0).toLocaleString()}
+            Total: ₹{pendingPayouts.reduce((s, p) => s + (parseFloat(p.pending_balance) || 0), 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
       )}

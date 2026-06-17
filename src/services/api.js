@@ -1056,6 +1056,40 @@ export const prodeskGetDeactivatedAccounts = async (params = {}) => {
   }
 };
 
+export const prodeskGetOfferEmails = async (params = {}) => {
+  try {
+    const payload = {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+      is_used: params.is_used ?? null,
+    };
+    if (params.offer_id != null) payload.offer_id = params.offer_id;
+    const response = await api.post('/prodesk-admin/get-offer-emails', payload);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskEditOfferEmail = async (data) => {
+  try {
+    const response = await api.post('/prodesk-admin/edit-offer-email', data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskAddOfferEmails = async (offer_id, emails) => {
+  try {
+    const response = await api.post('/prodesk-admin/add-offer-emails', { offer_id, emails });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const prodeskGetOfferTags = async () => {
   try {
     const response = await api.post('/prodesk-admin/get-offer-tags', {});
