@@ -275,3 +275,30 @@ body .ant-pro-menu-item-selected {
   border-color: var(--border-secondary) !important;
   color: var(--text-primary) !important;
 }
+
+/* Remove table wrapper focus/hover border outline globally */
+.ant-table-wrapper,
+.ant-table-wrapper *,
+.ant-table-wrapper:focus,
+.ant-table-wrapper:focus-within,
+.ant-table-wrapper:hover,
+.ant-spin-nested-loading,
+.ant-spin-nested-loading:focus,
+.ant-spin-nested-loading:focus-within,
+.ant-spin-container,
+.ant-table,
+.ant-table:focus,
+.ant-table:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Keep only row-level hover background, no border */
+.ant-table-wrapper .ant-table-container {
+  border: none !important;
+  outline: none !important;
+}
+
+.ant-table-wrapper table {
+  outline: none !important;
+}
