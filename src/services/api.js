@@ -1164,6 +1164,41 @@ export const prodeskUploadOfferEmails = async (offer_id, file) => {
   }
 };
 
+export const prodeskGetBankAccountList = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/getBankAccountList', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetBankAccountById = async (therapist_id) => {
+  try {
+    const response = await api.post('/prodesk-admin/getBankAccountById', { therapist_id });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetBankAccountLogs = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/getBankAccountLogs', {
+      therapist_id: params.therapist_id,
+      page: params.page || 1,
+      limit: params.limit || 20,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const prodeskGetReferrals = async (params = {}) => {
   try {
     const response = await api.post('/prodesk-admin/get-referrals', {
