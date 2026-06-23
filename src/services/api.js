@@ -22,7 +22,6 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    console.log('API error:', error.response?.status);
 
     if (
       (error.response?.status === 401 || error.response?.status === 403) &&
@@ -30,35 +29,40 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        console.log('Attempting token refresh');
-        const refreshToken = localStorage.getItem('refreshToken');
-        
-        // Only attempt refresh if we have a refresh token
-        if (!refreshToken) {
-          console.log('No refresh token available');
+        const storedRefreshToken = localStorage.getItem('refreshToken');
+
+        if (!storedRefreshToken) {
           throw new Error('No refresh token');
         }
-        
-        const response = await refreshToken();
-        if (response.data.accessToken) {
-          console.log('Token refresh successful');
-          localStorage.setItem("accessToken", response.data.accessToken);
-          api.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${response.data.accessToken}`;
+
+        // Call the refresh endpoint directly to avoid the shadowing bug
+        const refreshResponse = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/user/refresh-token`,
+          {},
+          { headers: { Authorization: `Bearer ${storedRefreshToken}` } }
+        );
+
+        const newAccessToken = refreshResponse.data?.data?.accessToken || refreshResponse.data?.accessToken;
+
+        if (newAccessToken) {
+          localStorage.setItem("accessToken", newAccessToken);
+          api.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return api(originalRequest);
         }
+
+        throw new Error('No access token in refresh response');
       } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
-        // Only clear localStorage and redirect for auth errors
         localStorage.clear();
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }
-    } else if (error.response?.status === 500) {
-      // For 500 errors, just reject the promise without logout
+    }
+
+    if (error.response?.status === 500) {
       return Promise.reject(error);
     }
+
     return Promise.reject(error);
   }
 );
@@ -1157,6 +1161,41 @@ export const prodeskUploadOfferEmails = async (offer_id, file) => {
     formData.append('file', file);
     const response = await api.post('/prodesk-admin/upload-offer-emails', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetBankAccountList = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/getBankAccountList', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      search: params.search || '',
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetBankAccountById = async (therapist_id) => {
+  try {
+    const response = await api.post('/prodesk-admin/getBankAccountById', { therapist_id });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetBankAccountLogs = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/getBankAccountLogs', {
+      therapist_id: params.therapist_id,
+      page: params.page || 1,
+      limit: params.limit || 20,
     });
     return response.data;
   } catch (error) {
