@@ -17,6 +17,8 @@ import {
   StopOutlined,
   CreditCardOutlined,
   TransactionOutlined,
+  BellOutlined,
+  ToolOutlined,
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
@@ -71,6 +73,16 @@ const Sidebar = () => {
       path: "/prodesk-therapists",
       name: "Therapists",
       icon: <SolutionOutlined />,
+    },
+    {
+      path: "/prodesk-notifications",
+      name: "Prodesk Notifications",
+      icon: <BellOutlined />,
+    },
+    {
+      path: "/prodesk-maintenance",
+      name: "Maintenance Mode",
+      icon: <ToolOutlined />,
     },
     {
       path: "/therapist-resources",
