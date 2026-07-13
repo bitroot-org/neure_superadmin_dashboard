@@ -1341,4 +1341,58 @@ export const deleteCatalogueResource = async (resource_id) => {
   }
 };
 
+// ── Prodesk Notification Broadcast ───────────────────────────────────────────
+// Recipient picker reuses getProdeskTherapists (users JOIN therapists only —
+// one row per therapist) instead of the subscription-joined admin list.
+
+export const prodeskSendNotification = async (data) => {
+  try {
+    const response = await api.post('/prodesk-admin/sendNotification', data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetSentNotifications = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/getSentNotifications', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskGetNotificationDetail = async (batch_id) => {
+  try {
+    const response = await api.post('/prodesk-admin/getNotificationDetail', { batch_id });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+// ── Prodesk Maintenance Mode ─────────────────────────────────────────────────
+
+export const prodeskGetMaintenanceMode = async () => {
+  try {
+    const response = await api.post('/prodesk-admin/getMaintenanceMode', {});
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const prodeskSetMaintenanceMode = async (data) => {
+  try {
+    const response = await api.post('/prodesk-admin/setMaintenanceMode', data);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 

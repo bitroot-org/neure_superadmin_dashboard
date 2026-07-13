@@ -32,6 +32,8 @@ import FAQ from "./pages/FAQ/FAQ";
 import ActivityHistory from "./pages/ActivityHistory/ActivityHistory";
 import Superadmins from "./pages/Superadmins/Superadmins";
 import ProDeskTherapists from "./pages/ProDeskTherapists/ProDeskTherapists";
+import ProdeskNotifications from "./pages/ProdeskNotifications/ProdeskNotifications";
+import ProdeskMaintenance from "./pages/ProdeskMaintenance/ProdeskMaintenance";
 import TherapistResources from "./pages/TherapistResources/TherapistResources";
 import CodesPromotions from "./pages/CodesPromotions/CodesPromotions";
 import Referrals from "./pages/Referrals/Referrals";
@@ -199,6 +201,8 @@ const ThemedApp = () => {
             {/* <Route path="/announcements" element={<Announcements />} /> */}
             {/* <Route path="/rewards" element={<Rewards />} /> */}
             <Route path="/prodesk-therapists" element={<ProDeskTherapists />} />
+            <Route path="/prodesk-notifications" element={<ProdeskNotifications />} />
+            <Route path="/prodesk-maintenance" element={<ProdeskMaintenance />} />
             <Route path="/therapist-resources" element={<TherapistResources />} />
             <Route path="/feedback" element={<Feedback />} />
             <Route path="/accountsDeactivation" element={<AccountsDeactivation />} />
