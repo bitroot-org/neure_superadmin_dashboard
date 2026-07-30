@@ -102,6 +102,11 @@ const OffersTab = ({ tags, fetchTags }) => {
         valid_till: values.valid_range?.[1]?.format("YYYY-MM-DD HH:mm:ss") || null,
         max_uses_per_email: values.max_uses_per_email || 1,
         total_max_uses: values.total_max_uses || null,
+        razorpay_offer_id: values.razorpay_offer_id || null,
+        restricted_billing_cycle: values.restricted_billing_cycle || null,
+        payment_method: values.payment_method || 'all',
+        discount_duration: values.discount_duration || 'single_cycle',
+        discount_cycles: values.discount_duration === 'limited_cycles' ? values.discount_cycles || null : null,
       });
       if (res?.status) {
         message.success("Offer created"); setCreateDrawerOpen(false); createForm.resetFields();
@@ -119,6 +124,11 @@ const OffersTab = ({ tags, fetchTags }) => {
         offer_id: editingOffer.id, name: values.name,
         valid_till: values.valid_till ? values.valid_till.format("YYYY-MM-DD HH:mm:ss") : undefined,
         is_active: values.is_active ? 1 : 0,
+        razorpay_offer_id: values.razorpay_offer_id || null,
+        restricted_billing_cycle: values.restricted_billing_cycle || null,
+        payment_method: values.payment_method || 'all',
+        discount_duration: values.discount_duration || 'single_cycle',
+        discount_cycles: values.discount_duration === 'limited_cycles' ? values.discount_cycles || null : null,
       });
       if (res?.status) {
         message.success("Offer updated"); setEditModalOpen(false);
@@ -160,7 +170,7 @@ const OffersTab = ({ tags, fetchTags }) => {
           onClick={e => {
             e.stopPropagation();
             setEditingOffer(record);
-            editForm.setFieldsValue({ name: record.name, valid_till: record.valid_till ? dayjs(record.valid_till) : null, is_active: !!record.is_active });
+            editForm.setFieldsValue({ name: record.name, valid_till: record.valid_till ? dayjs(record.valid_till) : null, is_active: !!record.is_active, razorpay_offer_id: record.razorpay_offer_id || "", restricted_billing_cycle: record.restricted_billing_cycle || null, payment_method: record.payment_method || "all", discount_duration: record.discount_duration || "single_cycle", discount_cycles: record.discount_cycles || null });
             setEditModalOpen(true);
           }}
         >Edit</Button>
@@ -218,6 +228,7 @@ const OffersTab = ({ tags, fetchTags }) => {
               ["Valid Till", d.valid_till ? dayjs(d.valid_till).format("DD MMM YYYY, HH:mm") : "—"],
               ["Total Used", d.total_used || 0],
               ["Whitelisted Emails", d.total_emails_whitelisted || "—"],
+              ["Razorpay Offer ID", d.razorpay_offer_id || "— not linked —"],
             ].map(([k, v]) => <InfoRow key={k} label={k} value={v} />)}
           </div>
         )}
@@ -228,6 +239,36 @@ const OffersTab = ({ tags, fetchTags }) => {
         <Form form={editForm} layout="vertical" onFinish={handleUpdate}>
           <Form.Item name="name" label="Offer Name" rules={[{ required: true }]}><Input /></Form.Item>
           <Form.Item name="valid_till" label="Valid Till"><DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} /></Form.Item>
+          <Form.Item name="razorpay_offer_id" label="Razorpay Offer ID" tooltip="Offer created on the Razorpay Dashboard (Payments → Offers). Applied automatically at checkout — first cycle only.">
+            <Input placeholder="e.g. offer_TJ2WHKvVifh3ra" />
+          </Form.Item>
+          <Form.Item name="restricted_billing_cycle" label="Restrict To Billing Cycle" tooltip="Leave blank to allow both. Set this if the offer's discount % was only calculated for one cycle (e.g. monthly) — prevents it being misapplied to the other.">
+            <Select placeholder="No restriction (both allowed)" allowClear>
+              <Option value="monthly">Monthly only</Option>
+              <Option value="annual">Annual only</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name="payment_method" label="Applicable Payment Method" tooltip="Must match the Payment Method configured on this offer in the Razorpay Dashboard. Checkout will only show the matching tab(s) so customers don't pick a method the discount won't apply to.">
+            <Select placeholder="All (no restriction)">
+              <Option value="all">All</Option>
+              <Option value="card">Card only</Option>
+              <Option value="upi">UPI only</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name="discount_duration" label="Discount Duration" tooltip="Must match the Redemption Type configured on this offer in the Razorpay Dashboard — drives the wording shown to the customer.">
+            <Select placeholder="Select duration">
+              <Option value="single_cycle">First cycle only (renews at full price)</Option>
+              <Option value="limited_cycles">Limited number of cycles</Option>
+              <Option value="forever">Forever (lifetime discount)</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item noStyle shouldUpdate={(prev, cur) => prev.discount_duration !== cur.discount_duration}>
+            {({ getFieldValue }) => getFieldValue('discount_duration') === 'limited_cycles' && (
+              <Form.Item name="discount_cycles" label="Number of Cycles" rules={[{ required: true }]}>
+                <Input type="number" min={1} placeholder="e.g. 6" />
+              </Form.Item>
+            )}
+          </Form.Item>
           <Form.Item name="is_active" label="Active" valuePropName="checked"><Switch /></Form.Item>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
             <Button onClick={() => setEditModalOpen(false)}>Cancel</Button>
@@ -252,7 +293,37 @@ const OffersTab = ({ tags, fetchTags }) => {
             <div><div style={{ fontSize: 13, color: "#555", marginBottom: 4 }}>Percentage Discount</div><Switch checked={isPercent} onChange={setIsPercent} /></div>
             <div><div style={{ fontSize: 13, color: "#555", marginBottom: 4 }}>Email Restricted</div><Switch checked={isEmailRestricted} onChange={setIsEmailRestricted} /></div>
           </div>
-          {isPercent && <Form.Item name="percent_discount" label="Discount %" rules={[{ required: true }]}><Input type="number" min={1} max={100} suffix="%" /></Form.Item>}
+          {isPercent && <Form.Item name="percent_discount" label="Discount %" rules={[{ required: true }]}><Input type="number" min={1} max={100} step="0.01" suffix="%" /></Form.Item>}
+          <Form.Item name="razorpay_offer_id" label="Razorpay Offer ID" tooltip="Create the Offer on the Razorpay Dashboard first (Payments → Offers → Create Offer for Subscription), then paste its ID here. Discount is applied by Razorpay itself at checkout — first billing cycle only.">
+            <Input placeholder="e.g. offer_TJ2WHKvVifh3ra" />
+          </Form.Item>
+          <Form.Item name="restricted_billing_cycle" label="Restrict To Billing Cycle" tooltip="Leave blank to allow both. Set this if the offer's discount % was only calculated for one cycle (e.g. monthly) — prevents it being misapplied to the other.">
+            <Select placeholder="No restriction (both allowed)" allowClear>
+              <Option value="monthly">Monthly only</Option>
+              <Option value="annual">Annual only</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name="payment_method" label="Applicable Payment Method" tooltip="Must match the Payment Method configured on this offer in the Razorpay Dashboard. Checkout will only show the matching tab(s) so customers don't pick a method the discount won't apply to." initialValue="all">
+            <Select placeholder="All (no restriction)">
+              <Option value="all">All</Option>
+              <Option value="card">Card only</Option>
+              <Option value="upi">UPI only</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name="discount_duration" label="Discount Duration" tooltip="Must match the Redemption Type configured on this offer in the Razorpay Dashboard — drives the wording shown to the customer." initialValue="single_cycle">
+            <Select placeholder="Select duration">
+              <Option value="single_cycle">First cycle only (renews at full price)</Option>
+              <Option value="limited_cycles">Limited number of cycles</Option>
+              <Option value="forever">Forever (lifetime discount)</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item noStyle shouldUpdate={(prev, cur) => prev.discount_duration !== cur.discount_duration}>
+            {({ getFieldValue }) => getFieldValue('discount_duration') === 'limited_cycles' && (
+              <Form.Item name="discount_cycles" label="Number of Cycles" rules={[{ required: true }]}>
+                <Input type="number" min={1} placeholder="e.g. 6" />
+              </Form.Item>
+            )}
+          </Form.Item>
           <Form.Item name="valid_range" label="Validity Period"><RangePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} /></Form.Item>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
             <Form.Item name="max_uses_per_email" label="Max Uses / Email"><Input type="number" min={1} defaultValue={1} /></Form.Item>

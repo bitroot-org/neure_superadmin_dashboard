@@ -91,6 +91,13 @@ export const lightThemeConfig = {
       colorBgElevated: "#ffffff",
       colorBgMask: "rgba(0, 0, 0, 0.45)",
     },
+    // colorBgSpotlight above is near-white for this theme, but Tooltip's text
+    // defaults to colorTextLightSolid (white) — invisible without its own
+    // dark background override here.
+    Tooltip: {
+      colorBgSpotlight: "#333333",
+      colorTextLightSolid: "#ffffff",
+    },
   },
 };
 
