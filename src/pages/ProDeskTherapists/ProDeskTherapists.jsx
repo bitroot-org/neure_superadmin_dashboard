@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import debounce from "lodash/debounce";
 import {
   Table, Button, Drawer, Form, Input, Select,
   Space, message, Modal, Tag, Tooltip, Descriptions,
@@ -92,6 +93,16 @@ const ProDeskTherapists = () => {
     setPage(1);
     fetchTherapists(1, search, planFilter, statusFilter);
   };
+
+  const debouncedSearch = useCallback(
+    debounce((value, plan, sub_status) => {
+      setPage(1);
+      fetchTherapists(1, value, plan, sub_status);
+    }, 500),
+    []
+  );
+
+  useEffect(() => () => debouncedSearch.cancel(), [debouncedSearch]);
 
   const handleReset = () => {
     setSearch(""); setPlanFilter(""); setStatusFilter(""); setPage(1);
@@ -382,17 +393,24 @@ const ProDeskTherapists = () => {
           placeholder="Search name / email"
           prefix={<SearchOutlined />}
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={e => { setSearch(e.target.value); debouncedSearch(e.target.value, planFilter, statusFilter); }}
           onPressEnter={handleSearch}
           style={{ width: 220 }}
         />
-        <Select value={planFilter} onChange={v => setPlanFilter(v)} style={{ width: 170 }}>
+        <Select
+          value={planFilter}
+          onChange={v => { setPlanFilter(v); setPage(1); fetchTherapists(1, search, v, statusFilter); }}
+          style={{ width: 170 }}
+        >
           <Select.Option value="">All Plans</Select.Option>
           <Select.Option value="starter">Starter (Free)</Select.Option>
           <Select.Option value="professional">Professional</Select.Option>
-          <Select.Option value="clinic">Clinic + Staff</Select.Option>
         </Select>
-        <Select value={statusFilter} onChange={v => setStatusFilter(v)} style={{ width: 170 }}>
+        <Select
+          value={statusFilter}
+          onChange={v => { setStatusFilter(v); setPage(1); fetchTherapists(1, search, planFilter, v); }}
+          style={{ width: 170 }}
+        >
           <Select.Option value="">All Statuses</Select.Option>
           <Select.Option value="active">Active</Select.Option>
           <Select.Option value="expired">Expired</Select.Option>
