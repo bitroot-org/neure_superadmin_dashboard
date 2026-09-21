@@ -13,6 +13,7 @@ import {
   MedicineBoxOutlined,
   TagsOutlined,
   GiftOutlined,
+  SafetyCertificateOutlined,
   CalendarOutlined,
   StopOutlined,
   CreditCardOutlined,
@@ -89,10 +90,17 @@ const Sidebar = () => {
       name: "Therapist Resources",
       icon: <MedicineBoxOutlined />,
     },
+    /* Session Details entry hidden per request, keep for later reuse
     {
       path: "/sessions",
       name: "Session Details",
       icon: <CalendarOutlined />,
+    },
+    */
+    {
+      path: "/consent-logs",
+      name: "Consent Logs",
+      icon: <SafetyCertificateOutlined />,
     },
     {
       path: "/subscriptions",

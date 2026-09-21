@@ -1259,6 +1259,24 @@ export const prodeskGetSessions = async (params = {}) => {
   }
 };
 
+export const prodeskGetConsentLogs = async (params = {}) => {
+  try {
+    const response = await api.post('/prodesk-admin/get-consent-logs', {
+      page: params.page || 1,
+      limit: params.limit || 20,
+      actor_type: params.actor_type || undefined,
+      consent_type: params.consent_type || undefined,
+      therapist_id: params.therapist_id || undefined,
+      start_date: params.start_date || undefined,
+      end_date: params.end_date || undefined,
+      search: params.search || undefined,
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 export const prodeskGetSubscriptions = async (params = {}) => {
   try {
     const response = await api.post('/prodesk-admin/get-subscriptions', {
