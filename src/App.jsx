@@ -37,7 +37,9 @@ import ProdeskMaintenance from "./pages/ProdeskMaintenance/ProdeskMaintenance";
 import TherapistResources from "./pages/TherapistResources/TherapistResources";
 import CodesPromotions from "./pages/CodesPromotions/CodesPromotions";
 import Referrals from "./pages/Referrals/Referrals";
-import Sessions from "./pages/Sessions/Sessions";
+import ConsentLogs from "./pages/ConsentLogs/ConsentLogs";
+// Session Details page hidden per request, keep for later reuse
+// import Sessions from "./pages/Sessions/Sessions";
 import Subscriptions from "./pages/Subscriptions/Subscriptions";
 import Payments from "./pages/Payments/Payments";
 import PasswordChange from './components/PasswordChange/PasswordChange';
@@ -211,7 +213,10 @@ const ThemedApp = () => {
             <Route path="/superadmins" element={<Superadmins />} />
             <Route path="/codes-promotions" element={<CodesPromotions />} />
             <Route path="/referrals" element={<Referrals />} />
+            <Route path="/consent-logs" element={<ConsentLogs />} />
+            {/* Session Details route hidden per request, keep for later reuse
             <Route path="/sessions" element={<Sessions />} />
+            */}
             <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/payments" element={<Payments />} />
 
