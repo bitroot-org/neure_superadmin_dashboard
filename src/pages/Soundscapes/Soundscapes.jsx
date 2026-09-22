@@ -156,7 +156,7 @@ const Soundscapes = () => {
               width: 50,
               height: 50,
               objectFit: "cover",
-              borderRadius: "4px",
+              borderRadius: "2px",
             }}
           />
         </div>

@@ -6,7 +6,7 @@
 .userDropdown {
   cursor: pointer;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 2px;
   transition: background-color 0.2s;
 }
 
@@ -25,7 +25,7 @@
   align-items: center;
   cursor: pointer;
   padding: 8px;
-  border-radius: 4px;
+  border-radius: 2px;
   transition: background-color 0.2s;
 }
 
@@ -63,15 +63,61 @@
 :global(.ant-menu-item-selected),
 :global(.ant-menu-item-selected) :global(a),
 :global(.ant-menu-item-selected) :global(a:hover) {
-  background-color: #48A6A7 !important;
-  color: #fff !important;
+  background-color: rgba(14, 159, 110, 0.10) !important;
+  color: #0B7D57 !important;
 }
 
 /* Hover — single rule, no conflicts */
 :global(.ant-menu-item:not(.ant-menu-item-selected):hover),
 :global(.ant-menu-submenu-title:not(.ant-menu-item-selected):hover) {
-  background-color: rgba(72, 166, 167, 0.15) !important;
-  color: #48A6A7 !important;
+  background-color: rgba(14, 159, 110, 0.06) !important;
+  color: #1F2328 !important;
+}
+
+/* Dark mode — tinted selection with mint text instead of a solid teal block */
+:global([data-theme="dark"] .ant-menu-item-selected),
+:global([data-theme="dark"] .ant-menu-item-selected) :global(a),
+:global([data-theme="dark"] .ant-menu-item-selected) :global(a:hover) {
+  background-color: rgba(95, 211, 165, 0.12) !important;
+  color: #7EE2BA !important;
+}
+
+:global([data-theme="dark"] .ant-menu-item:not(.ant-menu-item-selected):hover),
+:global([data-theme="dark"] .ant-menu-submenu-title:not(.ant-menu-item-selected):hover) {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #EEF3F0 !important;
+}
+
+/* ── Logo: brand mark inside a white squircle ─────────────────────── */
+.logoSquircle {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border-radius: 28%;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 2px 6px rgba(0, 0, 0, 0.18);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@supports (corner-shape: squircle) {
+  .logoSquircle {
+    border-radius: 50%;
+    corner-shape: squircle;
+  }
+}
+
+.logoSquircle:hover {
+  transform: scale(1.06) rotate(-4deg);
+}
+
+.logoSquircle img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 /* ── Theme toggle menu item ───────────────────────────────────────── */

@@ -28,12 +28,12 @@
 .table {
   margin-top: 24px;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 
 :global(.ant-modal-content) {
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .pageTitle {

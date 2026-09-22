@@ -374,7 +374,7 @@ const Resources = () => {
               width: 50,
               height: 50,
               objectFit: "cover",
-              borderRadius: "4px",
+              borderRadius: "2px",
             }}
           />
         </div>
@@ -448,7 +448,7 @@ const Resources = () => {
           <img 
             src={thumbnailUrl || '/placeholder-image.png'} 
             alt="Video thumbnail" 
-            style={{ width: '80px', height: 'auto' , borderRadius: '12px'}}
+            style={{ width: '80px', height: 'auto' , borderRadius: '6px'}}
           />
         );
       },

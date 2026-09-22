@@ -30,7 +30,7 @@
 
 .responseCard {
   margin-bottom: 16px;
-  border-radius: 8px;
+  border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -64,13 +64,13 @@
   margin-top: 16px;
   background-color: #f9f9f9;
   padding: 12px;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 .userPoints {
   margin-top: 16px;
   background-color: #f0f7ff;
   padding: 12px;
-  border-radius: 4px;
+  border-radius: 2px;
   border-left: 4px solid #1890ff;
 }

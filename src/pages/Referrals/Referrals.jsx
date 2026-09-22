@@ -239,7 +239,7 @@ const BankAccountsTab = () => {
         ) : d ? (
           <div>
             {/* Account details */}
-            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 10, padding: "14px 16px", marginBottom: 24 }}>
+            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 5, padding: "14px 16px", marginBottom: 24 }}>
               <div style={{ fontWeight: 600, fontSize: 12, color: "#555", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 Account Details
               </div>
@@ -251,7 +251,7 @@ const BankAccountsTab = () => {
               <InfoRow label="Account Type" value={d.account_type ? <Tag style={{ textTransform: "capitalize" }}>{d.account_type}</Tag> : "—"} />
             </div>
 
-            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 10, padding: "14px 16px", marginBottom: 24 }}>
+            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 5, padding: "14px 16px", marginBottom: 24 }}>
               <div style={{ fontWeight: 600, fontSize: 12, color: "#555", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 Therapist
               </div>
@@ -458,7 +458,7 @@ const ReferralsTab = () => {
       </div>
 
       {pendingPayouts.length > 0 && (
-        <div style={{ background: "#fffbe6", border: "1px solid #ffe58f", borderRadius: 8, padding: "12px 16px", marginBottom: 20 }}>
+        <div style={{ background: "#fffbe6", border: "1px solid #ffe58f", borderRadius: 4, padding: "12px 16px", marginBottom: 20 }}>
           <strong>⏳ {pendingPayouts.length} therapists have pending payouts</strong>
           <span style={{ color: "#888", fontSize: 13, marginLeft: 8 }}>
             Total: ₹{pendingPayouts.reduce((s, p) => s + (parseFloat(p.pending_balance) || 0), 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
@@ -493,7 +493,7 @@ const ReferralsTab = () => {
                 { label: "Total Paid", value: `₹${Number(referralDetail.wallet?.total_paid || 0).toLocaleString()}`, color: "#1677ff" },
                 { label: "Current Balance", value: `₹${Number(referralDetail.wallet?.balance || 0).toLocaleString()}`, color: "#722ed1" },
               ].map(c => (
-                <div key={c.label} style={{ flex: 1, minWidth: 120, padding: "12px 16px", background: "rgba(0,0,0,0.03)", borderRadius: 8, textAlign: "center" }}>
+                <div key={c.label} style={{ flex: 1, minWidth: 120, padding: "12px 16px", background: "rgba(0,0,0,0.03)", borderRadius: 4, textAlign: "center" }}>
                   <div style={{ fontSize: 11, color: "#888" }}>{c.label}</div>
                   <div style={{ fontSize: 20, fontWeight: 700, color: c.color }}>{c.value}</div>
                 </div>

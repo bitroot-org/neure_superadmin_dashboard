@@ -187,7 +187,7 @@ const Feedback = () => {
       >
         {selected && (
           <div>
-            <div style={{ marginBottom: 16, padding: 16, background: "rgba(0,0,0,0.03)", borderRadius: 8 }}>
+            <div style={{ marginBottom: 16, padding: 16, background: "rgba(0,0,0,0.03)", borderRadius: 4 }}>
               <div style={{ fontWeight: 600, fontSize: 15 }}>{selected.therapist_name}</div>
               <div style={{ color: "#888", fontSize: 13, marginBottom: 8 }}>{selected.therapist_email}</div>
               {selected.rating && <Rate disabled defaultValue={selected.rating} style={{ fontSize: 14, marginBottom: 8 }} />}

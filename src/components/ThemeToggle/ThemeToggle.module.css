@@ -1,7 +1,7 @@
 /* Button variant styles */
 .themeToggle {
   transition: all 0.3s ease;
-  border-radius: 6px;
+  border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,7 +88,7 @@
 }
 
 .themeSwitch:global(.ant-switch-checked) {
-  background-color: #48A6A7;
+  background-color: #0E9F6E;
 }
 
 /* Icon styling inside switch */
@@ -108,7 +108,7 @@
 }
 
 [data-theme="dark"] .themeSwitch:global(.ant-switch-checked) {
-  background-color: #48A6A7;
+  background-color: #0E9F6E;
 }
 
 /* Responsive adjustments */

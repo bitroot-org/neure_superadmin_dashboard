@@ -214,7 +214,7 @@ const Subscriptions = () => {
             </div>
 
             {/* Subscription Info */}
-            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 10, padding: "14px 16px", marginBottom: 20 }}>
+            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 5, padding: "14px 16px", marginBottom: 20 }}>
               <div style={{ fontWeight: 600, fontSize: 12, color: "#555", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Subscription Info</div>
               <InfoRow label="Therapist" value={d.therapist_name} />
               <InfoRow label="Email" value={d.email} />
@@ -237,7 +237,7 @@ const Subscriptions = () => {
                 <Divider orientation="left">Payment History ({d.payment_history.length})</Divider>
                 {d.payment_history.map((p, i) => (
                   <div key={p.payment_id || i} style={{
-                    border: "1px solid rgba(0,0,0,0.08)", borderRadius: 10, padding: "14px 16px",
+                    border: "1px solid rgba(0,0,0,0.08)", borderRadius: 5, padding: "14px 16px",
                     marginBottom: 12,
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>

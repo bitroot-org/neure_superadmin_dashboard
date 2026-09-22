@@ -1,41 +1,49 @@
+import { theme } from "antd";
+
 // Ant Design theme configurations for light and dark modes
 
 export const lightThemeConfig = {
   token: {
     fontFamily: "Archivo, sans-serif",
-    
-    // Primary colors
-    colorPrimary: "#48A6A7",
-    colorPrimaryHover: "#006A71",
-    colorPrimaryActive: "#006A71",
-    colorPrimaryBg: "#9ACBD0",
-    colorPrimaryBgHover: "#48A6A7",
+
+    // Primary colors — emerald (light counterpart of dark mode's mint)
+    colorPrimary: "#0E9F6E",
+    colorPrimaryHover: "#16B37E",
+    colorPrimaryActive: "#0B7D57",
+    colorPrimaryBg: "#EEF7F2",
+    colorPrimaryBgHover: "#DDF0E6",
+    colorLink: "#0B7D57",
+    colorLinkHover: "#0E9F6E",
 
     // Background colors
-    colorBgBase: "#F2EFE7",
+    colorBgBase: "#ffffff",
     colorBgContainer: "#ffffff",
     colorBgElevated: "#ffffff",
-    colorBgLayout: "#F2EFE7",
-    colorBgSpotlight: "#f9f9f9",
+    colorBgLayout: "#F4F7F5",
+    colorBgSpotlight: "#1F2328",
 
     // Text colors
-    colorText: "#333333",
-    colorTextSecondary: "#666666",
-    colorTextTertiary: "#999999",
-    colorTextQuaternary: "#cccccc",
+    colorText: "#1F2328",
+    colorTextSecondary: "#5B6560",
+    colorTextTertiary: "#8A938E",
+    colorTextQuaternary: "#B7BEBA",
+    colorTextHeading: "#1F2328",
 
     // Border colors
-    colorBorder: "rgba(154, 203, 208, 0.2)",
-    colorBorderSecondary: "#e8e8e8",
+    colorBorder: "#E3E8E5",
+    colorBorderSecondary: "#EBEFED",
+    colorSplit: "rgba(16, 24, 20, 0.06)",
 
     // Border radius
-    borderRadius: 8,
-    borderRadiusLG: 12,
+    borderRadius: 4,
+    borderRadiusLG: 6,
+    borderRadiusSM: 2,
+    borderRadiusXS: 1,
 
     // Shadows
-    boxShadow: "0 2px 8px rgba(0, 106, 113, 0.1)",
-    boxShadowSecondary: "0 4px 12px rgba(0, 106, 113, 0.12)",
-    boxShadowTertiary: "0 1px 2px rgba(0, 106, 113, 0.04)",
+    boxShadow: "0 1px 3px rgba(16, 24, 20, 0.06), 0 1px 2px rgba(16, 24, 20, 0.04)",
+    boxShadowSecondary: "0 12px 32px rgba(16, 24, 20, 0.10)",
+    boxShadowTertiary: "0 1px 2px rgba(16, 24, 20, 0.04)",
 
     // Other tokens
     colorSuccess: "#52c41a",
@@ -47,150 +55,184 @@ export const lightThemeConfig = {
     Typography: {
       titleFontFamily: "Clash Display, sans-serif",
       fontWeightStrong: 600,
-      colorTextHeading: "#006A71",
+      colorTextHeading: "#1F2328",
     },
     Table: {
       headerFontSize: 14,
       headerFontWeight: 600,
-      headerBg: "#9ACBD0",
-      headerColor: "#006A71",
+      headerBg: "#F7F9F8",
+      headerColor: "#5B6560",
       fontWeightStrong: 600,
       colorBgContainer: "#ffffff",
-      borderColor: "rgba(154, 203, 208, 0.2)",
+      borderColor: "#EBEFED",
+      rowHoverBg: "rgba(14, 159, 110, 0.04)",
     },
     Button: {
-      colorPrimary: "#48A6A7",
-      colorPrimaryHover: "#006A71",
-      colorPrimaryActive: "#006A71",
-      borderRadius: 6,
+      colorPrimary: "#0E9F6E",
+      colorPrimaryHover: "#16B37E",
+      colorPrimaryActive: "#0B7D57",
+      primaryShadow: "0 1px 2px rgba(11, 125, 87, 0.25)",
+      borderRadius: 3,
     },
     Card: {
       colorBgContainer: "#ffffff",
-      borderRadiusLG: 12,
-      boxShadow: "0 2px 8px rgba(0, 106, 113, 0.08)",
+      borderRadiusLG: 6,
+      boxShadow: "0 1px 3px rgba(16, 24, 20, 0.06)",
     },
     Layout: {
       colorBgHeader: "#ffffff",
-      colorBgBody: "#F2EFE7",
-      colorBgTrigger: "#48A6A7",
+      colorBgBody: "transparent",
+      colorBgTrigger: "#0E9F6E",
+      bodyBg: "transparent",
     },
     Menu: {
-      colorBgContainer: "#ffffff",
+      colorBgContainer: "transparent",
       colorItemBg: "transparent",
-      colorItemBgSelected: "#48A6A7",
-      colorItemBgHover: "#48A6A7",
-      colorItemText: "#333333",
-      colorItemTextSelected: "#ffffff",
-      colorItemTextHover: "#ffffff",
+      colorItemBgSelected: "rgba(14, 159, 110, 0.10)",
+      colorItemBgHover: "rgba(14, 159, 110, 0.06)",
+      colorItemText: "#3A423E",
+      colorItemTextSelected: "#0B7D57",
+      colorItemTextHover: "#1F2328",
     },
     Drawer: {
       colorBgElevated: "#ffffff",
-      colorBgMask: "rgba(0, 0, 0, 0.45)",
+      colorBgMask: "rgba(16, 24, 20, 0.35)",
     },
     Modal: {
       colorBgElevated: "#ffffff",
-      colorBgMask: "rgba(0, 0, 0, 0.45)",
+      colorBgMask: "rgba(16, 24, 20, 0.35)",
     },
-    // colorBgSpotlight above is near-white for this theme, but Tooltip's text
-    // defaults to colorTextLightSolid (white) — invisible without its own
-    // dark background override here.
+    // colorBgSpotlight is dark here, so Tooltip text stays white.
     Tooltip: {
-      colorBgSpotlight: "#333333",
+      colorBgSpotlight: "#1F2328",
       colorTextLightSolid: "#ffffff",
     },
   },
 };
 
+// Dark mode — near-black surfaces with subtle mint hints (matches the sign-in page).
 export const darkThemeConfig = {
+  algorithm: theme.darkAlgorithm,
   token: {
     fontFamily: "Archivo, sans-serif",
-    
-    // Primary colors - adjusted for dark mode
-    colorPrimary: "#6BC9CE",
-    colorPrimaryHover: "#4ABBC2",
-    colorPrimaryActive: "#4ABBC2",
-    colorPrimaryBg: "#8DD5D9",
-    colorPrimaryBgHover: "#6BC9CE",
+
+    // Primary colors — soft mint accent
+    colorPrimary: "#5FD3A5",
+    colorPrimaryHover: "#7EE2BA",
+    colorPrimaryActive: "#46B98C",
+    colorPrimaryBg: "rgba(95, 211, 165, 0.12)",
+    colorPrimaryBgHover: "rgba(95, 211, 165, 0.18)",
+    colorLink: "#7EE2BA",
+    colorLinkHover: "#A7F0CF",
 
     // Background colors
-    colorBgBase: "#0f0f0f",
-    colorBgContainer: "#1a1a1a",
-    colorBgElevated: "#2a2a2a",
-    colorBgLayout: "#0f0f0f",
-    colorBgSpotlight: "#262626",
+    colorBgBase: "#060807",
+    colorBgContainer: "#0C100E",
+    colorBgElevated: "#121815",
+    colorBgLayout: "#060807",
+    colorBgSpotlight: "#1A221E",
+    colorBgMask: "rgba(0, 0, 0, 0.72)",
 
     // Text colors
-    colorText: "#ffffff",
-    colorTextSecondary: "#d9d9d9",
-    colorTextTertiary: "#8c8c8c",
-    colorTextQuaternary: "#595959",
+    colorText: "#EEF3F0",
+    colorTextSecondary: "#B4BDB8",
+    colorTextTertiary: "#7C8681",
+    colorTextQuaternary: "#525A56",
+    colorTextHeading: "#EEF3F0",
+    colorTextLightSolid: "#04110B",
 
     // Border colors
-    colorBorder: "rgba(75, 187, 194, 0.3)",
-    colorBorderSecondary: "#404040",
+    colorBorder: "#212A26",
+    colorBorderSecondary: "#18201C",
+    colorSplit: "rgba(255, 255, 255, 0.06)",
 
     // Border radius
-    borderRadius: 8,
-    borderRadiusLG: 12,
+    borderRadius: 4,
+    borderRadiusLG: 6,
+    borderRadiusSM: 2,
+    borderRadiusXS: 1,
 
     // Shadows
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
-    boxShadowSecondary: "0 4px 12px rgba(0, 0, 0, 0.4)",
-    boxShadowTertiary: "0 1px 2px rgba(0, 0, 0, 0.2)",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.5)",
+    boxShadowSecondary: "0 12px 32px rgba(0, 0, 0, 0.6)",
+    boxShadowTertiary: "0 1px 2px rgba(0, 0, 0, 0.3)",
 
-    // Other tokens
-    colorSuccess: "#73d13d",
-    colorWarning: "#ffc53d",
-    colorError: "#ff7875",
-    colorInfo: "#40a9ff",
+    // Status colors
+    colorSuccess: "#5FD3A5",
+    colorWarning: "#F5C451",
+    colorError: "#FF7B7B",
+    colorInfo: "#7CB7FF",
   },
   components: {
     Typography: {
       titleFontFamily: "Clash Display, sans-serif",
       fontWeightStrong: 600,
-      colorTextHeading: "#4ABBC2",
+      colorTextHeading: "#EEF3F0",
     },
     Table: {
       headerFontSize: 14,
       headerFontWeight: 600,
-      headerBg: "#2a2a2a",
-      headerColor: "#4ABBC2",
+      headerBg: "#101512",
+      headerColor: "#B4BDB8",
       fontWeightStrong: 600,
-      colorBgContainer: "#1a1a1a",
-      borderColor: "rgba(75, 187, 194, 0.3)",
+      colorBgContainer: "#0C100E",
+      borderColor: "#18201C",
+      rowHoverBg: "rgba(95, 211, 165, 0.05)",
     },
     Button: {
-      colorPrimary: "#6BC9CE",
-      colorPrimaryHover: "#4ABBC2",
-      colorPrimaryActive: "#4ABBC2",
-      borderRadius: 6,
+      colorPrimary: "#5FD3A5",
+      colorPrimaryHover: "#7EE2BA",
+      colorPrimaryActive: "#46B98C",
+      primaryColor: "#04110B",
+      primaryShadow: "none",
+      defaultBg: "#121815",
+      defaultBorderColor: "#28322D",
+      defaultColor: "#EEF3F0",
+      borderRadius: 3,
     },
     Card: {
-      colorBgContainer: "#1a1a1a",
-      borderRadiusLG: 12,
-      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+      colorBgContainer: "#0C100E",
+      borderRadiusLG: 6,
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.4)",
     },
     Layout: {
-      colorBgHeader: "#1a1a1a",
-      colorBgBody: "#0f0f0f",
-      colorBgTrigger: "#6BC9CE",
+      colorBgHeader: "#0A0D0B",
+      colorBgBody: "transparent",
+      colorBgTrigger: "#5FD3A5",
+      siderBg: "#0A0D0B",
+      headerBg: "#0A0D0B",
+      bodyBg: "transparent",
     },
     Menu: {
-      colorBgContainer: "#1a1a1a",
+      colorBgContainer: "#0A0D0B",
       colorItemBg: "transparent",
-      colorItemBgSelected: "#6BC9CE",
-      colorItemBgHover: "#6BC9CE",
-      colorItemText: "#ffffff",
-      colorItemTextSelected: "#000000",
-      colorItemTextHover: "#000000",
+      colorItemBgSelected: "rgba(95, 211, 165, 0.12)",
+      colorItemBgHover: "rgba(255, 255, 255, 0.05)",
+      colorItemText: "#B4BDB8",
+      colorItemTextSelected: "#7EE2BA",
+      colorItemTextHover: "#EEF3F0",
     },
     Drawer: {
-      colorBgElevated: "#1a1a1a",
-      colorBgMask: "rgba(0, 0, 0, 0.7)",
+      colorBgElevated: "#0C100E",
+      colorBgMask: "rgba(0, 0, 0, 0.72)",
     },
     Modal: {
-      colorBgElevated: "#1a1a1a",
-      colorBgMask: "rgba(0, 0, 0, 0.7)",
+      contentBg: "#121815",
+      headerBg: "#121815",
+      footerBg: "transparent",
+      titleColor: "#EEF3F0",
+      colorBgMask: "rgba(0, 0, 0, 0.72)",
+    },
+    Message: {
+      contentBg: "#121815",
+    },
+    Tooltip: {
+      colorBgSpotlight: "#1A221E",
+      colorTextLightSolid: "#EEF3F0",
+    },
+    Tag: {
+      defaultBg: "#121815",
+      defaultColor: "#B4BDB8",
     },
   },
 };
