@@ -12,7 +12,7 @@
 .title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--primary-dark);
+  color: var(--text-heading);
   margin: 0;
 }
 
@@ -62,7 +62,7 @@
 
 .feedback {
   margin-top: 16px;
-  background-color: #f9f9f9;
+  background-color: var(--background-tertiary);
   padding: 12px;
   border-radius: 2px;
 }

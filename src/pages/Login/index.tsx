@@ -6,6 +6,7 @@ import styles from './Login.module.css';
 import { Link } from 'react-router-dom';
 import AsciiStars from './AsciiStars';
 import logo from '../../assets/neurelogo.png';
+import { WHATS_NEW_PENDING_KEY } from '../../utils/storage';
 
 const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -60,6 +61,9 @@ const LoginPage: React.FC = () => {
 
         // Check if this is the first login (last_login is null)
         localStorage.setItem('isFirstLogin', user && user.last_login === null ? 'true' : 'false');
+
+        // Ask the app to show the "What's new" popup once after this sign-in
+        try { sessionStorage.setItem(WHATS_NEW_PENDING_KEY, '1'); } catch { /* ignore */ }
 
         setSuccess(true);
         message.success('Login successful!');

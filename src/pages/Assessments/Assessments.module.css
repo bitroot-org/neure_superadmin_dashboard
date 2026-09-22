@@ -5,7 +5,7 @@
 .title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--primary-dark);
+  color: var(--text-heading);
   margin-bottom: 24px;
 }
 
@@ -21,7 +21,7 @@
 }
 
 .tableContainer {
-  background-color: #ffffff;
+  background-color: var(--background-secondary);
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -32,7 +32,7 @@
 
 .questionBox {
   padding: 24px;
-  background: #ffffff;
+  background: var(--background-secondary);
   border: 1px solid #f0f0f0;
   border-radius: 4px;
   margin-bottom: 24px;

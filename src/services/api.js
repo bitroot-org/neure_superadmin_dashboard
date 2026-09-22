@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clearSessionStorage } from "../utils/storage";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -53,7 +54,7 @@ api.interceptors.response.use(
 
         throw new Error('No access token in refresh response');
       } catch (refreshError) {
-        localStorage.clear();
+        clearSessionStorage();
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }

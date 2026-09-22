@@ -16,7 +16,7 @@
 .title {
   margin-bottom: 0 !important;
   font-weight: 600 !important;
-  color: var(--primary-dark);
+  color: var(--text-heading);
 }
 
 .controls {
@@ -38,7 +38,7 @@
               0 4px 8px rgba(0, 106, 113, 0.04);
   transition: all 0.3s ease;
   height: 100%;
-  background: #ffffff;
+  background: var(--background-secondary);
   border: 1px solid rgba(154, 203, 208, 0.2);
 }
 
