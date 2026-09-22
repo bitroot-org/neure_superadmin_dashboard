@@ -1,59 +1,25 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  Table, Input, Select, DatePicker, Space, Tag, Button,
-  Drawer, message, Typography, Spin,
+  Table, Input, Select, DatePicker, Space, Tag, Button, message, Typography,
 } from "antd";
 import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { prodeskGetPayments, prodeskGetPaymentDetail } from "../../services/api";
-import styles from "./Payments.module.css";
+import {
+  DetailDrawer, Section, Summary, Field, Person, StatusBadge, Count,
+  Timeline, TimelineItem, Row, Amount, Meta, Mono, formatINR, formatDate, byDateAsc,
+} from "../../components/DetailDrawer/DetailDrawer";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 const STATUS_COLORS = { captured: "green", created: "blue", failed: "red", refunded: "orange" };
-const STATUS_TONE = { captured: "success", failed: "error", created: "pending", refunded: "pending" };
+const STATUS_TONE = { captured: "success", failed: "error", created: "pending", refunded: "warning" };
 
-const formatINR = (v) => `₹${Number(v || 0).toLocaleString("en-IN")}`;
-const formatDate = (v, withSeconds = false) =>
-  v ? dayjs(v).format(withSeconds ? "DD MMM YYYY, HH:mm:ss" : "DD MMM YYYY, HH:mm") : null;
-
-const StatusBadge = ({ status }) => (
-  <span className={`${styles.badge} ${styles[STATUS_TONE[status] || "pending"]}`}>
-    <span className={styles.badgeDot} />
-    {status || "unknown"}
-  </span>
+const PaymentStatus = ({ status }) => (
+  <StatusBadge tone={STATUS_TONE[status] || "pending"}>{status || "unknown"}</StatusBadge>
 );
-
-const Section = ({ title, extra, children }) => (
-  <section className={styles.section}>
-    <header className={styles.sectionHeader}>
-      <span>{title}</span>
-      {extra}
-    </header>
-    {children}
-  </section>
-);
-
-const Field = ({ label, value, copyable, mono }) => (
-  <div className={styles.field}>
-    <span className={styles.fieldLabel}>{label}</span>
-    {value ? (
-      <Text
-        className={`${styles.fieldValue} ${mono ? styles.mono : ""}`}
-        copyable={copyable ? { text: String(value) } : false}
-      >
-        {value}
-      </Text>
-    ) : (
-      <span className={styles.fieldEmpty}>—</span>
-    )}
-  </div>
-);
-
-const initials = (name = "") =>
-  name.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0].toUpperCase()).join("") || "?";
 
 const Payments = () => {
   const [payments, setPayments] = useState([]);
@@ -221,103 +187,60 @@ const Payments = () => {
       />
 
       {/* Detail Drawer */}
-      <Drawer
-        title={
-          d ? (
-            <div className={styles.drawerTitle}>
-              <span>Payment #{d.payment_id}</span>
-              <StatusBadge status={d.status} />
-            </div>
-          ) : "Payment detail"
-        }
-        width={480}
+      <DetailDrawer
+        title={d ? `Payment #${d.payment_id}` : "Payment detail"}
+        badge={d && <PaymentStatus status={d.status} />}
         open={detailOpen}
         onClose={() => setDetailOpen(false)}
-        className={styles.drawer}
+        loading={detailLoading}
       >
-        {detailLoading ? (
-          <div className={styles.loading}><Spin /></div>
-        ) : d ? (
-          <div className={styles.stack}>
-            {/* Summary */}
-            <section className={`${styles.section} ${styles.summary}`}>
-              <span className={styles.summaryLabel}>Amount</span>
-              <span className={styles.amount}>{formatINR(d.amount)}</span>
-              <div className={styles.summaryMeta}>
+        {d && (
+          <>
+            <Summary
+              label="Amount"
+              value={formatINR(d.amount)}
+              meta={<>
                 {d.payment_for && <Tag>{d.payment_for}</Tag>}
-                {d.paid_at && <span>Paid {formatDate(d.paid_at)}</span>}
-              </div>
-            </section>
+                {d.paid_at && <span>Paid {formatDate(d.paid_at, { time: true })}</span>}
+              </>}
+            />
 
-            {/* Customer */}
             <Section title="Customer">
-              <div className={styles.customer}>
-                <span className={styles.avatar}>{initials(d.therapist_name)}</span>
-                <div className={styles.customerText}>
-                  <span className={styles.customerName}>{d.therapist_name || "—"}</span>
-                  <span className={styles.customerEmail}>{d.email}</span>
-                </div>
-                {d.plan_name && <Tag className={styles.planTag}>{d.plan_name}</Tag>}
-              </div>
+              <Person name={d.therapist_name} email={d.email} extra={d.plan_name && <Tag style={{ margin: 0 }}>{d.plan_name}</Tag>} />
             </Section>
 
-            {/* Transaction */}
             <Section title="Transaction">
               <Field label="Subscription" value={d.subscription_id ? `#${d.subscription_id}` : null} />
               <Field label="Razorpay order" value={d.razorpay_order_id} copyable mono />
               <Field label="Razorpay payment" value={d.razorpay_payment_id} copyable mono />
-              <Field label="Paid at" value={formatDate(d.paid_at, true)} />
+              <Field label="Paid at" value={formatDate(d.paid_at, { seconds: true })} />
             </Section>
 
-            {/* Attempts */}
             {d.payment_logs?.length > 0 && (
-              <Section
-                title="Payment attempts"
-                extra={<span className={styles.count}>{d.payment_logs.length}</span>}
-              >
-                <ol className={styles.timeline}>
-                  {[...d.payment_logs]
-                    .sort((a, b) => dayjs(a.paid_at || a.created_at).valueOf() - dayjs(b.paid_at || b.created_at).valueOf())
-                    .map((log, i) => (
-                      <li
-                        key={log.razorpay_payment_id || i}
-                        className={`${styles.timelineItem} ${styles[STATUS_TONE[log.status] || "pending"]}`}
-                      >
-                        <span className={styles.timelineDot} aria-hidden="true" />
-                        <div className={styles.timelineHead}>
-                          <span className={styles.attemptNo}>Attempt {i + 1}</span>
-                          <span className={styles.attemptTime}>{formatDate(log.paid_at || log.created_at, true)}</span>
-                        </div>
-                        <div className={styles.attemptTop}>
-                          <StatusBadge status={log.status} />
-                          {log.amount && <span className={styles.attemptAmount}>{formatINR(log.amount)}</span>}
-                        </div>
-                        {log.razorpay_payment_id && (
-                          <div className={styles.attemptMeta}>
-                            <span>Payment</span>
-                            <Text className={styles.mono} copyable={{ text: log.razorpay_payment_id }}>
-                              {log.razorpay_payment_id}
-                            </Text>
-                          </div>
-                        )}
-                        {log.razorpay_order_id && (
-                          <div className={styles.attemptMeta}>
-                            <span>Order</span>
-                            <Text className={styles.mono} copyable={{ text: log.razorpay_order_id }}>
-                              {log.razorpay_order_id}
-                            </Text>
-                          </div>
-                        )}
-                      </li>
-                    ))}
-                </ol>
+              <Section title="Payment attempts" extra={<Count>{d.payment_logs.length}</Count>}>
+                <Timeline>
+                  {[...d.payment_logs].sort(byDateAsc("paid_at", "created_at")).map((log, i) => (
+                    <TimelineItem
+                      key={log.razorpay_payment_id || i}
+                      tone={STATUS_TONE[log.status] || "pending"}
+                      label={`Attempt ${i + 1}`}
+                      time={formatDate(log.paid_at || log.created_at, { seconds: true })}
+                    >
+                      <Row left={<PaymentStatus status={log.status} />} right={log.amount && <Amount>{formatINR(log.amount)}</Amount>} />
+                      {log.razorpay_payment_id && (
+                        <Meta label="Payment"><Mono copy={log.razorpay_payment_id}>{log.razorpay_payment_id}</Mono></Meta>
+                      )}
+                      {log.razorpay_order_id && (
+                        <Meta label="Order"><Mono copy={log.razorpay_order_id}>{log.razorpay_order_id}</Mono></Meta>
+                      )}
+                    </TimelineItem>
+                  ))}
+                </Timeline>
               </Section>
             )}
-          </div>
-        ) : (
-          <div className={styles.empty}>No data available</div>
+          </>
         )}
-      </Drawer>
+      </DetailDrawer>
     </div>
   );
 };
