@@ -1,25 +1,38 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  Table, Input, Select, Space, Tag, Button, Drawer,
-  message, Typography, Descriptions, Divider, Spin, Badge,
+  Table, Input, Select, Space, Tag, Button, message, Typography,
 } from "antd";
 import { SearchOutlined, ReloadOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { prodeskGetSubscriptions, prodeskGetSubscriptionDetail } from "../../services/api";
+import {
+  DetailDrawer, Section, Summary, Field, Person, StatusBadge, Count, Progress,
+  Timeline, TimelineItem, Row, Amount, Meta, Mono, formatINR, formatDate, byDateAsc,
+} from "../../components/DetailDrawer/DetailDrawer";
 
 const { Title } = Typography;
 const { Option } = Select;
 
-const PLAN_COLORS   = { starter: "blue", professional: "purple", clinic: "gold" };
 const STATUS_COLORS = { active: "green", expired: "red", cancelled: "orange", pending_payment: "gold" };
-const PAY_COLORS    = { captured: "green", created: "blue", failed: "red", refunded: "orange" };
+const SUB_TONE = { active: "success", expired: "error", cancelled: "pending", pending_payment: "warning", pending: "warning" };
+const PAY_TONE = { captured: "success", failed: "error", created: "pending", refunded: "warning" };
 
-const InfoRow = ({ label, value }) => (
-  <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-    <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>{label}</span>
-    <span style={{ fontWeight: 500, fontSize: 13 }}>{value || "—"}</span>
-  </div>
-);
+const label = (v) => (v ? String(v).replace(/_/g, " ") : "unknown");
+
+// Where "today" sits inside the current billing period.
+const periodProgress = (start, end) => {
+  if (!start || !end) return null;
+  const s = dayjs(start), e = dayjs(end), now = dayjs();
+  const total = e.diff(s, "day") || 1;
+  const pct = Math.round((now.diff(s, "day") / total) * 100);
+  const left = e.diff(now, "day");
+  const caption = now.isBefore(s)
+    ? `Starts ${s.format("DD MMM YYYY")}`
+    : left < 0
+      ? `Ended ${e.format("DD MMM YYYY")}`
+      : `${left} day${left === 1 ? "" : "s"} left · renews ${e.format("DD MMM YYYY")}`;
+  return { pct: Math.max(0, Math.min(100, pct)), caption, tone: left < 0 ? "error" : left <= 3 ? "warning" : "success" };
+};
 
 const Subscriptions = () => {
   const [subs, setSubs] = useState([]);
@@ -87,8 +100,8 @@ const Subscriptions = () => {
       key: "plan",
       render: (_, r) => (
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <Tag color={PLAN_COLORS[r.plan_type] || "default"}>{r.plan_name}</Tag>
-          {r.access_type === "early_access" && <Tag color="cyan" style={{ fontSize: 10 }}>Early Access</Tag>}
+          <Tag>{r.plan_name}</Tag>
+          {r.access_type === "early_access" && <Tag style={{ fontSize: 10 }}>Early Access</Tag>}
         </div>
       ),
     },
@@ -194,74 +207,74 @@ const Subscriptions = () => {
       />
 
       {/* Detail Drawer */}
-      <Drawer
-        title={d ? `Subscription #${d.subscription_id} — ${d.therapist_name}` : "Subscription Detail"}
-        width={560}
+      <DetailDrawer
+        title={d ? `Subscription #${d.subscription_id}` : "Subscription detail"}
+        badge={d && <StatusBadge tone={SUB_TONE[d.status] || "pending"}>{label(d.status)}</StatusBadge>}
         open={detailOpen}
         onClose={() => setDetailOpen(false)}
+        loading={detailLoading}
       >
-        {detailLoading ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: 60 }}>
-            <Spin size="large" />
-          </div>
-        ) : d ? (
-          <div>
-            {/* Status badges */}
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-              <Tag color={STATUS_COLORS[d.status] || "default"} style={{ fontSize: 13, padding: "2px 10px" }}>{d.status}</Tag>
-              <Tag color={PLAN_COLORS[d.plan_type] || "default"}>{d.plan_name}</Tag>
-              {d.access_type === "early_access" && <Tag color="cyan">Early Access</Tag>}
-            </div>
+        {d && (() => {
+          const period = periodProgress(d.period_start, d.period_end);
+          return (
+            <>
+              <Summary
+                label={d.plan_name || "Plan"}
+                value={formatINR(d.price_inr)}
+                suffix={d.billing_cycle === "annual" ? "/ year" : d.billing_cycle === "monthly" ? "/ month" : null}
+                meta={<>
+                  {d.billing_cycle && <Tag>{d.billing_cycle}</Tag>}
+                  {d.access_type === "early_access" && <Tag>Early Access</Tag>}
+                </>}
+              >
+                {period && <Progress percent={period.pct} caption={period.caption} tone={period.tone} />}
+              </Summary>
 
-            {/* Subscription Info */}
-            <div style={{ background: "var(--background-tertiary)", borderRadius: 5, padding: "14px 16px", marginBottom: 20 }}>
-              <div style={{ fontWeight: 600, fontSize: 12, color: "var(--text-secondary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Subscription Info</div>
-              <InfoRow label="Therapist" value={d.therapist_name} />
-              <InfoRow label="Email" value={d.email} />
-              <InfoRow label="Plan" value={d.plan_name} />
-              <InfoRow label="Billing Cycle" value={d.billing_cycle} />
-              <InfoRow label="Price" value={`₹${Number(d.price_inr || 0).toLocaleString()}`} />
-              <InfoRow label="Period Start" value={d.period_start ? dayjs(d.period_start).format("DD MMM YYYY") : null} />
-              <InfoRow label="Period End" value={d.period_end ? dayjs(d.period_end).format("DD MMM YYYY") : null} />
-              {d.offer_code && (
-                <InfoRow
-                  label="Offer Applied"
-                  value={`${d.offer_code}${d.offer_name ? ` — ${d.offer_name}` : ""}`}
+              <Section title="Customer">
+                <Person name={d.therapist_name} email={d.email} />
+              </Section>
+
+              <Section title="Plan & billing">
+                <Field label="Plan" value={d.plan_name} />
+                <Field label="Billing cycle" value={d.billing_cycle} />
+                <Field label="Price" value={formatINR(d.price_inr)} />
+                <Field label="Period start" value={formatDate(d.period_start)} />
+                <Field label="Period end" value={formatDate(d.period_end)} />
+                <Field
+                  label="Offer applied"
+                  value={d.offer_code ? `${d.offer_code}${d.offer_name ? ` · ${d.offer_name}` : ""}` : null}
                 />
-              )}
-            </div>
+              </Section>
 
-            {/* Payment History */}
-            {d.payment_history?.length > 0 && (
-              <>
-                <Divider orientation="left">Payment History ({d.payment_history.length})</Divider>
-                {d.payment_history.map((p, i) => (
-                  <div key={p.payment_id || i} style={{
-                    border: "1px solid rgba(0,0,0,0.08)", borderRadius: 5, padding: "14px 16px",
-                    marginBottom: 12,
-                  }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                        <Tag color={PAY_COLORS[p.status] || "default"}>{p.status}</Tag>
-                        {p.payment_for && <Tag>{p.payment_for}</Tag>}
-                      </div>
-                      <span style={{ fontWeight: 700, color: "var(--accent-text)", fontSize: 15 }}>
-                        ₹{Number(p.amount || 0).toLocaleString()}
-                      </span>
-                    </div>
-                    <InfoRow label="Razorpay Order" value={p.razorpay_order_id} />
-                    <InfoRow label="Razorpay Payment" value={p.razorpay_payment_id} />
-                    <InfoRow label="Paid At" value={p.paid_at ? dayjs(p.paid_at).format("DD MMM YYYY, HH:mm") : null} />
-                    <InfoRow label="Created At" value={p.created_at ? dayjs(p.created_at).format("DD MMM YYYY, HH:mm") : null} />
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
-        ) : (
-          <div style={{ textAlign: "center", color: "var(--text-tertiary)", padding: 40 }}>No data available</div>
-        )}
-      </Drawer>
+              {d.payment_history?.length > 0 && (
+                <Section title="Payment history" extra={<Count>{d.payment_history.length}</Count>}>
+                  <Timeline>
+                    {[...d.payment_history].sort(byDateAsc("paid_at", "created_at")).map((p, i) => (
+                      <TimelineItem
+                        key={p.payment_id || i}
+                        tone={PAY_TONE[p.status] || "pending"}
+                        label={`Payment ${i + 1}${p.payment_for ? ` · ${p.payment_for}` : ""}`}
+                        time={formatDate(p.paid_at || p.created_at, { time: true })}
+                      >
+                        <Row
+                          left={<StatusBadge tone={PAY_TONE[p.status] || "pending"}>{label(p.status)}</StatusBadge>}
+                          right={<Amount>{formatINR(p.amount)}</Amount>}
+                        />
+                        {p.razorpay_payment_id && (
+                          <Meta label="Payment"><Mono copy={p.razorpay_payment_id}>{p.razorpay_payment_id}</Mono></Meta>
+                        )}
+                        {p.razorpay_order_id && (
+                          <Meta label="Order"><Mono copy={p.razorpay_order_id}>{p.razorpay_order_id}</Mono></Meta>
+                        )}
+                      </TimelineItem>
+                    ))}
+                  </Timeline>
+                </Section>
+              )}
+            </>
+          );
+        })()}
+      </DetailDrawer>
     </div>
   );
 };

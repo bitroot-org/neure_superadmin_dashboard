@@ -16,21 +16,39 @@ import {
   prodeskCreateOfferTag, prodeskGetOfferEmails, prodeskEditOfferEmail,
   prodeskAddOfferEmails,
 } from "../../services/api";
+import {
+  DetailDrawer, Section, Summary, Field, StatusBadge, Count, Progress, List, ListItem, Note, formatDate,
+} from "../../components/DetailDrawer/DetailDrawer";
 
 const { Title } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
+const DURATION_LABEL = {
+  single_cycle: "First cycle only",
+  limited_cycles: "Limited cycles",
+  forever: "Forever",
+};
+
+// Where "now" sits inside the offer's validity window.
+const validity = (from, till) => {
+  if (!from || !till) return null;
+  const s = dayjs(from), e = dayjs(till), now = dayjs();
+  if (now.isBefore(s)) return { state: "scheduled", pct: 0, tone: "pending", caption: `Starts ${s.format("DD MMM YYYY, HH:mm")}` };
+  if (now.isAfter(e)) return { state: "expired", pct: 100, tone: "error", caption: `Expired ${e.format("DD MMM YYYY, HH:mm")}` };
+  const total = e.diff(s, "minute") || 1;
+  const days = e.diff(now, "day");
+  return {
+    state: "live",
+    pct: Math.round((now.diff(s, "minute") / total) * 100),
+    tone: days <= 3 ? "warning" : "success",
+    caption: days >= 1 ? `Expires in ${days} day${days === 1 ? "" : "s"} · ${e.format("DD MMM YYYY")}` : `Expires ${e.format("DD MMM YYYY, HH:mm")}`,
+  };
+};
+
 const SAMPLE_CSV_URL =
   "https://neure-staging.s3.ap-south-1.amazonaws.com/prodesk/samples/offer_emails_sample.csv";
-
-const InfoRow = ({ label, value }) => (
-  <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-    <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>{label}</span>
-    <span style={{ fontWeight: 500, fontSize: 13 }}>{value || "—"}</span>
-  </div>
-);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TAB 1 — OFFERS
@@ -209,30 +227,93 @@ const OffersTab = ({ tags, fetchTags }) => {
       />
 
       {/* Offer detail drawer */}
-      <Drawer
-        title={d ? <><code style={{ fontSize: 15, fontWeight: 800 }}>{d.code}</code><span style={{ marginLeft: 10, fontSize: 13, fontWeight: 400, color: "var(--text-tertiary)" }}>{d.name}</span></> : "Offer Detail"}
-        width={480} open={detailOpen} onClose={() => setDetailOpen(false)} loading={detailLoading}
+      <DetailDrawer
+        title={d ? <code style={{ fontWeight: 700 }}>{d.code}</code> : "Offer detail"}
+        badge={d && (() => {
+          const v = validity(d.valid_from, d.valid_till);
+          if (!d.is_active) return <StatusBadge tone="pending">Inactive</StatusBadge>;
+          if (v?.state === "expired") return <StatusBadge tone="error">Expired</StatusBadge>;
+          if (v?.state === "scheduled") return <StatusBadge tone="pending">Scheduled</StatusBadge>;
+          return <StatusBadge tone="success">Active</StatusBadge>;
+        })()}
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        loading={detailLoading}
       >
-        {d && (
-          <div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-              <Badge status={d.is_active ? "success" : "error"} text={d.is_active ? "Active" : "Inactive"} />
-              <Tag color={d.is_percent ? "purple" : d.is_email_restricted ? "cyan" : "default"}>
-                {d.is_percent ? `${d.percent_discount}% OFF` : d.is_email_restricted ? "Email Restricted" : "Open"}
-              </Tag>
-              {d.tag_name && <Tag color="geekblue">{d.tag_name}</Tag>}
-            </div>
-            {[
-              ["Name", d.name],
-              ["Valid From", d.valid_from ? dayjs(d.valid_from).format("DD MMM YYYY, HH:mm") : "—"],
-              ["Valid Till", d.valid_till ? dayjs(d.valid_till).format("DD MMM YYYY, HH:mm") : "—"],
-              ["Total Used", d.total_used || 0],
-              ["Whitelisted Emails", d.total_emails_whitelisted || "—"],
-              ["Razorpay Offer ID", d.razorpay_offer_id || "— not linked —"],
-            ].map(([k, v]) => <InfoRow key={k} label={k} value={v} />)}
-          </div>
-        )}
-      </Drawer>
+        {d && (() => {
+          const v = validity(d.valid_from, d.valid_till);
+          const emails = d.emails || [];
+          const usedEmails = emails.filter(e => e.is_used).length;
+          const maxUses = d.total_max_uses;
+          return (
+            <>
+              <Summary
+                label={d.name}
+                value={d.is_percent ? `${Number(d.percent_discount)}% off` : d.is_email_restricted ? "Email restricted" : "Open offer"}
+                meta={<>
+                  {d.tag_name && <Tag>{d.tag_name}</Tag>}
+                  {d.is_email_restricted ? <Tag>Email restricted</Tag> : null}
+                  {d.discount_duration && (
+                    <span>
+                      {DURATION_LABEL[d.discount_duration] || d.discount_duration}
+                      {d.discount_duration === "limited_cycles" && d.discount_cycles ? ` (${d.discount_cycles})` : ""}
+                    </span>
+                  )}
+                </>}
+              >
+                {d.description && <Note>{d.description}</Note>}
+                {v && <Progress percent={v.pct} caption={v.caption} tone={v.tone} />}
+              </Summary>
+
+              <Section title="Usage">
+                <Field label="Total redemptions" value={`${d.total_used || 0}${maxUses ? ` / ${maxUses}` : " (no limit)"}`} />
+                {maxUses ? (
+                  <Progress
+                    percent={((d.total_used || 0) / maxUses) * 100}
+                    tone={(d.total_used || 0) >= maxUses ? "error" : "success"}
+                  />
+                ) : null}
+                <Field label="Uses per email" value={d.max_uses_per_email} />
+                {d.is_email_restricted ? (
+                  <Field label="Whitelisted emails" value={`${emails.length} · ${usedEmails} used`} />
+                ) : null}
+              </Section>
+
+              <Section title="Settings">
+                <Field label="Valid from" value={formatDate(d.valid_from, { time: true })} />
+                <Field label="Valid till" value={formatDate(d.valid_till, { time: true })} />
+                <Field label="Billing cycle" value={d.restricted_billing_cycle ? `${d.restricted_billing_cycle} only` : "Monthly & annual"} />
+                <Field label="Payment method" value={d.payment_method && d.payment_method !== "all" ? `${d.payment_method.toUpperCase()} only` : "All methods"} />
+                <Field label="Razorpay offer" value={d.razorpay_offer_id} copyable mono />
+              </Section>
+
+              {d.is_email_restricted ? (
+                <Section title="Whitelisted emails" extra={<Count>{emails.length}</Count>}>
+                  {emails.length === 0 ? (
+                    <Note>
+                      <StatusBadge tone="warning">No emails</StatusBadge>{" "}
+                      This code is email restricted but no emails are whitelisted, so nobody can redeem it yet.
+                      Add emails from the Whitelisted Emails tab.
+                    </Note>
+                  ) : (
+                    <List>
+                      {emails.map(e => (
+                        <ListItem
+                          key={e.email}
+                          primary={e.email}
+                          secondary={e.is_used
+                            ? <StatusBadge tone="success">Used{e.used_at ? ` ${dayjs(e.used_at).format("DD MMM")}` : ""}</StatusBadge>
+                            : <StatusBadge tone="pending">Unused</StatusBadge>}
+                        />
+                      ))}
+                    </List>
+                  )}
+                </Section>
+              ) : null}
+            </>
+          );
+        })()}
+      </DetailDrawer>
 
       {/* Edit offer modal */}
       <Modal title="Edit Offer" open={editModalOpen} onCancel={() => setEditModalOpen(false)} footer={null}>
