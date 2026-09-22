@@ -127,12 +127,15 @@ const LoginPage: React.FC = () => {
             <span className={styles.logoRing}>
               <img src={logo} alt="" className={styles.logo} />
             </span>
-            <span className={styles.brandName}>Neure</span>
+            <span className={styles.brandText}>
+              <span className={styles.brandName}>ProDesk</span>
+              <span className={styles.brandBy}>by Neure</span>
+            </span>
             <span className={styles.brandTag}>Superadmin</span>
           </div>
 
           <h1 className={styles.title}>Welcome back</h1>
-          <p className={styles.subtitle}>Sign in to manage the Neure platform</p>
+          <p className={styles.subtitle}>Sign in to manage ProDesk</p>
 
           <form onSubmit={handleSubmit} className={styles.form} noValidate>
             <label className={styles.field}>

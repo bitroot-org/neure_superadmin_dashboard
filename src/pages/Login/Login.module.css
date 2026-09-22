@@ -211,11 +211,28 @@
 
 .brand:hover .logo { transform: scale(1.12) rotate(-6deg); }
 
+.brandText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1;
+}
+
 .brandName {
   font-family: 'Clash Display', 'Archivo', sans-serif;
   font-weight: 600;
   font-size: 19px;
+  line-height: 20px;
   letter-spacing: 0.01em;
+}
+
+.brandBy {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
 }
 
 .brandTag {
