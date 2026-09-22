@@ -120,39 +120,6 @@
   object-fit: contain;
 }
 
-/* ── Theme toggle menu item ───────────────────────────────────────── */
-.themeMenuItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
-  min-height: 40px;
-}
-
-.themeMenuLabel {
-  display: flex;
-  align-items: center;
-  color: var(--text-primary);
-  flex: 1;
-  padding-left: 0;
-}
-
-.themeMenuLabel :global(.anticon) {
-  font-size: 14px;
-  width: 14px;
-  height: 14px;
-}
-
-.themeToggleWrapper {
-  margin-right: 8px;
-  display: flex;
-  align-items: center;
-  height: 40px;
-}
-
 /* ── Collapsible sections ─────────────────────────────────────────── */
 :global(.ant-pro-sider .ant-menu-sub.ant-menu-inline) {
   background: transparent !important;
