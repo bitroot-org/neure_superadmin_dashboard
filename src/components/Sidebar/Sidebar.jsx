@@ -5,8 +5,6 @@ import {
   HomeOutlined,
   SolutionOutlined,
   HistoryOutlined,
-  SettingOutlined,
-  LogoutOutlined,
   CommentOutlined,
   QuestionCircleOutlined,
   UserSwitchOutlined,
@@ -27,7 +25,7 @@ import {
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
-import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import ProfileCard from "./ProfileCard";
 import WhatsNew from "../WhatsNew/WhatsNew";
 import { clearSessionStorage } from "../../utils/storage";
 import styles from './Sidebar.module.css';
@@ -122,18 +120,6 @@ const Sidebar = () => {
         { path: "/activitylog", name: "Activity Logs", icon: <HistoryOutlined /> },
       ],
     },
-    {
-      key: "theme-toggle",
-      path: "#",
-      name: "Theme",
-      icon: <SettingOutlined />,
-    },
-    {
-      key: "logout",
-      path: "#",
-      name: "Logout",
-      icon: <LogoutOutlined />,
-    }
   ];
 
   // Open the section that contains the current page; users can toggle others freely.
@@ -153,48 +139,10 @@ const Sidebar = () => {
           <img src={neurelogo} alt="Neure" />
         </span>
       }
+      menuFooterRender={(props) => (
+        <ProfileCard collapsed={props?.collapsed} onLogout={handleLogout} />
+      )}
       menuItemRender={(item, dom) => {
-        // For theme toggle item, render the ThemeToggle component
-        if (item.key === "theme-toggle") {
-          return (
-            <div className={styles.themeMenuItem}>
-              <div className={styles.themeMenuLabel}>
-                <SettingOutlined />
-                <span>Theme</span>
-              </div>
-              <div className={styles.themeToggleWrapper}>
-                <ThemeToggle 
-                  variant="switch" 
-                  showTooltip={true} 
-                  size="small" 
-                  className={styles.sidebarThemeToggle}
-                />
-              </div>
-            </div>
-          );
-        }
-
-        // For logout item, use a button with onClick
-        if (item.key === "logout") {
-          return (
-            <button
-              onClick={handleLogout}
-              style={{
-                cursor: 'pointer',
-                background: 'transparent',
-                border: 'none',
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                width: '100%',
-                textAlign: 'left'
-              }}
-            >
-              {dom}
-            </button>
-          );
-        }
-        
         // For regular menu items with a path, use Link
         if (item.path) {
           return <Link to={item.path}>{dom}</Link>;

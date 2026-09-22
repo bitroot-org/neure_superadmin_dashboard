@@ -27,7 +27,7 @@
   width: 100%;
   aspect-ratio: 16 / 7.5;
   overflow: hidden;
-  background: #b9cdf7; /* matches the artwork while the renderer loads */
+  background: #bfecdc; /* matches the artwork while the renderer loads */
 }
 
 .lottie {
