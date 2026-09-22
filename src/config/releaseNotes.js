@@ -3,6 +3,7 @@
 // chose "Don't show this again" will see the popup again for a new version.
 export const RELEASE_NOTES = {
   version: "2.0.0",
+  date: "2026-09-23", // shown next to the version; YYYY-MM-DD
   title: "A fresh new look",
   description:
     "The dashboard has a cleaner design, refreshed light and dark themes, and a sidebar grouped into sections so everything is easier to find.",
