@@ -140,3 +140,40 @@
 :global([data-theme="dark"] .ant-pro-sider .ant-menu-submenu-selected > .ant-menu-submenu-title) {
   color: #7EE2BA !important;
 }
+
+/* ── Brand: "ProDesk" with "by Neure" ─────────────────────────────── */
+/* ProLayout renders the title in an h1 sized for a single line (fixed height +
+   line-height), which pushes a two-line title below the logo. */
+:global(.ant-pro-sider-logo) :global(h1),
+:global(.ant-pro-global-header-logo) :global(h1) {
+  display: flex !important;
+  align-items: center;
+  height: auto !important;
+  line-height: normal !important;
+  margin-block: 0 !important;
+  margin-inline-start: 10px !important;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 32px; /* same as the logo squircle */
+  line-height: 1;
+}
+
+.brandName {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--text-primary);
+}
+
+.brandBy {
+  margin-top: 1px;
+  font-size: 11px;
+  line-height: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
+}

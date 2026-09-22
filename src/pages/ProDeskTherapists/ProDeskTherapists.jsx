@@ -24,23 +24,23 @@ const PLAN_COLORS = { starter: "blue", professional: "purple", clinic: "gold" };
 const SUB_STATUS_COLORS = { active: "green", expired: "red", cancelled: "orange", pending_payment: "gold" };
 
 const InfoRow = ({ label, value }) => (
-  <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--border-primary, #f0f0f0)" }}>
-    <span style={{ color: "#888", fontSize: 13 }}>{label}</span>
+  <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid var(--border-primary, var(--border-light))" }}>
+    <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>{label}</span>
     <span style={{ fontWeight: 500, fontSize: 13, textAlign: "right", maxWidth: "60%" }}>{value || "—"}</span>
   </div>
 );
 
 const SectionCard = ({ title, children }) => (
-  <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 5, padding: "14px 16px", marginBottom: 16 }}>
-    <div style={{ fontWeight: 600, fontSize: 13, color: "#555", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>{title}</div>
+  <div style={{ background: "var(--background-tertiary)", borderRadius: 5, padding: "14px 16px", marginBottom: 16 }}>
+    <div style={{ fontWeight: 600, fontSize: 13, color: "var(--text-secondary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>{title}</div>
     {children}
   </div>
 );
 
 const StatPill = ({ label, value, color }) => (
-  <div style={{ flex: 1, textAlign: "center", padding: "10px 8px", background: "rgba(0,0,0,0.03)", borderRadius: 4 }}>
+  <div style={{ flex: 1, textAlign: "center", padding: "10px 8px", background: "var(--background-tertiary)", borderRadius: 4 }}>
     <div style={{ fontSize: 18, fontWeight: 700, color: color || "inherit" }}>{value}</div>
-    <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>{label}</div>
+    <div style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: 2 }}>{label}</div>
   </div>
 );
 
@@ -255,14 +255,14 @@ const ProDeskTherapists = () => {
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Avatar
             src={r.profile_url}
-            style={{ background: "#4f8ef7", fontWeight: 600, fontSize: 14, flexShrink: 0 }}
+            style={{ background: "var(--active-bg)", color: "var(--accent-text)", fontWeight: 600, fontSize: 14, flexShrink: 0 }}
             size={36}
           >
             {(r.first_name || r.name)?.[0]?.toUpperCase() || "?"}
           </Avatar>
           <div>
             <div style={{ fontWeight: 500 }}>{r.name || `${r.first_name} ${r.last_name}`}</div>
-            <div style={{ fontSize: 12, color: "#888" }}>{r.email}</div>
+            <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{r.email}</div>
           </div>
         </div>
       ),
@@ -375,7 +375,7 @@ const ProDeskTherapists = () => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>Therapists</h1>
-          <p style={{ margin: 0, color: "#888", fontSize: 13 }}>Manage therapists and their ProDesk login access</p>
+          <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: 13 }}>Manage therapists and their ProDesk login access</p>
         </div>
         <Space>
           <Tooltip title="Download list of all therapists">
@@ -445,12 +445,12 @@ const ProDeskTherapists = () => {
         title={
           d ? (
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <Avatar src={d.profile_url} size={40} style={{ background: "#4f8ef7", fontWeight: 700 }}>
+              <Avatar src={d.profile_url} size={40} style={{ background: "var(--active-bg)", color: "var(--accent-text)", fontWeight: 700 }}>
                 {d.name?.[0]?.toUpperCase()}
               </Avatar>
               <div>
                 <div style={{ fontWeight: 700, fontSize: 15, lineHeight: 1.2 }}>{d.name}</div>
-                <div style={{ fontSize: 12, color: "#888", fontWeight: 400 }}>{d.email}</div>
+                <div style={{ fontSize: 12, color: "var(--text-tertiary)", fontWeight: 400 }}>{d.email}</div>
               </div>
             </div>
           ) : "Therapist Details"
@@ -483,10 +483,10 @@ const ProDeskTherapists = () => {
             {/* Stats strip */}
             {stats && (
               <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-                <StatPill label="Clients" value={stats.total_clients} color="#1677ff" />
-                <StatPill label="Sessions" value={stats.total_sessions} color="#52c41a" />
-                <StatPill label="Invoices" value={stats.total_invoices} color="#722ed1" />
-                <StatPill label="Revenue" value={`₹${Number(stats.total_invoice_amount || 0).toLocaleString()}`} color="#fa8c16" />
+                <StatPill label="Clients" value={stats.total_clients} />
+                <StatPill label="Sessions" value={stats.total_sessions} />
+                <StatPill label="Invoices" value={stats.total_invoices} />
+                <StatPill label="Revenue" value={`₹${Number(stats.total_invoice_amount || 0).toLocaleString()}`} />
               </div>
             )}
 
@@ -501,8 +501,8 @@ const ProDeskTherapists = () => {
               <InfoRow label="Joined" value={d.created_at ? dayjs(d.created_at).format("DD MMM YYYY") : null} />
               {d.about_me && (
                 <div style={{ marginTop: 8 }}>
-                  <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>About</div>
-                  <div style={{ fontSize: 13, lineHeight: 1.6, color: "#444" }}>{d.about_me}</div>
+                  <div style={{ fontSize: 12, color: "var(--text-tertiary)", marginBottom: 4 }}>About</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.6, color: "var(--text-secondary)" }}>{d.about_me}</div>
                 </div>
               )}
             </SectionCard>
@@ -532,10 +532,10 @@ const ProDeskTherapists = () => {
             {wallet && (
               <SectionCard title="Referral Wallet">
                 <div style={{ display: "flex", gap: 8 }}>
-                  <StatPill label="Balance" value={`₹${wallet.balance || 0}`} color="#1677ff" />
-                  <StatPill label="Pending" value={`₹${wallet.pending_balance || 0}`} color="#fa8c16" />
-                  <StatPill label="Total Earned" value={`₹${wallet.total_earned || 0}`} color="#52c41a" />
-                  <StatPill label="Total Paid" value={`₹${wallet.total_paid || 0}`} color="#722ed1" />
+                  <StatPill label="Balance" value={`₹${wallet.balance || 0}`} />
+                  <StatPill label="Pending" value={`₹${wallet.pending_balance || 0}`} />
+                  <StatPill label="Total Earned" value={`₹${wallet.total_earned || 0}`} />
+                  <StatPill label="Total Paid" value={`₹${wallet.total_paid || 0}`} />
                 </div>
               </SectionCard>
             )}
@@ -550,7 +550,7 @@ const ProDeskTherapists = () => {
             )}
           </div>
         ) : (
-          <div style={{ textAlign: "center", color: "#aaa", padding: 40 }}>No data available</div>
+          <div style={{ textAlign: "center", color: "var(--text-tertiary)", padding: 40 }}>No data available</div>
         )}
       </Drawer>
 
@@ -607,7 +607,7 @@ const ProDeskTherapists = () => {
       >
         {newCreds && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 8 }}>
-            <p style={{ margin: 0, color: "#888", fontSize: 13 }}>
+            <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: 13 }}>
               Share these credentials with <strong>{newCreds.name}</strong>.
               Save them now — the password cannot be retrieved later.
             </p>
@@ -619,10 +619,10 @@ const ProDeskTherapists = () => {
             ].map(({ label, value, field }) => (
               <div key={field} style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                background: "rgba(0,0,0,0.04)", borderRadius: 4, padding: "10px 14px",
+                background: "var(--background-tertiary)", borderRadius: 4, padding: "10px 14px",
               }}>
                 <div>
-                  <div style={{ fontSize: 11, color: "#888", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
                   <div style={{ fontWeight: 600, marginTop: 2, fontFamily: field === "password" ? "monospace" : "inherit" }}>{value}</div>
                 </div>
                 <Button type="text"

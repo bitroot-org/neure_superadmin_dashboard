@@ -1,0 +1,304 @@
+/* ── Payment detail drawer ─────────────────────────────────────────── */
+
+.drawer :global(.ant-drawer-body) {
+  padding: 16px;
+  background: var(--background-primary);
+}
+
+.drawerTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.loading,
+.empty {
+  display: grid;
+  place-items: center;
+  padding: 60px 0;
+  color: var(--text-tertiary);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section {
+  padding: 14px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  background: var(--background-secondary);
+  animation: rise 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stack > :nth-child(2) { animation-delay: 40ms; }
+.stack > :nth-child(3) { animation-delay: 80ms; }
+.stack > :nth-child(4) { animation-delay: 120ms; }
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.count {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 18px;
+  color: var(--text-secondary);
+  background: var(--background-tertiary);
+}
+
+/* Summary */
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryLabel {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.amount {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.summaryMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.summaryMeta :global(.ant-tag) { margin: 0; }
+
+/* Status badge — the only place semantic colour is used */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  border: 1px solid transparent;
+}
+
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.success {
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+  border-color: color-mix(in srgb, var(--success) 25%, transparent);
+}
+
+.error {
+  color: var(--error);
+  background: color-mix(in srgb, var(--error) 10%, transparent);
+  border-color: color-mix(in srgb, var(--error) 25%, transparent);
+}
+
+.pending {
+  color: var(--text-secondary);
+  background: var(--background-tertiary);
+  border-color: var(--border-secondary);
+}
+
+/* Customer */
+.customer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-text);
+  background: var(--active-bg);
+}
+
+.customerText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.customerName {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.customerEmail {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.planTag { margin: 0; }
+
+/* Fields */
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border-light);
+  font-size: 13px;
+}
+
+.field:first-of-type { border-top: 0; }
+
+.fieldLabel { color: var(--text-tertiary); flex-shrink: 0; }
+
+.fieldValue {
+  min-width: 0;
+  text-align: right;
+  font-weight: 500;
+  color: var(--text-primary) !important;
+  word-break: break-all;
+}
+
+.fieldEmpty { color: var(--text-tertiary); }
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Attempts — vertical timeline, oldest first */
+.timeline {
+  position: relative;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timelineItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 0 18px 24px;
+  /* status tone classes set `color`; the badge uses it, the text below resets it */
+}
+
+.timelineItem:last-child { padding-bottom: 2px; }
+
+/* Rail between dots */
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 14px;
+  bottom: -2px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--border-secondary);
+}
+
+.timelineItem:last-child::before { display: none; }
+
+.timelineDot {
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 18%, transparent);
+}
+
+/* Tone classes on the item colour the dot; keep item text neutral */
+.timelineItem.success,
+.timelineItem.error,
+.timelineItem.pending {
+  background: none;
+  border: 0;
+}
+
+.timelineItem.pending .timelineDot { color: var(--text-tertiary); }
+
+.timelineHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.attemptNo {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.attemptTime {
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.attemptTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.attemptAmount {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.attemptMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translate3d(0, 6px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section { animation: none; }
+}

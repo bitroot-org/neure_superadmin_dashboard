@@ -27,7 +27,7 @@ const SAMPLE_CSV_URL =
 
 const InfoRow = ({ label, value }) => (
   <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-    <span style={{ color: "#888", fontSize: 13 }}>{label}</span>
+    <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>{label}</span>
     <span style={{ fontWeight: 500, fontSize: 13 }}>{value || "—"}</span>
   </div>
 );
@@ -210,7 +210,7 @@ const OffersTab = ({ tags, fetchTags }) => {
 
       {/* Offer detail drawer */}
       <Drawer
-        title={d ? <><code style={{ fontSize: 15, fontWeight: 800 }}>{d.code}</code><span style={{ marginLeft: 10, fontSize: 13, fontWeight: 400, color: "#888" }}>{d.name}</span></> : "Offer Detail"}
+        title={d ? <><code style={{ fontSize: 15, fontWeight: 800 }}>{d.code}</code><span style={{ marginLeft: 10, fontSize: 13, fontWeight: 400, color: "var(--text-tertiary)" }}>{d.name}</span></> : "Offer Detail"}
         width={480} open={detailOpen} onClose={() => setDetailOpen(false)} loading={detailLoading}
       >
         {d && (
@@ -290,8 +290,8 @@ const OffersTab = ({ tags, fetchTags }) => {
           <Form.Item name="name" label="Offer Name" rules={[{ required: true }]}><Input placeholder="e.g. World Psychology Day Promo" /></Form.Item>
           <Form.Item name="description" label="Description"><TextArea rows={2} /></Form.Item>
           <div style={{ display: "flex", gap: 24, marginBottom: 16 }}>
-            <div><div style={{ fontSize: 13, color: "#555", marginBottom: 4 }}>Percentage Discount</div><Switch checked={isPercent} onChange={setIsPercent} /></div>
-            <div><div style={{ fontSize: 13, color: "#555", marginBottom: 4 }}>Email Restricted</div><Switch checked={isEmailRestricted} onChange={setIsEmailRestricted} /></div>
+            <div><div style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 4 }}>Percentage Discount</div><Switch checked={isPercent} onChange={setIsPercent} /></div>
+            <div><div style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 4 }}>Email Restricted</div><Switch checked={isEmailRestricted} onChange={setIsEmailRestricted} /></div>
           </div>
           {isPercent && <Form.Item name="percent_discount" label="Discount %" rules={[{ required: true }]}><Input type="number" min={1} max={100} step="0.01" suffix="%" /></Form.Item>}
           <Form.Item name="razorpay_offer_id" label="Razorpay Offer ID" tooltip="Create the Offer on the Razorpay Dashboard first (Payments → Offers → Create Offer for Subscription), then paste its ID here. Discount is applied by Razorpay itself at checkout — first billing cycle only.">
@@ -343,7 +343,7 @@ const OffersTab = ({ tags, fetchTags }) => {
           {tags.map(t => (
             <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
               <Tag color="geekblue">{t.name}</Tag>
-              <span style={{ fontSize: 12, color: "#888" }}>{t.description}</span>
+              <span style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{t.description}</span>
             </div>
           ))}
         </div>
@@ -468,7 +468,7 @@ const EmailsTab = () => {
   const emailColumns = [
     {
       title: "Offer Code", dataIndex: "offer_code", key: "offer_code",
-      render: v => v ? <code style={{ fontWeight: 700, fontSize: 12, color: "#1677ff" }}>{v}</code> : "—",
+      render: v => v ? <code style={{ fontWeight: 700, fontSize: 12, color: "var(--accent-text)" }}>{v}</code> : "—",
     },
     {
       title: "Offer Name", dataIndex: "offer_name", key: "offer_name",
@@ -476,7 +476,7 @@ const EmailsTab = () => {
     },
     {
       title: "Email", dataIndex: "email", key: "email",
-      render: v => <span style={{ fontWeight: 500 }}><MailOutlined style={{ color: "#888", marginRight: 8, fontSize: 12 }} />{v}</span>,
+      render: v => <span style={{ fontWeight: 500 }}><MailOutlined style={{ color: "var(--text-tertiary)", marginRight: 8, fontSize: 12 }} />{v}</span>,
     },
     {
       title: "Status", dataIndex: "is_used", key: "is_used", width: 110,
@@ -540,11 +540,11 @@ const EmailsTab = () => {
           selectedEmail ? (
             <div>
               <div style={{ fontWeight: 700, fontSize: 15 }}>
-                <MailOutlined style={{ marginRight: 8, color: "#1677ff" }} />
+                <MailOutlined style={{ marginRight: 8, color: "var(--accent-text)" }} />
                 {selectedEmail.email}
               </div>
-              <div style={{ fontSize: 12, fontWeight: 400, color: "#888", marginTop: 2 }}>
-                {selectedEmail.offer_code && <><code style={{ color: "#1677ff" }}>{selectedEmail.offer_code}</code> — {selectedEmail.offer_name}</>}
+              <div style={{ fontSize: 12, fontWeight: 400, color: "var(--text-tertiary)", marginTop: 2 }}>
+                {selectedEmail.offer_code && <><code style={{ color: "var(--accent-text)" }}>{selectedEmail.offer_code}</code> — {selectedEmail.offer_name}</>}
               </div>
             </div>
           ) : "Email Detail"
@@ -563,7 +563,7 @@ const EmailsTab = () => {
                 }
               </div>
               {[
-                ["Offer Code", selectedEmail.offer_code ? <code style={{ color: "#1677ff", fontWeight: 700 }}>{selectedEmail.offer_code}</code> : "—"],
+                ["Offer Code", selectedEmail.offer_code ? <code style={{ color: "var(--accent-text)", fontWeight: 700 }}>{selectedEmail.offer_code}</code> : "—"],
                 ["Offer Name", selectedEmail.offer_name],
                 ["Email", selectedEmail.email],
                 ["Used By", selectedEmail.used_by_name],
@@ -571,7 +571,7 @@ const EmailsTab = () => {
                 ["Added On", selectedEmail.created_at ? dayjs(selectedEmail.created_at).format("DD MMM YYYY") : null],
               ].map(([label, value]) => (
                 <div key={label} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-                  <span style={{ color: "#888", fontSize: 13 }}>{label}</span>
+                  <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>{label}</span>
                   <span style={{ fontWeight: 500, fontSize: 13, textAlign: "right", maxWidth: "60%" }}>{value || "—"}</span>
                 </div>
               ))}
@@ -596,7 +596,7 @@ const EmailsTab = () => {
       {/* Edit email modal */}
       <Modal title="Edit Email Address" open={editEmailModalOpen} onCancel={() => setEditEmailModalOpen(false)}
         onOk={handleEditEmail} okText="Save" confirmLoading={editingEmail}>
-        <div style={{ marginBottom: 10, fontSize: 13, color: "#888" }}>Current: <code style={{ color: "#333" }}>{selectedEmail?.email}</code></div>
+        <div style={{ marginBottom: 10, fontSize: 13, color: "var(--text-tertiary)" }}>Current: <code style={{ color: "var(--text-primary)" }}>{selectedEmail?.email}</code></div>
         <Input value={editEmailValue} onChange={e => setEditEmailValue(e.target.value)}
           placeholder="Enter new email address" onPressEnter={handleEditEmail} autoFocus />
       </Modal>
@@ -615,17 +615,17 @@ const EmailsTab = () => {
           >
             {offerOptions.map(o => (
               <Option key={o.id} value={o.id}>
-                <code style={{ marginRight: 8, color: "#1677ff" }}>{o.code}</code>{o.name}
+                <code style={{ marginRight: 8, color: "var(--accent-text)" }}>{o.code}</code>{o.name}
               </Option>
             ))}
           </Select>
         </div>
-        <div style={{ marginBottom: 10, fontSize: 13, color: "#555" }}>
+        <div style={{ marginBottom: 10, fontSize: 13, color: "var(--text-secondary)" }}>
           Enter one email per line or separate with commas. Duplicates will be skipped automatically.
         </div>
         <TextArea value={addEmailsValue} onChange={e => setAddEmailsValue(e.target.value)}
           rows={7} placeholder={"email1@example.com\nemail2@example.com"} />
-        <div style={{ marginTop: 6, fontSize: 12, color: "#aaa" }}>Only valid email addresses will be accepted.</div>
+        <div style={{ marginTop: 6, fontSize: 12, color: "var(--text-tertiary)" }}>Only valid email addresses will be accepted.</div>
       </Modal>
 
       {/* Upload CSV modal */}
@@ -642,28 +642,28 @@ const EmailsTab = () => {
           >
             {offerOptions.map(o => (
               <Option key={o.id} value={o.id}>
-                <code style={{ marginRight: 8, color: "#1677ff" }}>{o.code}</code>{o.name}
+                <code style={{ marginRight: 8, color: "var(--accent-text)" }}>{o.code}</code>{o.name}
               </Option>
             ))}
           </Select>
         </div>
 
-        <div style={{ background: "rgba(22,119,255,0.04)", border: "1px solid #1677ff22", borderRadius: 4, padding: "12px 16px", marginBottom: 20 }}>
+        <div style={{ background: "rgba(22,119,255,0.04)", border: "1px solid var(--border-primary)", borderRadius: 4, padding: "12px 16px", marginBottom: 20 }}>
           <div style={{ fontWeight: 600, marginBottom: 8 }}>CSV Format Instructions</div>
-          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: "#555", lineHeight: 1.8 }}>
+          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.8 }}>
             <li>Upload a CSV with <strong>one email per row</strong> under the column header <code>"email"</code>.</li>
             <li>Only valid email addresses will be accepted.</li>
             <li>Duplicates will be skipped automatically.</li>
           </ul>
           <div style={{ marginTop: 12 }}>
             <a href={SAMPLE_CSV_URL} download="offer_emails_sample.csv" target="_blank" rel="noreferrer"
-              style={{ color: "#1677ff", fontWeight: 500, fontSize: 13 }}>
+              style={{ color: "var(--accent-text)", fontWeight: 500, fontSize: 13 }}>
               <DownloadOutlined style={{ marginRight: 6 }} />Download Sample CSV
             </a>
           </div>
         </div>
-        <div style={{ background: "#f6f8fa", border: "1px solid #e8e8e8", borderRadius: 3, padding: "10px 14px", fontFamily: "monospace", fontSize: 12, marginBottom: 20, color: "#444" }}>
-          <div style={{ color: "#1677ff", fontWeight: 600 }}>email</div>
+        <div style={{ background: "var(--background-tertiary)", border: "1px solid var(--border-secondary)", borderRadius: 3, padding: "10px 14px", fontFamily: "monospace", fontSize: 12, marginBottom: 20, color: "var(--text-secondary)" }}>
+          <div style={{ color: "var(--accent-text)", fontWeight: 600 }}>email</div>
           <div>varun@gmail.com</div><div>yash@gmail.com</div><div>abc@gmail.com</div>
         </div>
         <Upload accept=".csv" beforeUpload={file => { setUploadFile(file); return false; }}
@@ -719,7 +719,7 @@ const CodesPromotions = () => {
     <div>
       <div style={{ marginBottom: 20 }}>
         <Title level={3} style={{ margin: 0 }}>Codes & Promotions</Title>
-        <p style={{ margin: 0, color: "#888", fontSize: 13 }}>Manage coupon codes and promotional offers</p>
+        <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: 13 }}>Manage coupon codes and promotional offers</p>
       </div>
       <Tabs items={tabItems} defaultActiveKey="offers" destroyInactiveTabPane={false} />
     </div>

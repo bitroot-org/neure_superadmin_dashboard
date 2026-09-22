@@ -442,7 +442,7 @@ const Therapists = () => {
       >
         {newCreds && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 8 }}>
-            <p style={{ margin: 0, color: "#888", fontSize: 13 }}>
+            <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: 13 }}>
               Share these credentials with <strong>{newCreds.name}</strong>.
               Save them now — the password cannot be retrieved later.
             </p>
@@ -453,10 +453,10 @@ const Therapists = () => {
             ].map(({ label, value, field }) => (
               <div key={field} style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                background: "rgba(0,0,0,0.04)", borderRadius: 4, padding: "10px 14px",
+                background: "var(--background-tertiary)", borderRadius: 4, padding: "10px 14px",
               }}>
                 <div>
-                  <div style={{ fontSize: 11, color: "#888", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
                   <div style={{ fontWeight: 600, marginTop: 2, fontFamily: field === "password" ? "monospace" : "inherit" }}>{value}</div>
                 </div>
                 <Button type="text"

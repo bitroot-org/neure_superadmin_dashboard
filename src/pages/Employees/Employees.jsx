@@ -456,7 +456,7 @@ const Employees = () => {
             justifyContent: "space-between",
             marginBottom: 16,
             padding: "8px 0",
-            borderBottom: "1px solid #f0f0f0",
+            borderBottom: "1px solid var(--border-light)",
           }}
         >
           {uploadedFile ? (

@@ -16,7 +16,7 @@ const PAY_COLORS    = { captured: "green", created: "blue", failed: "red", refun
 
 const InfoRow = ({ label, value }) => (
   <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-    <span style={{ color: "#888", fontSize: 13 }}>{label}</span>
+    <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>{label}</span>
     <span style={{ fontWeight: 500, fontSize: 13 }}>{value || "—"}</span>
   </div>
 );
@@ -78,7 +78,7 @@ const Subscriptions = () => {
       render: (_, r) => (
         <div>
           <div style={{ fontWeight: 500 }}>{r.therapist_name}</div>
-          <div style={{ fontSize: 12, color: "#888" }}>{r.email}</div>
+          <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{r.email}</div>
         </div>
       ),
     },
@@ -116,7 +116,7 @@ const Subscriptions = () => {
       render: (_, r) => (
         <div style={{ fontSize: 12 }}>
           <div>{r.period_start ? dayjs(r.period_start).format("DD MMM YYYY") : "—"}</div>
-          <div style={{ color: "#888" }}>→ {r.period_end ? dayjs(r.period_end).format("DD MMM YYYY") : "—"}</div>
+          <div style={{ color: "var(--text-tertiary)" }}>→ {r.period_end ? dayjs(r.period_end).format("DD MMM YYYY") : "—"}</div>
         </div>
       ),
     },
@@ -124,7 +124,7 @@ const Subscriptions = () => {
       title: "Offer",
       dataIndex: "offer_code",
       key: "offer_code",
-      render: v => v ? <code style={{ fontSize: 12, color: "#1677ff" }}>{v}</code> : "—",
+      render: v => v ? <code style={{ fontSize: 12, color: "var(--accent-text)" }}>{v}</code> : "—",
     },
     {
       title: "Created",
@@ -140,7 +140,7 @@ const Subscriptions = () => {
     <div>
       <div style={{ marginBottom: 20 }}>
         <Title level={3} style={{ margin: 0 }}>Subscriptions</Title>
-        <p style={{ margin: 0, color: "#888", fontSize: 13 }}>All ProDesk subscription records</p>
+        <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: 13 }}>All ProDesk subscription records</p>
       </div>
 
       <Space style={{ marginBottom: 16 }} wrap>
@@ -214,8 +214,8 @@ const Subscriptions = () => {
             </div>
 
             {/* Subscription Info */}
-            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 5, padding: "14px 16px", marginBottom: 20 }}>
-              <div style={{ fontWeight: 600, fontSize: 12, color: "#555", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Subscription Info</div>
+            <div style={{ background: "var(--background-tertiary)", borderRadius: 5, padding: "14px 16px", marginBottom: 20 }}>
+              <div style={{ fontWeight: 600, fontSize: 12, color: "var(--text-secondary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Subscription Info</div>
               <InfoRow label="Therapist" value={d.therapist_name} />
               <InfoRow label="Email" value={d.email} />
               <InfoRow label="Plan" value={d.plan_name} />
@@ -245,7 +245,7 @@ const Subscriptions = () => {
                         <Tag color={PAY_COLORS[p.status] || "default"}>{p.status}</Tag>
                         {p.payment_for && <Tag>{p.payment_for}</Tag>}
                       </div>
-                      <span style={{ fontWeight: 700, color: "#1677ff", fontSize: 15 }}>
+                      <span style={{ fontWeight: 700, color: "var(--accent-text)", fontSize: 15 }}>
                         ₹{Number(p.amount || 0).toLocaleString()}
                       </span>
                     </div>
@@ -259,7 +259,7 @@ const Subscriptions = () => {
             )}
           </div>
         ) : (
-          <div style={{ textAlign: "center", color: "#aaa", padding: 40 }}>No data available</div>
+          <div style={{ textAlign: "center", color: "var(--text-tertiary)", padding: 40 }}>No data available</div>
         )}
       </Drawer>
     </div>

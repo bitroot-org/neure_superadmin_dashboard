@@ -35,7 +35,7 @@
 .coverImage {
   width: 40px;
   height: 40px;
-  background-color: #f0f0f0;
+  background-color: var(--border-light);
   border-radius: 2px;
   display: flex;
   align-items: center;
@@ -87,7 +87,7 @@
 
 :global(.ant-upload-drag) {
   background: var(--background-secondary) !important;
-  border: 1px solid #d9d9d9 !important;
+  border: 1px solid var(--border-secondary) !important;
 }
 
 :global(.ant-btn-block) {
@@ -204,7 +204,7 @@
 }
 
 .resourceTag {
-  background-color: #f0f0f0;
+  background-color: var(--border-light);
   border-radius: 6px;
   padding: 2px 8px;
   font-size: 12px;

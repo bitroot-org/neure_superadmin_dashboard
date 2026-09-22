@@ -100,7 +100,7 @@ const Feedback = () => {
       render: (_, r) => (
         <div>
           <div style={{ fontWeight: 500 }}>{r.therapist_name}</div>
-          <div style={{ fontSize: 12, color: "#888" }}>{r.therapist_email}</div>
+          <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{r.therapist_email}</div>
         </div>
       ),
     },
@@ -141,7 +141,7 @@ const Feedback = () => {
     <div>
       <div style={{ marginBottom: 20 }}>
         <Title level={3} style={{ margin: 0 }}>Feedback</Title>
-        <p style={{ margin: 0, color: "#888", fontSize: 13 }}>Feedback submitted by ProDesk psychologists</p>
+        <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: 13 }}>Feedback submitted by ProDesk psychologists</p>
       </div>
 
       <Space style={{ marginBottom: 16 }} wrap>
@@ -187,13 +187,13 @@ const Feedback = () => {
       >
         {selected && (
           <div>
-            <div style={{ marginBottom: 16, padding: 16, background: "rgba(0,0,0,0.03)", borderRadius: 4 }}>
+            <div style={{ marginBottom: 16, padding: 16, background: "var(--background-tertiary)", borderRadius: 4 }}>
               <div style={{ fontWeight: 600, fontSize: 15 }}>{selected.therapist_name}</div>
-              <div style={{ color: "#888", fontSize: 13, marginBottom: 8 }}>{selected.therapist_email}</div>
+              <div style={{ color: "var(--text-tertiary)", fontSize: 13, marginBottom: 8 }}>{selected.therapist_email}</div>
               {selected.rating && <Rate disabled defaultValue={selected.rating} style={{ fontSize: 14, marginBottom: 8 }} />}
               {selected.subject && <div style={{ fontWeight: 500, marginBottom: 4 }}>{selected.subject}</div>}
-              <div style={{ color: "#555", lineHeight: 1.6 }}>{selected.message}</div>
-              <div style={{ fontSize: 11, color: "#aaa", marginTop: 8 }}>
+              <div style={{ color: "var(--text-secondary)", lineHeight: 1.6 }}>{selected.message}</div>
+              <div style={{ fontSize: 11, color: "var(--text-tertiary)", marginTop: 8 }}>
                 {dayjs(selected.created_at).format("DD MMM YYYY, HH:mm")}
               </div>
             </div>

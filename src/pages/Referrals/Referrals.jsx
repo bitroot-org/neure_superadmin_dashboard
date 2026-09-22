@@ -18,7 +18,7 @@ const { Title } = Typography;
 
 const InfoRow = ({ label, value }) => (
   <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-    <span style={{ color: "#888", fontSize: 13 }}>{label}</span>
+    <span style={{ color: "var(--text-tertiary)", fontSize: 13 }}>{label}</span>
     <span style={{ fontWeight: 500, fontSize: 13, textAlign: "right", maxWidth: "65%", wordBreak: "break-all" }}>{value || "—"}</span>
   </div>
 );
@@ -91,7 +91,7 @@ const BankAccountsTab = () => {
       render: (_, r) => (
         <div>
           <div style={{ fontWeight: 500 }}>{r.therapist_name}</div>
-          <div style={{ fontSize: 12, color: "#888" }}>{r.therapist_email}</div>
+          <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{r.therapist_email}</div>
         </div>
       ),
     },
@@ -135,7 +135,7 @@ const BankAccountsTab = () => {
       render: (_, r) => (
         <div>
           <div style={{ fontSize: 13, fontWeight: 500 }}>{r.changed_by_name}</div>
-          <div style={{ fontSize: 11, color: "#888" }}>{r.changed_by_email}</div>
+          <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>{r.changed_by_email}</div>
         </div>
       ),
     },
@@ -156,7 +156,7 @@ const BankAccountsTab = () => {
           <div style={{ fontSize: 12 }}>
             {changed.map(k => (
               <div key={k} style={{ marginBottom: 2 }}>
-                <span style={{ color: "#888" }}>{k}: </span>
+                <span style={{ color: "var(--text-tertiary)" }}>{k}: </span>
                 <span style={{ color: "#ff4d4f", textDecoration: "line-through", marginRight: 6 }}>{old_[k] || "—"}</span>
                 <span style={{ color: "#52c41a" }}>{new_[k] || "—"}</span>
               </div>
@@ -219,10 +219,10 @@ const BankAccountsTab = () => {
           d ? (
             <div>
               <div style={{ fontWeight: 700, fontSize: 15 }}>
-                <BankOutlined style={{ marginRight: 8, color: "#1677ff" }} />
+                <BankOutlined style={{ marginRight: 8, color: "var(--accent-text)" }} />
                 {d.bank_name || "Bank Account"}
               </div>
-              <div style={{ fontSize: 12, fontWeight: 400, color: "#888", marginTop: 2 }}>
+              <div style={{ fontSize: 12, fontWeight: 400, color: "var(--text-tertiary)", marginTop: 2 }}>
                 {d.therapist_name} · {d.therapist_email}
               </div>
             </div>
@@ -239,8 +239,8 @@ const BankAccountsTab = () => {
         ) : d ? (
           <div>
             {/* Account details */}
-            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 5, padding: "14px 16px", marginBottom: 24 }}>
-              <div style={{ fontWeight: 600, fontSize: 12, color: "#555", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <div style={{ background: "var(--background-tertiary)", borderRadius: 5, padding: "14px 16px", marginBottom: 24 }}>
+              <div style={{ fontWeight: 600, fontSize: 12, color: "var(--text-secondary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 Account Details
               </div>
               <InfoRow label="Account Holder" value={d.account_holder} />
@@ -251,8 +251,8 @@ const BankAccountsTab = () => {
               <InfoRow label="Account Type" value={d.account_type ? <Tag style={{ textTransform: "capitalize" }}>{d.account_type}</Tag> : "—"} />
             </div>
 
-            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 5, padding: "14px 16px", marginBottom: 24 }}>
-              <div style={{ fontWeight: 600, fontSize: 12, color: "#555", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <div style={{ background: "var(--background-tertiary)", borderRadius: 5, padding: "14px 16px", marginBottom: 24 }}>
+              <div style={{ fontWeight: 600, fontSize: 12, color: "var(--text-secondary)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                 Therapist
               </div>
               <InfoRow label="Name" value={d.therapist_name} />
@@ -284,7 +284,7 @@ const BankAccountsTab = () => {
             />
           </div>
         ) : (
-          <div style={{ textAlign: "center", color: "#aaa", padding: 60 }}>
+          <div style={{ textAlign: "center", color: "var(--text-tertiary)", padding: 60 }}>
             <BankOutlined style={{ fontSize: 36, marginBottom: 12, display: "block" }} />
             No bank account found for this therapist
           </div>
@@ -376,11 +376,11 @@ const ReferralsTab = () => {
       render: (_, r) => (
         <div>
           <div style={{ fontWeight: 500 }}>{r.name}</div>
-          <div style={{ fontSize: 12, color: "#888" }}>{r.email}</div>
+          <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{r.email}</div>
         </div>
       ),
     },
-    { title: "Referral Code", dataIndex: "referral_code", key: "referral_code", render: v => <code style={{ fontWeight: 600, color: "#1677ff" }}>{v}</code> },
+    { title: "Referral Code", dataIndex: "referral_code", key: "referral_code", render: v => <code style={{ fontWeight: 600, color: "var(--accent-text)" }}>{v}</code> },
     { title: "Referred", dataIndex: "referred_count", key: "referred_count", render: v => v || 0 },
     { title: "Total Earned", dataIndex: "total_earned", key: "total_earned", render: v => `₹${Number(v || 0).toLocaleString()}` },
     { title: "Pending", dataIndex: "pending_balance", key: "pending_balance", render: v => <span style={{ color: v > 0 ? "#fa8c16" : "inherit" }}>₹{Number(v || 0).toLocaleString()}</span> },
@@ -398,8 +398,8 @@ const ReferralsTab = () => {
   ];
 
   const pendingColumns = [
-    { title: "Therapist", key: "therapist", render: (_, r) => (<div><div style={{ fontWeight: 500 }}>{r.name}</div><div style={{ fontSize: 12, color: "#888" }}>{r.email}</div></div>) },
-    { title: "Pending Balance", dataIndex: "pending_balance", key: "pending_balance", render: v => <strong style={{ color: "#fa8c16" }}>₹{Number(v || 0).toLocaleString()}</strong> },
+    { title: "Therapist", key: "therapist", render: (_, r) => (<div><div style={{ fontWeight: 500 }}>{r.name}</div><div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{r.email}</div></div>) },
+    { title: "Pending Balance", dataIndex: "pending_balance", key: "pending_balance", render: v => <strong style={{ color: "var(--text-primary)" }}>₹{Number(v || 0).toLocaleString()}</strong> },
     { title: "Bank Account", dataIndex: "bank_account", key: "bank_account", render: v => v || "Not provided" },
   ];
 
@@ -451,16 +451,16 @@ const ReferralsTab = () => {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <p style={{ margin: 0, color: "#888", fontSize: 13 }}>Track referrals, earnings, and process payouts</p>
+        <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: 13 }}>Track referrals, earnings, and process payouts</p>
         <Button type="primary" icon={<DollarOutlined />} onClick={() => setPayoutModalOpen(true)} disabled={!pendingPayouts.length}>
           Process Payouts ({pendingPayouts.length})
         </Button>
       </div>
 
       {pendingPayouts.length > 0 && (
-        <div style={{ background: "#fffbe6", border: "1px solid #ffe58f", borderRadius: 4, padding: "12px 16px", marginBottom: 20 }}>
+        <div style={{ background: "color-mix(in srgb, var(--warning) 10%, transparent)", border: "1px solid color-mix(in srgb, var(--warning) 40%, transparent)", borderRadius: 4, padding: "12px 16px", marginBottom: 20 }}>
           <strong>⏳ {pendingPayouts.length} therapists have pending payouts</strong>
-          <span style={{ color: "#888", fontSize: 13, marginLeft: 8 }}>
+          <span style={{ color: "var(--text-tertiary)", fontSize: 13, marginLeft: 8 }}>
             Total: ₹{pendingPayouts.reduce((s, p) => s + (parseFloat(p.pending_balance) || 0), 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
           </span>
         </div>
@@ -489,12 +489,12 @@ const ReferralsTab = () => {
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
               {[
                 { label: "Total Earned", value: `₹${Number(referralDetail.wallet?.total_earned || 0).toLocaleString()}`, color: "#52c41a" },
-                { label: "Pending Balance", value: `₹${Number(referralDetail.wallet?.pending_balance || 0).toLocaleString()}`, color: "#fa8c16" },
-                { label: "Total Paid", value: `₹${Number(referralDetail.wallet?.total_paid || 0).toLocaleString()}`, color: "#1677ff" },
-                { label: "Current Balance", value: `₹${Number(referralDetail.wallet?.balance || 0).toLocaleString()}`, color: "#722ed1" },
+                { label: "Pending Balance", value: `₹${Number(referralDetail.wallet?.pending_balance || 0).toLocaleString()}`, color: "var(--text-primary)" },
+                { label: "Total Paid", value: `₹${Number(referralDetail.wallet?.total_paid || 0).toLocaleString()}`, color: "var(--accent-text)" },
+                { label: "Current Balance", value: `₹${Number(referralDetail.wallet?.balance || 0).toLocaleString()}`, color: "var(--text-primary)" },
               ].map(c => (
-                <div key={c.label} style={{ flex: 1, minWidth: 120, padding: "12px 16px", background: "rgba(0,0,0,0.03)", borderRadius: 4, textAlign: "center" }}>
-                  <div style={{ fontSize: 11, color: "#888" }}>{c.label}</div>
+                <div key={c.label} style={{ flex: 1, minWidth: 120, padding: "12px 16px", background: "var(--background-tertiary)", borderRadius: 4, textAlign: "center" }}>
+                  <div style={{ fontSize: 11, color: "var(--text-tertiary)" }}>{c.label}</div>
                   <div style={{ fontSize: 20, fontWeight: 700, color: c.color }}>{c.value}</div>
                 </div>
               ))}
@@ -509,7 +509,7 @@ const ReferralsTab = () => {
         onCancel={() => { setPayoutModalOpen(false); payoutForm.resetFields(); setSelectedRowKeys([]); }}
         footer={null} width={680}
       >
-        <p style={{ color: "#888", fontSize: 13, marginBottom: 16 }}>
+        <p style={{ color: "var(--text-tertiary)", fontSize: 13, marginBottom: 16 }}>
           Select therapists to process payouts for and enter their bank transfer UTR references.
         </p>
         <Table size="small" rowSelection={{ selectedRowKeys, onChange: keys => setSelectedRowKeys(keys) }}
@@ -564,7 +564,7 @@ const Referrals = () => {
     <div>
       <div style={{ marginBottom: 20 }}>
         <Title level={3} style={{ margin: 0 }}>Referral Program</Title>
-        <p style={{ margin: 0, color: "#888", fontSize: 13 }}>Referrals, payouts and therapist bank accounts</p>
+        <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: 13 }}>Referrals, payouts and therapist bank accounts</p>
       </div>
       <Tabs items={tabItems} defaultActiveKey="referrals" destroyInactiveTabPane={false} />
     </div>

@@ -650,7 +650,7 @@ const Workshops = () => {
               handleEditWorkshop(record);
             }}
             icon={<EditOutlined />}
-            style={{ color: "#1890ff" }}
+            style={{ color: "var(--accent-text)" }}
           >
             Edit
           </Button>

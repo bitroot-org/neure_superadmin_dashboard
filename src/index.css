@@ -46,6 +46,9 @@
   --hover-bg: rgba(14, 159, 110, 0.06);
   --active-bg: rgba(14, 159, 110, 0.10);
   --focus-outline: rgba(14, 159, 110, 0.30);
+
+  /* Accent used for emphasised text (amounts, codes, links) */
+  --accent-text: #0B7D57;
 }
 
 /* Dark Theme Variables */
@@ -90,6 +93,8 @@
   --hover-bg: rgba(255, 255, 255, 0.04);
   --active-bg: rgba(95, 211, 165, 0.12);
   --focus-outline: rgba(95, 211, 165, 0.35);
+
+  --accent-text: #7EE2BA;
 
   --app-bg:
     radial-gradient(1100px 520px at 0% -10%, rgba(95, 211, 165, 0.05), transparent 60%),
