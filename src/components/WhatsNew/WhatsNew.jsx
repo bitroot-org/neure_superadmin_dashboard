@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Modal, Switch, Button } from "antd";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { DotLottieReact, setWasmUrl } from "@lottiefiles/dotlottie-react";
+import wasmUrl from "@lottiefiles/dotlottie-web/dotlottie-player.wasm?url";
+import dayjs from "dayjs";
 import celebration from "../../assets/lottie/celebration.lottie?url";
 import { RELEASE_NOTES } from "../../config/releaseNotes";
 import { WHATS_NEW_DISMISSED_KEY, WHATS_NEW_PENDING_KEY } from "../../utils/storage";
 import styles from "./WhatsNew.module.css";
+
+// Serve the Lottie renderer from our own bundle instead of a public CDN.
+setWasmUrl(wasmUrl);
 
 const shouldShow = () => {
   try {
@@ -21,10 +26,24 @@ const shouldShow = () => {
 const WhatsNew = () => {
   const [open, setOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
+  const lottieRef = useRef(null);
 
   useEffect(() => {
     if (shouldShow()) setOpen(true);
   }, []);
+
+  // The canvas measures itself while the modal is still zooming in (scaled down),
+  // which renders it blurry — re-measure once it's at full size.
+  const resizeLottie = () => {
+    try { lottieRef.current?.resize(); } catch { /* player not ready yet */ }
+  };
+
+  const replay = () => {
+    const player = lottieRef.current;
+    if (!player) return;
+    player.stop();
+    player.play();
+  };
 
   const close = () => {
     try {
@@ -42,17 +61,36 @@ const WhatsNew = () => {
       onCancel={close}
       footer={null}
       centered
-      width={420}
+      width={520}
       className={styles.modal}
       maskClosable={false}
       destroyOnClose
+      afterOpenChange={(isOpen) => { if (isOpen) resizeLottie(); }}
     >
       <div className={styles.hero}>
-        <DotLottieReact src={celebration} autoplay className={styles.lottie} />
+        <DotLottieReact
+          src={celebration}
+          autoplay
+          className={styles.lottie}
+          layout={{ fit: "cover", align: [0.5, 0.5] }}
+          renderConfig={{ autoResize: true, devicePixelRatio: Math.min(window.devicePixelRatio || 1, 3) }}
+          dotLottieRefCallback={(player) => {
+            lottieRef.current = player;
+            player?.addEventListener("load", resizeLottie);
+          }}
+        />
       </div>
 
       <div className={styles.body}>
-        <span className={styles.version}>Version {RELEASE_NOTES.version}</span>
+        <div className={styles.meta}>
+          <span className={styles.version}>v{RELEASE_NOTES.version}</span>
+          {RELEASE_NOTES.date && (
+            <span className={styles.date}>{dayjs(RELEASE_NOTES.date).format("MMM D, YYYY")}</span>
+          )}
+          <button type="button" className={styles.replay} onClick={replay}>
+            Replay
+          </button>
+        </div>
         <h2 className={styles.title}>{RELEASE_NOTES.title}</h2>
         <p className={styles.description}>{RELEASE_NOTES.description}</p>
       </div>
@@ -62,7 +100,7 @@ const WhatsNew = () => {
           <Switch size="small" checked={dontShowAgain} onChange={setDontShowAgain} />
           <span>Don't show this again</span>
         </label>
-        <Button type="primary" onClick={close}>
+        <Button type="primary" size="large" onClick={close}>
           Got it
         </Button>
       </div>
