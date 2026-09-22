@@ -63,8 +63,9 @@ export const Section = ({ title, extra, children, className = "" }) => (
 
 export const Count = ({ children }) => <span className={styles.count}>{children}</span>;
 
-export const Summary = ({ label, value, suffix, meta, children }) => (
+export const Summary = ({ top, label, value, suffix, meta, children }) => (
   <section className={`${styles.section} ${styles.summary}`}>
+    {top}
     {label && <span className={styles.summaryLabel}>{label}</span>}
     <span className={styles.amount}>
       {value}
@@ -169,3 +170,46 @@ export const ListItem = ({ primary, secondary }) => (
 );
 
 export const Note = ({ children }) => <p className={styles.note}>{children}</p>;
+
+// Coupon "ticket": dashed cutout with side notches; click to copy the code.
+export const Coupon = ({ code, caption }) => {
+  const [copied, setCopied] = React.useState(false);
+  const copy = async () => {
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(code);
+      ok = true;
+    } catch {
+      // Clipboard API unavailable or denied — fall back to a hidden textarea.
+      const el = document.createElement("textarea");
+      el.value = code;
+      el.setAttribute("readonly", "");
+      el.style.position = "fixed";
+      el.style.opacity = "0";
+      document.body.appendChild(el);
+      el.select();
+      try { ok = document.execCommand("copy"); } catch { ok = false; }
+      document.body.removeChild(el);
+    }
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
+    }
+  };
+  return (
+    <div className={styles.coupon}>
+      <div className={styles.couponBody}>
+        {caption && <span className={styles.couponCaption}>{caption}</span>}
+        <span className={styles.couponCode}>{code}</span>
+      </div>
+      <button
+        type="button"
+        className={`${styles.couponCopy} ${copied ? styles.couponCopied : ""}`}
+        onClick={copy}
+        aria-label={`Copy code ${code}`}
+      >
+        {copied ? "Copied" : "Copy"}
+      </button>
+    </div>
+  );
+};
