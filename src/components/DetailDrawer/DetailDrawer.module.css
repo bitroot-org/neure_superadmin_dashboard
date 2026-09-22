@@ -343,6 +343,95 @@
   color: var(--text-tertiary);
 }
 
+/* Coupon ticket */
+.coupon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 14px 18px;
+  border: 1.5px dashed color-mix(in srgb, var(--primary) 55%, transparent);
+  border-radius: 6px;
+  background: var(--active-bg);
+}
+
+/* Side notches: circles in the card colour punched over the dashed edge */
+.coupon::before,
+.coupon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: var(--background-secondary);
+  border: 1.5px dashed color-mix(in srgb, var(--primary) 55%, transparent);
+}
+
+.coupon::before {
+  left: -10px;
+  clip-path: inset(0 0 0 50%);
+}
+
+.coupon::after {
+  right: -10px;
+  clip-path: inset(0 50% 0 0);
+}
+
+.couponBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.couponCaption {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+}
+
+.couponCode {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: all;
+}
+
+.couponCopy {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  border-radius: 4px;
+  background: var(--background-secondary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-text);
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.12s ease;
+}
+
+.couponCopy:hover { background: var(--hover-bg); }
+.couponCopy:active { transform: scale(0.96); }
+.couponCopy:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.couponCopied {
+  color: var(--text-inverse);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.couponCopied:hover { background: var(--primary); }
+
 /* Email list (Codes & Promotions) */
 .emailList {
   margin: 0;

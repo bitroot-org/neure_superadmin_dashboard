@@ -17,7 +17,7 @@ import {
   prodeskAddOfferEmails,
 } from "../../services/api";
 import {
-  DetailDrawer, Section, Summary, Field, StatusBadge, Count, Progress, List, ListItem, Note, formatDate,
+  DetailDrawer, Section, Summary, Field, StatusBadge, Count, Progress, List, ListItem, Note, Coupon, formatDate,
 } from "../../components/DetailDrawer/DetailDrawer";
 
 const { Title } = Typography;
@@ -228,7 +228,7 @@ const OffersTab = ({ tags, fetchTags }) => {
 
       {/* Offer detail drawer */}
       <DetailDrawer
-        title={d ? <code style={{ fontWeight: 700 }}>{d.code}</code> : "Offer detail"}
+        title={d ? d.name || "Offer" : "Offer detail"}
         badge={d && (() => {
           const v = validity(d.valid_from, d.valid_till);
           if (!d.is_active) return <StatusBadge tone="pending">Inactive</StatusBadge>;
@@ -248,7 +248,7 @@ const OffersTab = ({ tags, fetchTags }) => {
           return (
             <>
               <Summary
-                label={d.name}
+                top={<Coupon code={d.code} caption="Offer code" />}
                 value={d.is_percent ? `${Number(d.percent_discount)}% off` : d.is_email_restricted ? "Email restricted" : "Open offer"}
                 meta={<>
                   {d.tag_name && <Tag>{d.tag_name}</Tag>}
