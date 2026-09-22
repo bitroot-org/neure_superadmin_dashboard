@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  Card, Row, Col, Table, Tag, Spin, Button, Input, Select,
-  DatePicker, Space, Tabs, Statistic, message,
+  Table, Tag, Button, Input, Select, DatePicker, Space, Tabs, message,
 } from "antd";
 import {
   UserOutlined, StopOutlined, CreditCardOutlined, GiftOutlined,
@@ -27,27 +26,38 @@ const PLAN_COLORS = {
   clinic: "gold",
 };
 
-const StatCard = ({ title, value, icon, color, prefix }) => (
-  <div className={styles.statsBox}>
-    <div className={styles.statTitle}>{title}</div>
-    <div className={styles.statContent}>
-      <div className={styles.statIcon} style={{ color }}>
-        {icon}
-      </div>
-      <div className={styles.statValue}>
-        <CountUp end={value || 0} duration={2} separator="," prefix={prefix} />
-      </div>
+const StatCard = ({ title, value, icon, accent, prefix, index }) => (
+  <div className={styles.statCard} style={{ "--accent": accent, "--i": index }}>
+    <div className={styles.statTop}>
+      <span className={styles.statTitle}>{title}</span>
+      <span className={styles.statIcon}>{icon}</span>
+    </div>
+    <div className={styles.statValue} title={`${prefix || ""}${(value || 0).toLocaleString("en-IN")}`}>
+      <CountUp end={value || 0} duration={1.4} separator="," prefix={prefix} preserveValue />
     </div>
   </div>
 );
 
-const RevenueCard = ({ label, value }) => (
-  <Card size="small" style={{ textAlign: "center", minWidth: 0, overflow: "hidden" }}>
-    <div style={{ fontSize: 12, color: "#888", marginBottom: 4 }}>{label}</div>
-    <div style={{ fontSize: "clamp(14px, 2vw, 20px)", fontWeight: 700, color: "#1677ff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-      ₹<CountUp end={value || 0} duration={2} separator="," />
+const RevenueTile = ({ label, value, featured }) => (
+  <div className={`${styles.revenueTile} ${featured ? styles.revenueFeatured : ""}`}>
+    <span className={styles.revenueLabel}>{label}</span>
+    <span className={styles.revenueValue}>
+      <span className={styles.rupee}>₹</span>
+      <CountUp end={value || 0} duration={1.4} separator="," preserveValue />
+    </span>
+  </div>
+);
+
+const DashboardSkeleton = () => (
+  <div className={styles.container}>
+    <div className={styles.skeletonHeader} />
+    <div className={styles.statsGrid}>
+      {Array.from({ length: 7 }).map((_, i) => (
+        <div key={i} className={`${styles.statCard} ${styles.skeleton}`} style={{ "--i": i }} />
+      ))}
     </div>
-  </Card>
+    <div className={`${styles.panel} ${styles.skeleton}`} style={{ height: 120, marginTop: 28 }} />
+  </div>
 );
 
 const Home = () => {
@@ -77,15 +87,17 @@ const Home = () => {
     fetchDiscontinuedUsers();
   }, []);
 
-  const fetchOverview = async () => {
-    setOverviewLoading(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchOverview = async ({ silent = false } = {}) => {
+    silent ? setRefreshing(true) : setOverviewLoading(true);
     try {
       const res = await prodeskGetOverview();
       setOverview(res?.data || null);
     } catch {
       message.error("Failed to load overview stats");
     } finally {
-      setOverviewLoading(false);
+      silent ? setRefreshing(false) : setOverviewLoading(false);
     }
   };
 
@@ -147,8 +159,8 @@ const Home = () => {
       key: "name",
       render: (_, r) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{r.name}</div>
-          <div style={{ fontSize: 12, color: "#888" }}>{r.email}</div>
+          <div className={styles.cellName}>{r.name}</div>
+          <div className={styles.cellSub}>{r.email}</div>
         </div>
       ),
     },
@@ -194,8 +206,8 @@ const Home = () => {
       key: "name",
       render: (_, r) => (
         <div>
-          <div style={{ fontWeight: 500 }}>{r.name}</div>
-          <div style={{ fontSize: 12, color: "#888" }}>{r.email}</div>
+          <div className={styles.cellName}>{r.name}</div>
+          <div className={styles.cellSub}>{r.email}</div>
         </div>
       ),
     },
@@ -334,91 +346,108 @@ const Home = () => {
     },
   ];
 
-  if (overviewLoading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <Spin size="large" />
-      </div>
-    );
-  }
+  if (overviewLoading) return <DashboardSkeleton />;
+
+  const stats = [
+    { title: "Active Users", value: overview?.active_users, icon: <UserOutlined />, accent: "#52c41a" },
+    { title: "Discontinued", value: overview?.discontinued_users, icon: <StopOutlined />, accent: "#ff4d4f" },
+    { title: "Paid Users", value: overview?.total_paid_users, icon: <CreditCardOutlined />, accent: "#1677ff" },
+    { title: "Free Users", value: overview?.total_free_users, icon: <GiftOutlined />, accent: "#faad14" },
+    { title: "Total Sessions", value: overview?.total_sessions, icon: <CalendarOutlined />, accent: "#722ed1" },
+    { title: "Total Clients", value: overview?.total_clients, icon: <TeamOutlined />, accent: "#13c2c2" },
+    { title: "Total Invoices", value: overview?.total_invoice_amount, icon: <FileTextOutlined />, accent: "#eb2f96", prefix: "₹" },
+  ];
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Business Overview</h1>
-        <h2 className={styles.subtitle}>ProDesk platform metrics</h2>
-      </div>
+      <header className={styles.header}>
+        <h1 className={styles.title}>
+          Dashboard
+          <span className={styles.date}>{dayjs().format("ddd, D MMM YYYY")}</span>
+        </h1>
+        <button
+          type="button"
+          className={`${styles.refresh} ${refreshing ? styles.refreshing : ""}`}
+          onClick={() => {
+            fetchOverview({ silent: true });
+            fetchActiveUsers(activePage, activeSearch, activePlan);
+            fetchDiscontinuedUsers(discPage, discSearch);
+          }}
+          disabled={refreshing}
+          aria-label="Refresh dashboard"
+        >
+          <ReloadOutlined className={styles.refreshIcon} />
+          <span>Refresh</span>
+        </button>
+      </header>
 
       {/* Stat Cards */}
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Platform Statistics</h2>
+      <section className={styles.section}>
         <div className={styles.statsGrid}>
-          <StatCard title="Active Users" value={overview?.active_users} icon={<UserOutlined />} color="#52c41a" />
-          <StatCard title="Discontinued" value={overview?.discontinued_users} icon={<StopOutlined />} color="#ff4d4f" />
-          <StatCard title="Paid Users" value={overview?.total_paid_users} icon={<CreditCardOutlined />} color="#1677ff" />
-          <StatCard title="Free Users" value={overview?.total_free_users} icon={<GiftOutlined />} color="#fa8c16" />
-          <StatCard title="Total Sessions" value={overview?.total_sessions} icon={<CalendarOutlined />} color="#722ed1" />
-          <StatCard title="Total Clients" value={overview?.total_clients} icon={<TeamOutlined />} color="#13c2c2" />
-          <StatCard title="Total Invoices" value={overview?.total_invoice_amount} icon={<FileTextOutlined />} color="#eb2f96" prefix="₹" />
+          {stats.map((st, i) => <StatCard key={st.title} index={i} {...st} />)}
         </div>
-      </div>
+      </section>
 
       {/* Revenue Section */}
-      <div className={styles.section}>
+      <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Revenue</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12, marginBottom: 20 }}>
-          <RevenueCard label="Weekly" value={overview?.revenue?.weekly} />
-          <RevenueCard label="Monthly" value={overview?.revenue?.monthly} />
-          <RevenueCard label="Quarterly" value={overview?.revenue?.quarterly} />
-          <RevenueCard label="Annual" value={overview?.revenue?.annual} />
-        </div>
+        <div className={styles.panel} style={{ "--i": 7 }}>
+          <div className={styles.revenueGrid}>
+            <RevenueTile label="Weekly" value={overview?.revenue?.weekly} />
+            <RevenueTile label="Monthly" value={overview?.revenue?.monthly} />
+            <RevenueTile label="Quarterly" value={overview?.revenue?.quarterly} />
+            <RevenueTile label="Annual" value={overview?.revenue?.annual} featured />
+          </div>
 
-        {/* Custom Date Range */}
-        <Card size="small" title={<span><DollarOutlined style={{ marginRight: 6 }} />Custom Date Range Revenue</span>}>
-          <Space wrap>
-            <RangePicker
-              value={dateRange}
-              onChange={setDateRange}
-              format="YYYY-MM-DD"
-            />
-            <Button
-              type="primary"
-              onClick={fetchRevenue}
-              loading={revenueLoading}
-              disabled={!dateRange}
-            >
-              Get Revenue
-            </Button>
-          </Space>
+          <div className={styles.rangeRow}>
+            <div className={styles.rangeLabel}>
+              <DollarOutlined /> Custom date range
+            </div>
+            <Space wrap>
+              <RangePicker
+                value={dateRange}
+                onChange={setDateRange}
+                format="YYYY-MM-DD"
+              />
+              <Button
+                type="primary"
+                onClick={fetchRevenue}
+                loading={revenueLoading}
+                disabled={!dateRange}
+              >
+                Get Revenue
+              </Button>
+            </Space>
+          </div>
+
           {customRevenue && (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontWeight: 700, fontSize: 18, color: "#1677ff", marginBottom: 12 }}>
-                Total: ₹{customRevenue.total_revenue?.toLocaleString()}
+            <div className={styles.rangeResult}>
+              <div className={styles.rangeTotal}>
+                <span className={styles.rangeTotalLabel}>Total</span>
+                <span className={styles.rangeTotalValue}>₹{customRevenue.total_revenue?.toLocaleString()}</span>
               </div>
               {customRevenue.breakdown?.length > 0 && (
-                <Row gutter={[8, 8]}>
-                  {customRevenue.breakdown.map(b => (
-                    <Col key={b.month} xs={12} sm={8} md={6}>
-                      <Card size="small" style={{ textAlign: "center" }}>
-                        <div style={{ fontSize: 11, color: "#888" }}>{b.month}</div>
-                        <div style={{ fontWeight: 600 }}>₹{b.revenue?.toLocaleString()}</div>
-                      </Card>
-                    </Col>
+                <div className={styles.breakdownGrid}>
+                  {customRevenue.breakdown.map((b, i) => (
+                    <div key={b.month} className={styles.breakdownItem} style={{ "--i": i }}>
+                      <span className={styles.breakdownMonth}>{b.month}</span>
+                      <span className={styles.breakdownValue}>₹{b.revenue?.toLocaleString()}</span>
+                    </div>
                   ))}
-                </Row>
+                </div>
               )}
             </div>
           )}
-        </Card>
-      </div>
+        </div>
+      </section>
 
       {/* Users Tables */}
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>User Details</h2>
-        <Card>
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Users</h2>
+        <div className={`${styles.panel} ${styles.tablePanel}`} style={{ "--i": 8 }}>
           <Tabs items={tabItems} defaultActiveKey="active" />
-        </Card>
-      </div>
+        </div>
+      </section>
     </div>
   );
 };

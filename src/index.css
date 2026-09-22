@@ -1,34 +1,40 @@
 /* Light Theme Variables */
 :root {
-  /* Primary Brand Colors */
-  --primary-dark: #006A71;  /* Deep teal */
-  --primary: #48A6A7;       /* Medium teal/turquoise */
-  --primary-light: #9ACBD0; /* Light teal/aqua */
-  --primary-bg: #F2EFE7;    /* Off-white/cream */
+  /* Primary Brand Colors — emerald, the light counterpart of dark mode's mint */
+  --primary-dark: #0B7D57;  /* Pressed / strong accent */
+  --primary: #0E9F6E;       /* Emerald accent */
+  --primary-light: #34C38F; /* Hover / highlight */
+  --primary-bg: #EEF7F2;    /* Accent-tinted surface */
 
   /* Background Colors */
-  --background-primary: #F2EFE7;    /* Main background */
+  --background-primary: #F4F7F5;    /* Main background */
   --background-secondary: #ffffff;   /* Card/container background */
-  --background-tertiary: #f9f9f9;   /* Subtle background */
+  --background-tertiary: #F7F9F8;   /* Subtle background */
   --background-elevated: #ffffff;    /* Elevated surfaces */
   --background-overlay: rgba(255, 255, 255, 0.9); /* Modal overlays */
 
+  /* App-wide background: soft neutral with faint emerald light in the corners */
+  --app-bg:
+    radial-gradient(1200px 600px at 0% -10%, rgba(14, 159, 110, 0.11), transparent 60%),
+    radial-gradient(1000px 520px at 100% -10%, rgba(52, 195, 143, 0.08), transparent 60%),
+    linear-gradient(180deg, #F9FBFA 0%, #F2F5F3 100%);
+
   /* Text Colors */
-  --text-primary: #333333;          /* Primary text */
-  --text-secondary: #666666;        /* Secondary text */
-  --text-tertiary: #999999;         /* Muted text */
+  --text-primary: #1F2328;          /* Primary text */
+  --text-secondary: #5B6560;        /* Secondary text */
+  --text-tertiary: #8A938E;         /* Muted text */
   --text-inverse: #ffffff;          /* Text on dark backgrounds */
-  --text-heading: #006A71;          /* Headings */
+  --text-heading: #1F2328;          /* Headings — neutral, not brand-coloured */
 
   /* Border Colors */
-  --border-primary: rgba(154, 203, 208, 0.2);  /* Primary borders */
-  --border-secondary: #e8e8e8;                 /* Secondary borders */
-  --border-light: #f0f0f0;                     /* Light borders */
+  --border-primary: rgba(14, 159, 110, 0.16);  /* Accent borders */
+  --border-secondary: #E3E8E5;                 /* Secondary borders */
+  --border-light: #EBEFED;                     /* Light borders */
 
   /* Shadow Colors */
-  --shadow-primary: rgba(0, 106, 113, 0.1);
-  --shadow-secondary: rgba(0, 106, 113, 0.08);
-  --shadow-light: rgba(0, 106, 113, 0.04);
+  --shadow-primary: rgba(16, 24, 20, 0.10);
+  --shadow-secondary: rgba(16, 24, 20, 0.06);
+  --shadow-light: rgba(16, 24, 20, 0.04);
 
   /* Status Colors */
   --success: #52c41a;
@@ -37,53 +43,57 @@
   --info: #1677ff;
 
   /* Interactive States */
-  --hover-bg: rgba(72, 166, 167, 0.1);
-  --active-bg: rgba(72, 166, 167, 0.2);
-  --focus-outline: rgba(72, 166, 167, 0.4);
+  --hover-bg: rgba(14, 159, 110, 0.06);
+  --active-bg: rgba(14, 159, 110, 0.10);
+  --focus-outline: rgba(14, 159, 110, 0.30);
 }
 
 /* Dark Theme Variables */
 [data-theme="dark"] {
-  /* Primary Brand Colors - Adjusted for dark mode */
-  --primary-dark: #4ABBC2;          /* Lighter teal for better contrast */
-  --primary: #6BC9CE;               /* Adjusted primary */
-  --primary-light: #8DD5D9;         /* Lighter variant */
-  --primary-bg: #1a1a1a;            /* Dark background */
+  /* Primary Brand Colors — near-black with subtle mint hints */
+  --primary-dark: #46B98C;          /* Pressed / strong accent */
+  --primary: #5FD3A5;               /* Mint accent */
+  --primary-light: #7EE2BA;         /* Hover / link accent */
+  --primary-bg: #0C100E;            /* Accent-tinted surface */
 
   /* Background Colors */
-  --background-primary: #0f0f0f;    /* Main dark background */
-  --background-secondary: #1a1a1a;  /* Card/container background */
-  --background-tertiary: #262626;   /* Subtle background */
-  --background-elevated: #2a2a2a;   /* Elevated surfaces */
-  --background-overlay: rgba(0, 0, 0, 0.8); /* Modal overlays */
+  --background-primary: #060807;    /* Main dark background */
+  --background-secondary: #0C100E;  /* Card/container background */
+  --background-tertiary: #121815;   /* Subtle background */
+  --background-elevated: #151C18;   /* Elevated surfaces */
+  --background-overlay: rgba(0, 0, 0, 0.72); /* Modal overlays */
 
   /* Text Colors */
-  --text-primary: #ffffff;          /* Primary text */
-  --text-secondary: #d9d9d9;        /* Secondary text */
-  --text-tertiary: #8c8c8c;         /* Muted text */
-  --text-inverse: #000000;          /* Text on light backgrounds */
-  --text-heading: #4ABBC2;          /* Headings */
+  --text-primary: #EEF3F0;          /* Primary text */
+  --text-secondary: #B4BDB8;        /* Secondary text */
+  --text-tertiary: #7C8681;         /* Muted text */
+  --text-inverse: #04110B;          /* Text on accent backgrounds */
+  --text-heading: #EEF3F0;          /* Headings */
 
   /* Border Colors */
-  --border-primary: rgba(75, 187, 194, 0.3);  /* Primary borders */
-  --border-secondary: #404040;                 /* Secondary borders */
-  --border-light: #303030;                     /* Light borders */
+  --border-primary: rgba(95, 211, 165, 0.18); /* Accent borders */
+  --border-secondary: #212A26;                /* Secondary borders */
+  --border-light: #18201C;                    /* Light borders */
 
   /* Shadow Colors */
-  --shadow-primary: rgba(0, 0, 0, 0.3);
-  --shadow-secondary: rgba(0, 0, 0, 0.2);
-  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-primary: rgba(0, 0, 0, 0.5);
+  --shadow-secondary: rgba(0, 0, 0, 0.4);
+  --shadow-light: rgba(0, 0, 0, 0.25);
 
   /* Status Colors - Adjusted for dark mode */
-  --success: #73d13d;
-  --warning: #ffc53d;
-  --error: #ff7875;
-  --info: #40a9ff;
+  --success: #5FD3A5;
+  --warning: #F5C451;
+  --error: #FF7B7B;
+  --info: #7CB7FF;
 
   /* Interactive States */
-  --hover-bg: rgba(75, 187, 194, 0.15);
-  --active-bg: rgba(75, 187, 194, 0.25);
-  --focus-outline: rgba(75, 187, 194, 0.5);
+  --hover-bg: rgba(255, 255, 255, 0.04);
+  --active-bg: rgba(95, 211, 165, 0.12);
+  --focus-outline: rgba(95, 211, 165, 0.35);
+
+  --app-bg:
+    radial-gradient(1100px 520px at 0% -10%, rgba(95, 211, 165, 0.05), transparent 60%),
+    linear-gradient(180deg, #070908 0%, #050706 100%);
 }
 
 /* Legacy variables for backward compatibility */
@@ -98,6 +108,8 @@ body {
   margin: 0;
   padding: 0;
   background-color: var(--background-primary);
+  background-image: var(--app-bg);
+  background-attachment: fixed;
   color: var(--text-primary);
   user-select: none;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -180,38 +192,38 @@ h1, h2, h3, h4, h5,
 /* Menu items - Light theme */
 .ant-menu-item-selected,
 .ant-pro-menu-item-selected {
-  background-color: var(--primary) !important;
-  color: var(--text-inverse) !important;
+  background-color: var(--active-bg) !important;
+  color: var(--primary-dark) !important;
 }
 
 .ant-menu-item:hover,
 .ant-pro-menu-item:hover {
-  background-color: var(--primary) !important;
-  color: var(--text-inverse) !important;
+  background-color: var(--hover-bg) !important;
+  color: var(--text-primary) !important;
 }
 
 /* Dark theme menu adjustments */
 [data-theme="dark"] .ant-menu-item-selected,
 [data-theme="dark"] .ant-pro-menu-item-selected {
-  background-color: var(--primary-dark) !important;
-  color: var(--text-inverse) !important;
+  background-color: var(--active-bg) !important;
+  color: var(--primary-light) !important;
 }
 
 [data-theme="dark"] .ant-menu-item:hover,
 [data-theme="dark"] .ant-pro-menu-item:hover {
-  background-color: var(--primary-dark) !important;
-  color: var(--text-inverse) !important;
+  background-color: var(--hover-bg) !important;
+  color: var(--text-primary) !important;
 }
 
 /* Ensure these styles are applied globally */
 body .ant-menu-item-selected,
 body .ant-pro-menu-item-selected {
-  background-color: var(--primary) !important;
+  background-color: var(--active-bg) !important;
 }
 
 [data-theme="dark"] body .ant-menu-item-selected,
 [data-theme="dark"] body .ant-pro-menu-item-selected {
-  background-color: var(--primary-dark) !important;
+  background-color: var(--active-bg) !important;
 }
 
 /* Progress bars and other components */
@@ -301,4 +313,25 @@ body .ant-pro-menu-item-selected {
 
 .ant-table-wrapper table {
   outline: none !important;
+}
+
+/* Let the app-wide gradient show through the layout shells */
+.ant-pro-layout .ant-layout,
+.ant-pro-layout .ant-pro-layout-container,
+.ant-pro-layout-bg-list {
+  background: transparent !important;
+}
+
+.ant-pro-layout-bg-list { display: none !important; }
+
+/* Sidebar: frosted white panel in light mode */
+.ant-pro-sider {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border-right: 1px solid var(--border-light) !important;
+}
+
+[data-theme="dark"] .ant-pro-sider {
+  background: rgba(10, 13, 11, 0.8) !important;
 }

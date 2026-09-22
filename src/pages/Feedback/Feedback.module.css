@@ -1,6 +1,6 @@
 .container {
   padding: 24px;
-  background-color: var(--background-primary);
+  background-color: transparent;
   min-height: 100vh;
   transition: background-color 0.3s ease;
 }
@@ -46,7 +46,7 @@
 .tableContainer {
   overflow-x: auto;
   background-color: var(--background-secondary);
-  border-radius: 12px;
+  border-radius: 6px;
   box-shadow: var(--shadow-secondary);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -63,7 +63,7 @@
 .feedbackDescription {
   padding: 16px;
   background-color: var(--background-tertiary);
-  border-radius: 4px;
+  border-radius: 2px;
   border: 1px solid var(--border-secondary);
   margin-top: 8px;
   white-space: pre-wrap;

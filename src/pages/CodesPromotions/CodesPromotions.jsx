@@ -648,7 +648,7 @@ const EmailsTab = () => {
           </Select>
         </div>
 
-        <div style={{ background: "rgba(22,119,255,0.04)", border: "1px solid #1677ff22", borderRadius: 8, padding: "12px 16px", marginBottom: 20 }}>
+        <div style={{ background: "rgba(22,119,255,0.04)", border: "1px solid #1677ff22", borderRadius: 4, padding: "12px 16px", marginBottom: 20 }}>
           <div style={{ fontWeight: 600, marginBottom: 8 }}>CSV Format Instructions</div>
           <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: "#555", lineHeight: 1.8 }}>
             <li>Upload a CSV with <strong>one email per row</strong> under the column header <code>"email"</code>.</li>
@@ -662,7 +662,7 @@ const EmailsTab = () => {
             </a>
           </div>
         </div>
-        <div style={{ background: "#f6f8fa", border: "1px solid #e8e8e8", borderRadius: 6, padding: "10px 14px", fontFamily: "monospace", fontSize: 12, marginBottom: 20, color: "#444" }}>
+        <div style={{ background: "#f6f8fa", border: "1px solid #e8e8e8", borderRadius: 3, padding: "10px 14px", fontFamily: "monospace", fontSize: 12, marginBottom: 20, color: "#444" }}>
           <div style={{ color: "#1677ff", fontWeight: 600 }}>email</div>
           <div>varun@gmail.com</div><div>yash@gmail.com</div><div>abc@gmail.com</div>
         </div>

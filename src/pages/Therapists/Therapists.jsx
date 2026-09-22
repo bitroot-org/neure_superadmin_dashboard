@@ -453,7 +453,7 @@ const Therapists = () => {
             ].map(({ label, value, field }) => (
               <div key={field} style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                background: "rgba(0,0,0,0.04)", borderRadius: 8, padding: "10px 14px",
+                background: "rgba(0,0,0,0.04)", borderRadius: 4, padding: "10px 14px",
               }}>
                 <div>
                   <div style={{ fontSize: 11, color: "#888", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>

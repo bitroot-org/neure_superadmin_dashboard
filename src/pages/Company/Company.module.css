@@ -1,7 +1,7 @@
 .container {
   padding: 24px;
   width: 100%;
-  background-color: var(--background);
+  background-color: transparent;
 }
 
 .header {
@@ -29,7 +29,7 @@
 
 .statusBadge {
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 2px;
   font-size: 12px;
   font-weight: 500;
 }
@@ -66,7 +66,7 @@
   margin-bottom: 24px;
   padding: 16px;
   background-color: #f5f5f5;
-  border-radius: 4px;
+  border-radius: 2px;
   max-height: 300px;
   overflow-y: auto;
 }
@@ -98,7 +98,7 @@
 
 .metricCard {
   background-color: #fff;
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 106, 113, 0.08);
   border: 1px solid rgba(154, 203, 208, 0.2);
@@ -131,7 +131,7 @@
 
 .chartBox {
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -142,7 +142,7 @@
   justify-content: center;
   align-items: center;
   background-color: #f9f9f9;
-  border-radius: 4px;
+  border-radius: 2px;
   position: relative;
 }
 
@@ -159,7 +159,7 @@
 .dummyLineChartBar, .dummyBarChartBar {
   width: 20px;
   background-color: #1890ff;
-  border-radius: 4px 4px 0 0;
+  border-radius: 2px 2px 0 0;
   transition: height 0.3s ease;
 }
 
@@ -213,14 +213,14 @@
   flex: 1;
   height: 20px;
   background-color: #f0f0f0;
-  border-radius: 4px;
+  border-radius: 2px;
   position: relative;
 }
 
 .dummyHorizontalBarChartBar {
   height: 100%;
   background-color: #722ed1;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 .dummyHorizontalBarChartValue {

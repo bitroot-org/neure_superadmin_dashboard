@@ -1,6 +1,6 @@
 .container {
   padding: 24px;
-  background-color: var(--background);
+  background-color: transparent;
   min-height: 100vh;
 }
 
@@ -32,7 +32,7 @@
 .summaryCard,
 .chartsCard,
 .chartCard {
-  border-radius: 12px;
+  border-radius: 6px;
   box-shadow: 0 1px 2px rgba(0, 106, 113, 0.04),
               0 2px 4px rgba(0, 106, 113, 0.04),
               0 4px 8px rgba(0, 106, 113, 0.04);
@@ -72,12 +72,12 @@
 
 ::-webkit-scrollbar-track {
   background: var(--background);
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--primary-light);
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -101,6 +101,6 @@
   .summaryCard,
   .chartsCard,
   .chartCard {
-    border-radius: 10px;
+    border-radius: 5px;
   }
 }

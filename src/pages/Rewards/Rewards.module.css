@@ -27,7 +27,7 @@
 /* Table styles */
 :global(.ant-table-wrapper) {
   background: white;
-  border-radius: 12px;
+  border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 106, 113, 0.08);
   border: 1px solid rgba(154, 203, 208, 0.2);
 }
@@ -58,7 +58,7 @@
 
 :global(.ant-input),
 :global(.ant-input-textarea) {
-  border-radius: 8px !important;
+  border-radius: 4px !important;
   border-color: rgba(154, 203, 208, 0.4) !important;
 }
 

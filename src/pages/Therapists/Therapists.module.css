@@ -1,6 +1,6 @@
 .container {
   padding: 24px;
-  background-color: var(--background);
+  background-color: transparent;
 }
 
 .header {
@@ -26,7 +26,7 @@
 
 .tableContainer {
   background-color: #ffffff;
-  border-radius: 12px;
+  border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 106, 113, 0.08);
   border: 1px solid rgba(154, 203, 208, 0.2);
 }
@@ -50,7 +50,7 @@
   margin-bottom: 24px;
   padding: 24px;
   border: 2px dashed #d9d9d9;
-  border-radius: 8px;
+  border-radius: 4px;
   background-color: #fafafa;
   text-align: center;
 }

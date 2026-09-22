@@ -110,7 +110,7 @@
 .card {
   position: relative;
   padding: 36px 32px 32px;
-  border-radius: 24px;
+  border-radius: 12px;
   overflow: hidden;
   background: linear-gradient(155deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.025) 55%, rgba(110, 231, 183, 0.025) 100%);
   backdrop-filter: blur(22px) saturate(120%);
@@ -188,7 +188,7 @@
   place-items: center;
   width: 38px;
   height: 38px;
-  border-radius: 12px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.05);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
 }
@@ -197,7 +197,7 @@
   content: '';
   position: absolute;
   inset: -6px;
-  border-radius: 16px;
+  border-radius: 8px;
   background: radial-gradient(circle, rgba(110, 231, 183, 0.14), transparent 70%);
   animation: pulse 3.2s ease-in-out infinite;
   z-index: -1;
@@ -263,7 +263,7 @@
   display: flex;
   align-items: center;
   height: 56px;
-  border-radius: 14px;
+  border-radius: 7px;
   background: rgba(0, 0, 0, 0.28);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   cursor: text;
@@ -353,7 +353,7 @@
   width: 38px;
   height: 38px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 5px;
   background: transparent;
   color: var(--text-faint);
   font-size: 16px;
@@ -415,7 +415,7 @@
 
 .link:hover { color: var(--mint) !important; }
 .link:hover::after { transform: scaleX(1); transform-origin: left; }
-.link:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; border-radius: 4px; }
+.link:focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; border-radius: 2px; }
 
 /* ── Submit button ─────────────────────────────────────────────────────── */
 
@@ -425,7 +425,7 @@
   place-items: center;
   height: 54px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 7px;
   overflow: hidden;
   cursor: pointer;
   color: #07140f;
@@ -564,7 +564,7 @@
 /* ── Small screens ─────────────────────────────────────────────────────── */
 
 @media (max-width: 480px) {
-  .card { padding: 28px 22px 24px; border-radius: 20px; }
+  .card { padding: 28px 22px 24px; border-radius: 10px; }
   .title { font-size: 26px; }
   .brandTag { display: none; }
 }

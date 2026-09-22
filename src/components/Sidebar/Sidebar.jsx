@@ -165,7 +165,11 @@ const Sidebar = () => {
     <ProLayout
       title="Neure"
       menuDataRender={() => menuData}
-      logo={neurelogo}
+      logo={
+        <span className={styles.logoSquircle}>
+          <img src={neurelogo} alt="Neure" />
+        </span>
+      }
       menuItemRender={(item, dom) => {
         // For theme toggle item, render the ThemeToggle component
         if (item.key === "theme-toggle") {
@@ -226,7 +230,7 @@ const Sidebar = () => {
         style={{
           padding: "24px",
           minHeight: "100vh",
-          background: "var(--background)",
+          background: "transparent",
         }}
       >
         <Outlet />

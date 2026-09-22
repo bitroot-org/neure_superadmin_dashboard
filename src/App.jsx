@@ -85,6 +85,18 @@ const ThemedApp = () => {
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [isFirstTimeLogin, setIsFirstTimeLogin] = useState(false);
 
+  // Static calls (Modal.confirm, message.*) render outside the React tree and
+  // can't see the ConfigProvider below — wrap them so they follow the theme.
+  useEffect(() => {
+    ConfigProvider.config({
+      holderRender: (children) => (
+        <ConfigProvider locale={enUS} theme={getThemeConfig(theme)}>
+          {children}
+        </ConfigProvider>
+      ),
+    });
+  }, [theme]);
+
   useEffect(() => {
     // Check if user is logged in and if it's their first login
     const isFirstLogin = localStorage.getItem("isFirstLogin") === "true";

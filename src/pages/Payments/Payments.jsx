@@ -249,7 +249,7 @@ const Payments = () => {
             {/* Amount + status hero */}
             <div style={{
               textAlign: "center", padding: "20px 16px", marginBottom: 20,
-              background: "rgba(0,0,0,0.03)", borderRadius: 12,
+              background: "rgba(0,0,0,0.03)", borderRadius: 6,
             }}>
               <div style={{ fontSize: 32, fontWeight: 800, color: d.status === "captured" ? "#52c41a" : d.status === "failed" ? "#ff4d4f" : "#1677ff" }}>
                 ₹{Number(d.amount || 0).toLocaleString()}
@@ -261,7 +261,7 @@ const Payments = () => {
             </div>
 
             {/* Payment Info */}
-            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 10, padding: "14px 16px", marginBottom: 20 }}>
+            <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 5, padding: "14px 16px", marginBottom: 20 }}>
               <div style={{ fontWeight: 600, fontSize: 12, color: "#555", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>Payment Info</div>
               <InfoRow label="Therapist" value={d.therapist_name} />
               <InfoRow label="Email" value={d.email} />

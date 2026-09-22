@@ -31,14 +31,14 @@ const InfoRow = ({ label, value }) => (
 );
 
 const SectionCard = ({ title, children }) => (
-  <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 10, padding: "14px 16px", marginBottom: 16 }}>
+  <div style={{ background: "rgba(0,0,0,0.02)", borderRadius: 5, padding: "14px 16px", marginBottom: 16 }}>
     <div style={{ fontWeight: 600, fontSize: 13, color: "#555", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.05em" }}>{title}</div>
     {children}
   </div>
 );
 
 const StatPill = ({ label, value, color }) => (
-  <div style={{ flex: 1, textAlign: "center", padding: "10px 8px", background: "rgba(0,0,0,0.03)", borderRadius: 8 }}>
+  <div style={{ flex: 1, textAlign: "center", padding: "10px 8px", background: "rgba(0,0,0,0.03)", borderRadius: 4 }}>
     <div style={{ fontSize: 18, fontWeight: 700, color: color || "inherit" }}>{value}</div>
     <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>{label}</div>
   </div>
@@ -619,7 +619,7 @@ const ProDeskTherapists = () => {
             ].map(({ label, value, field }) => (
               <div key={field} style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                background: "rgba(0,0,0,0.04)", borderRadius: 8, padding: "10px 14px",
+                background: "rgba(0,0,0,0.04)", borderRadius: 4, padding: "10px 14px",
               }}>
                 <div>
                   <div style={{ fontSize: 11, color: "#888", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
