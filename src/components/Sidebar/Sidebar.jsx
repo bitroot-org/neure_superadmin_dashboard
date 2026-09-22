@@ -132,13 +132,20 @@ const Sidebar = () => {
 
   return (
     <ProLayout
-      title="Neure"
+      title={
+        <span className={styles.brand}>
+          <span className={styles.brandName}>ProDesk</span>
+          <span className={styles.brandBy}>by Neure</span>
+        </span>
+      }
       menuDataRender={() => menuData}
       logo={
         <span className={styles.logoSquircle}>
           <img src={neurelogo} alt="Neure" />
         </span>
       }
+      // The sidebar title is JSX, so give the browser tab a plain string ("<Page> - ProDesk").
+      pageTitleRender={(_, __, info) => (info?.pageName ? `${info.pageName} - ProDesk` : "ProDesk")}
       menuFooterRender={(props) => (
         <ProfileCard collapsed={props?.collapsed} onLogout={handleLogout} />
       )}

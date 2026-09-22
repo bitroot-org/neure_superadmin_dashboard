@@ -49,7 +49,7 @@ const AccountsDeactivation = () => {
       render: (_, r) => (
         <div>
           <div style={{ fontWeight: 500 }}>{r.name}</div>
-          <div style={{ fontSize: 12, color: "#888" }}>{r.email}</div>
+          <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>{r.email}</div>
         </div>
       ),
     },
@@ -97,7 +97,7 @@ const AccountsDeactivation = () => {
     <div>
       <div style={{ marginBottom: 20 }}>
         <Title level={3} style={{ margin: 0 }}>Accounts Deactivated</Title>
-        <p style={{ margin: 0, color: "#888", fontSize: 13 }}>
+        <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: 13 }}>
           ProDesk psychologists who have discontinued their subscription
         </p>
       </div>

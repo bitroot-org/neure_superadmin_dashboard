@@ -811,7 +811,7 @@ const Company = () => {
                             <VideoCameraOutlined
                               style={{
                                 fontSize: 36,
-                                color: "#1890ff",
+                                color: "var(--accent-text)",
                                 cursor: "pointer",
                               }}
                             />

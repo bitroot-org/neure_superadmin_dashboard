@@ -256,7 +256,7 @@ const ActivityHistory = () => {
         <span style={{ whiteSpace: 'nowrap' }}>
           {dayjs(date).format("MMM D, YYYY")}
           <br />
-          <span style={{ color: '#8c8c8c', fontSize: '12px' }}>
+          <span style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>
             {dayjs(date).format("hh:mm A")}
           </span>
         </span>

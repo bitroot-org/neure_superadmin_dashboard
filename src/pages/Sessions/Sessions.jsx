@@ -127,9 +127,9 @@ const Sessions = () => {
       key: "has_note",
       render: (_, r) => r.has_note ? (
         <Tooltip title={r.note_preview || "Session note available"}>
-          <FileTextOutlined style={{ color: "#1677ff", fontSize: 16 }} />
+          <FileTextOutlined style={{ color: "var(--accent-text)", fontSize: 16 }} />
         </Tooltip>
-      ) : <span style={{ color: "#ccc" }}>—</span>,
+      ) : <span style={{ color: "var(--text-quaternary, var(--text-tertiary))" }}>—</span>,
     },
   ];
 
@@ -137,7 +137,7 @@ const Sessions = () => {
     <div>
       <div style={{ marginBottom: 20 }}>
         <Title level={3} style={{ margin: 0 }}>Session Details</Title>
-        <p style={{ margin: 0, color: "#888", fontSize: 13 }}>
+        <p style={{ margin: 0, color: "var(--text-tertiary)", fontSize: 13 }}>
           All sessions across all ProDesk psychologists
         </p>
       </div>

@@ -30,7 +30,7 @@ import {
 
 const TYPE_ICONS = {
   PDF: <FileTextOutlined style={{ color: "#ff4d4f" }} />,
-  Worksheet: <FileDoneOutlined style={{ color: "#1890ff" }} />,
+  Worksheet: <FileDoneOutlined style={{ color: "var(--accent-text)" }} />,
   Audio: <AudioOutlined style={{ color: "#52c41a" }} />,
 };
 
@@ -157,7 +157,7 @@ const TherapistResources = () => {
       title: "Category",
       dataIndex: "category",
       key: "category",
-      render: (cat) => cat || <span style={{ color: "#999" }}>—</span>,
+      render: (cat) => cat || <span style={{ color: "var(--text-tertiary)" }}>—</span>,
     },
     {
       title: "Size",
@@ -193,7 +193,7 @@ const TherapistResources = () => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Therapist Resources</h1>
-      <p style={{ color: "#888", marginBottom: 16 }}>
+      <p style={{ color: "var(--text-tertiary)", marginBottom: 16 }}>
         Resources uploaded here appear in every therapist's <strong>Pre-loaded library</strong> in ProDesk.
       </p>
 

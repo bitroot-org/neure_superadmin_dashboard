@@ -104,7 +104,7 @@ const ConsentLogs = () => {
         <span>
           {record.therapist_name && <strong>{record.therapist_name}</strong>}
           {record.therapist_name && <br />}
-          <span style={{ color: "#8c8c8c" }}>{record.email || "—"}</span>
+          <span style={{ color: "var(--text-tertiary)" }}>{record.email || "—"}</span>
         </span>
       ),
     },
@@ -133,7 +133,7 @@ const ConsentLogs = () => {
         <span style={{ whiteSpace: "nowrap" }}>
           {dayjs(date).format("MMM D, YYYY")}
           <br />
-          <span style={{ color: "#8c8c8c", fontSize: 12 }}>{dayjs(date).format("hh:mm A")}</span>
+          <span style={{ color: "var(--text-tertiary)", fontSize: 12 }}>{dayjs(date).format("hh:mm A")}</span>
         </span>
       ),
     },
