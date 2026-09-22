@@ -6,7 +6,7 @@
 .title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--primary-dark);
+  color: var(--text-heading);
   margin-bottom: 24px;
 }
 
@@ -26,7 +26,7 @@
 }
 
 .tableContainer {
-  background-color: #ffffff;
+  background-color: var(--background-secondary);
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 106, 113, 0.08);
   border: 1px solid rgba(154, 203, 208, 0.2);
@@ -86,7 +86,7 @@
 }
 
 :global(.ant-upload-drag) {
-  background: #ffffff !important;
+  background: var(--background-secondary) !important;
   border: 1px solid #d9d9d9 !important;
 }
 

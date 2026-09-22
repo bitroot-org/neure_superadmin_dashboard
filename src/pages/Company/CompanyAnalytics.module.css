@@ -28,7 +28,7 @@
 
 .title {
   margin: 0 !important;
-  color: var(--primary-dark);
+  color: var(--text-heading);
   font-weight: 600 !important;
   line-height: 1.2;
   word-break: normal;
@@ -326,7 +326,7 @@
 }
 
 .metricCard {
-  background-color: #fff;
+  background-color: var(--background-secondary);
   border-radius: 6px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 106, 113, 0.08);
@@ -359,7 +359,7 @@
 }
 
 .chartBox {
-  background-color: #fff;
+  background-color: var(--background-secondary);
   border-radius: 6px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 106, 113, 0.08);
@@ -377,7 +377,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f9f9f9;
+  background-color: var(--background-tertiary);
   border-radius: 2px;
   position: relative;
 }

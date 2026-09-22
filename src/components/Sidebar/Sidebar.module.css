@@ -152,3 +152,24 @@
   align-items: center;
   height: 40px;
 }
+
+/* ── Collapsible sections ─────────────────────────────────────────── */
+:global(.ant-pro-sider .ant-menu-sub.ant-menu-inline) {
+  background: transparent !important;
+}
+
+:global(.ant-pro-sider .ant-menu-sub .ant-menu-item) {
+  height: 34px !important;
+  line-height: 34px !important;
+  margin-block: 1px !important;
+  font-size: 13px;
+}
+
+/* Section title turns accent when one of its pages is active */
+:global(.ant-pro-sider .ant-menu-submenu-selected > .ant-menu-submenu-title) {
+  color: #0B7D57 !important;
+}
+
+:global([data-theme="dark"] .ant-pro-sider .ant-menu-submenu-selected > .ant-menu-submenu-title) {
+  color: #7EE2BA !important;
+}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ProLayout } from "@ant-design/pro-layout";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -20,10 +20,16 @@ import {
   TransactionOutlined,
   BellOutlined,
   ToolOutlined,
+  TeamOutlined,
+  WalletOutlined,
+  CustomerServiceOutlined,
+  ControlOutlined,
 } from "@ant-design/icons";
 import { Modal } from "antd"; // Import Modal for confirmation dialog
 import neurelogo from "../../assets/darkneurelogo.png";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import WhatsNew from "../WhatsNew/WhatsNew";
+import { clearSessionStorage } from "../../utils/storage";
 import styles from './Sidebar.module.css';
 
 const Sidebar = () => {
@@ -47,8 +53,8 @@ const Sidebar = () => {
       cancelText: 'No',
       onOk: () => {
         console.log("Logout confirmed");
-        // Clear all items from localStorage
-        localStorage.clear();
+        // Clear session data (keeps preferences like "Don't show this again")
+        clearSessionStorage();
         // Redirect to login page
         navigate('/login');
       },
@@ -64,6 +70,7 @@ const Sidebar = () => {
   // Define selected keys based on current path
   const selectedKeys = [currentPath];
   
+  // Leaves keep their real routes; groups use a "/section/*" key that is never navigated to.
   const menuData = [
     {
       path: "/home",
@@ -71,81 +78,49 @@ const Sidebar = () => {
       icon: <HomeOutlined />,
     },
     {
-      path: "/prodesk-therapists",
+      path: "/section/therapists",
       name: "Therapists",
-      icon: <SolutionOutlined />,
+      icon: <TeamOutlined />,
+      children: [
+        { path: "/prodesk-therapists", name: "Therapists", icon: <SolutionOutlined /> },
+        { path: "/therapist-resources", name: "Therapist Resources", icon: <MedicineBoxOutlined /> },
+        { path: "/consent-logs", name: "Consent Logs", icon: <SafetyCertificateOutlined /> },
+        { path: "/accountsDeactivation", name: "Accounts Deactivated", icon: <StopOutlined /> },
+        /* Session Details entry hidden per request, keep for later reuse
+        { path: "/sessions", name: "Session Details", icon: <CalendarOutlined /> },
+        */
+      ],
     },
     {
-      path: "/prodesk-notifications",
-      name: "Prodesk Notifications",
-      icon: <BellOutlined />,
+      path: "/section/billing",
+      name: "Billing",
+      icon: <WalletOutlined />,
+      children: [
+        { path: "/subscriptions", name: "Subscriptions", icon: <CreditCardOutlined /> },
+        { path: "/payments", name: "Payments", icon: <TransactionOutlined /> },
+        { path: "/codes-promotions", name: "Codes & Promotions", icon: <TagsOutlined /> },
+        { path: "/referrals", name: "Referral Program", icon: <GiftOutlined /> },
+      ],
     },
     {
-      path: "/prodesk-maintenance",
-      name: "Maintenance Mode",
-      icon: <ToolOutlined />,
+      path: "/section/support",
+      name: "Support",
+      icon: <CustomerServiceOutlined />,
+      children: [
+        { path: "/feedback", name: "Feedback", icon: <CommentOutlined /> },
+        { path: "/faq", name: "FAQ", icon: <QuestionCircleOutlined /> },
+        { path: "/prodesk-notifications", name: "Prodesk Notifications", icon: <BellOutlined /> },
+      ],
     },
     {
-      path: "/therapist-resources",
-      name: "Therapist Resources",
-      icon: <MedicineBoxOutlined />,
-    },
-    /* Session Details entry hidden per request, keep for later reuse
-    {
-      path: "/sessions",
-      name: "Session Details",
-      icon: <CalendarOutlined />,
-    },
-    */
-    {
-      path: "/consent-logs",
-      name: "Consent Logs",
-      icon: <SafetyCertificateOutlined />,
-    },
-    {
-      path: "/subscriptions",
-      name: "Subscriptions",
-      icon: <CreditCardOutlined />,
-    },
-    {
-      path: "/payments",
-      name: "Payments",
-      icon: <TransactionOutlined />,
-    },
-    {
-      path: "/feedback",
-      name: "Feedback",
-      icon: <CommentOutlined />,
-    },
-    {
-      path: "/faq",
-      name: "FAQ",
-      icon: <QuestionCircleOutlined />,
-    },
-    {
-      path: "/codes-promotions",
-      name: "Codes & Promotions",
-      icon: <TagsOutlined />,
-    },
-    {
-      path: "/referrals",
-      name: "Referral Program",
-      icon: <GiftOutlined />,
-    },
-    {
-      path: "/accountsDeactivation",
-      name: "Accounts Deactivated",
-      icon: <StopOutlined />,
-    },
-    {
-      path: "/superadmins",
-      name: "Superadmins",
-      icon: <UserSwitchOutlined />,
-    },
-    {
-      path: "/activitylog",
-      name: "Activity Logs",
-      icon: <HistoryOutlined />,
+      path: "/section/system",
+      name: "System",
+      icon: <ControlOutlined />,
+      children: [
+        { path: "/prodesk-maintenance", name: "Maintenance Mode", icon: <ToolOutlined /> },
+        { path: "/superadmins", name: "Superadmins", icon: <UserSwitchOutlined /> },
+        { path: "/activitylog", name: "Activity Logs", icon: <HistoryOutlined /> },
+      ],
     },
     {
       key: "theme-toggle",
@@ -160,6 +135,14 @@ const Sidebar = () => {
       icon: <LogoutOutlined />,
     }
   ];
+
+  // Open the section that contains the current page; users can toggle others freely.
+  const activeSection = menuData.find(g => g.children?.some(c => c.path === currentPath))?.path;
+  const [openKeys, setOpenKeys] = useState(activeSection ? [activeSection] : []);
+
+  useEffect(() => {
+    if (activeSection) setOpenKeys(keys => (keys.includes(activeSection) ? keys : [...keys, activeSection]));
+  }, [activeSection]);
 
   return (
     <ProLayout
@@ -222,8 +205,11 @@ const Sidebar = () => {
       }}
       contentStyle={{ margin: 0, padding: 0 }}
       fixSiderbar
+      location={{ pathname: currentPath }}
       menuProps={{
         selectedKeys: selectedKeys,
+        openKeys,
+        onOpenChange: setOpenKeys,
       }}
     >
       <div
@@ -234,6 +220,7 @@ const Sidebar = () => {
         }}
       >
         <Outlet />
+        <WhatsNew />
       </div>
     </ProLayout>
   );

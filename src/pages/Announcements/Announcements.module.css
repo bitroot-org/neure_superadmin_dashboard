@@ -12,7 +12,7 @@
 .title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--primary-dark);
+  color: var(--text-heading);
   margin: 0;
 }
 
@@ -27,7 +27,7 @@
 
 .table {
   margin-top: 24px;
-  background: #fff;
+  background: var(--background-secondary);
   border-radius: 4px;
 }
 
