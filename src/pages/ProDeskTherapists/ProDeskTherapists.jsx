@@ -52,6 +52,7 @@ const ProDeskTherapists = () => {
   const [planFilter, setPlanFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   // Detail drawer
   const [detailOpen, setDetailOpen] = useState(false);
@@ -227,23 +228,38 @@ const ProDeskTherapists = () => {
     URL.revokeObjectURL(url);
   };
 
-  const downloadAllCSV = () => {
-    if (!therapists.length) return;
-    const rows = [["Name", "Email", "Phone", "Plan", "Sub Status", "Account Status"]];
-    therapists.forEach((t) => {
-      rows.push([
-        t.name || `${t.first_name} ${t.last_name}`,
-        t.email, t.phone || "",
-        t.subscription?.plan_name || "No Plan",
-        t.subscription?.status || "—",
-        t.is_active ? "Active" : "Inactive",
-      ]);
-    });
-    const csv = rows.map((r) => r.map((v) => `"${v ?? ""}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url;
-    a.download = `therapists-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+  const downloadAllCSV = async () => {
+    setExporting(true);
+    try {
+      // Fetch the FULL matching set fresh (same search/filters as the screen,
+      // but ignoring the current page) instead of exporting only whichever
+      // page of `therapists` happens to be loaded in memory right now.
+      const res = await prodeskGetTherapists({
+        page: 1, limit: 100000, search, plan_type: planFilter, subscription_status: statusFilter,
+      });
+      const all = res?.data || [];
+      if (!all.length) { message.warning("No therapists to export"); return; }
+
+      const rows = [["Name", "Email", "Phone", "Plan", "Sub Status", "Account Status"]];
+      all.forEach((t) => {
+        rows.push([
+          t.name || `${t.first_name} ${t.last_name}`,
+          t.email, t.phone || "",
+          t.subscription?.plan_name || "No Plan",
+          t.subscription?.status || "—",
+          t.is_active ? "Active" : "Inactive",
+        ]);
+      });
+      const csv = rows.map((r) => r.map((v) => `"${v ?? ""}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url;
+      a.download = `therapists-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+    } catch {
+      message.error("Failed to export CSV");
+    } finally {
+      setExporting(false);
+    }
     URL.revokeObjectURL(url);
   };
 
@@ -379,7 +395,7 @@ const ProDeskTherapists = () => {
         </div>
         <Space>
           <Tooltip title="Download list of all therapists">
-            <Button icon={<DownloadOutlined />} onClick={downloadAllCSV}>Export CSV</Button>
+            <Button icon={<DownloadOutlined />} loading={exporting} onClick={downloadAllCSV}>Export CSV</Button>
           </Tooltip>
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setDrawerOpen(true)}>
             Add Therapist
